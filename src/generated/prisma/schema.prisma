@@ -14,6 +14,17 @@ enum UserRole {
   EMPLOYEE
 }
 
+enum EmployeeRole {
+  DRIVER
+  DELIVERY_DRIVER
+  COFFEE_MAKER
+  CASHIER
+  WAITER
+  CHEF
+  CLEANER
+  OTHER
+}
+
 model Company {
   id          String       @id @default(cuid())
   name        String       @unique
@@ -64,6 +75,7 @@ model Employee {
   name           String
   nameNormalized String
   notes          String?
+  role           EmployeeRole @default(OTHER)
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   attendances    Attendance[]

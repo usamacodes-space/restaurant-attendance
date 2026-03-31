@@ -2,12 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { getValidKioskSessionByPlainToken } from "@/lib/kiosk-session";
 import { saveSelfie } from "@/lib/upload-selfie";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   const form = await req.formData();
   const token = String(form.get("token") ?? "").trim();
   const employeeId = String(form.get("employeeId") ?? "").trim();
   const branchId = String(form.get("branchId") ?? "").trim();
+  const passcode = String(form.get("passcode") ?? "");
   const file = form.get("selfie");
   const latitudeRaw = String(form.get("latitude") ?? "").trim();
   const longitudeRaw = String(form.get("longitude") ?? "").trim();
@@ -16,6 +18,9 @@ export async function POST(req: NextRequest) {
 
   if (!token || !employeeId || !branchId) {
     return NextResponse.json({ error: "token, branchId and employeeId are required" }, { status: 400 });
+  }
+  if (!passcode) {
+    return NextResponse.json({ error: "passcode is required" }, { status: 400 });
   }
 
   if (!(file instanceof File) || file.size === 0) {
@@ -32,12 +37,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid branch for this QR" }, { status: 400 });
   }
 
-  const employee = await prisma.employee.findUnique({ where: { id: employeeId } });
+  const employee = await prisma.employee.findUnique({
+    where: { id: employeeId },
+    select: { id: true, companyId: true, branchId: true, user: { select: { passwordHash: true } } },
+  });
   if (!employee) {
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
   }
   if (employee.companyId !== kiosk.branch.companyId || employee.branchId !== branch.id) {
     return NextResponse.json({ error: "Employee does not belong to selected branch" }, { status: 400 });
+  }
+  const ok = await bcrypt.compare(passcode, employee.user.passwordHash);
+  if (!ok) {
+    return NextResponse.json({ error: "Invalid passcode" }, { status: 401 });
   }
 
   const existingOpen = await prisma.attendance.findFirst({

@@ -3,6 +3,7 @@ import { requireRoles } from "@/lib/authz";
 import { normalizeEmployeeName } from "@/lib/normalize-name";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
+import type { EmployeeRole } from "@/generated/prisma";
 
 export async function GET() {
   const required = await requireRoles(["MASTER_ADMIN", "COMPANY_ADMIN"]);
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
     password?: string;
     branchId?: string;
     employeeCode?: string | null;
+    role?: EmployeeRole;
   };
   try {
     body = await req.json();
@@ -45,6 +47,7 @@ export async function POST(req: NextRequest) {
   const email = body.email?.trim().toLowerCase();
   const password = body.password ?? "";
   const branchId = body.branchId?.trim();
+  const role: EmployeeRole = body.role ?? "OTHER";
 
   if (!name) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -94,6 +97,7 @@ export async function POST(req: NextRequest) {
           nameNormalized,
           notes: body.notes?.trim() || null,
           employeeCode: body.employeeCode?.trim() || null,
+          role,
         },
         include: {
           user: { select: { id: true, email: true, isActive: true } },

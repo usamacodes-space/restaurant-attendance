@@ -22,6 +22,7 @@ export function KioskClient({ token }: { token: string }) {
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [passcode, setPasscode] = useState("");
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [busy, setBusy] = useState(false);
@@ -113,11 +114,15 @@ export function KioskClient({ token }: { token: string }) {
 
   async function resolveAttendanceAction(): Promise<"checkout" | "checkin" | null> {
     if (!selectedEmployeeId || !selectedBranchId) return null;
+    if (!passcode.trim()) {
+      setError("Enter your passcode.");
+      return null;
+    }
     setError(null);
     const statusRes = await fetch("/api/kiosk/status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, employeeId: selectedEmployeeId, branchId: selectedBranchId }),
+      body: JSON.stringify({ token, employeeId: selectedEmployeeId, branchId: selectedBranchId, passcode }),
     });
     const statusData = await statusRes.json();
     if (!statusRes.ok) {
@@ -186,6 +191,7 @@ export function KioskClient({ token }: { token: string }) {
     fd.set("token", token);
     fd.set("branchId", selectedBranchId);
     fd.set("employeeId", selectedEmployeeId);
+    fd.set("passcode", passcode);
     if (location.latitude != null) fd.set("latitude", String(location.latitude));
     if (location.longitude != null) fd.set("longitude", String(location.longitude));
     fd.set("selfie", photo, "selfie.jpg");
@@ -194,6 +200,7 @@ export function KioskClient({ token }: { token: string }) {
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Check-in failed");
     setMessage("You are checked-in successfully.");
+    setPasscode("");
     setStep("done");
   }
 
@@ -206,6 +213,7 @@ export function KioskClient({ token }: { token: string }) {
         token,
         branchId: selectedBranchId,
         employeeId: selectedEmployeeId,
+        passcode,
         latitude: location.latitude,
         longitude: location.longitude,
       }),
@@ -214,6 +222,7 @@ export function KioskClient({ token }: { token: string }) {
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Check-out failed");
     setMessage("You checked-out successfully.");
+    setPasscode("");
     setStep("done");
   }
 
@@ -267,7 +276,7 @@ export function KioskClient({ token }: { token: string }) {
           <p>Company: {selectedEmployee?.company.name ?? "-"}</p>
           <p>Branch: {selectedEmployee?.branch.name ?? "-"}</p>
           <p>Name: {selectedEmployee?.name ?? "-"}</p>
-          <p>Role: {selectedEmployee?.role ?? "EMPLOYEE"}</p>
+          <p>Role: {(selectedEmployee?.role ?? "OTHER").replaceAll("_", " ")}</p>
         </div>
         {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
         <button
@@ -310,6 +319,13 @@ export function KioskClient({ token }: { token: string }) {
             </option>
           ))}
         </select>
+        <input
+          type="password"
+          value={passcode}
+          onChange={(e) => setPasscode(e.target.value)}
+          placeholder="Enter your passcode"
+          className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+        />
       </div>
       {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
       <button

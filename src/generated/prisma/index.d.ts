@@ -56,11 +56,29 @@ export namespace $Enums {
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
+
+export const EmployeeRole: {
+  DRIVER: 'DRIVER',
+  DELIVERY_DRIVER: 'DELIVERY_DRIVER',
+  COFFEE_MAKER: 'COFFEE_MAKER',
+  CASHIER: 'CASHIER',
+  WAITER: 'WAITER',
+  CHEF: 'CHEF',
+  CLEANER: 'CLEANER',
+  OTHER: 'OTHER'
+};
+
+export type EmployeeRole = (typeof EmployeeRole)[keyof typeof EmployeeRole]
+
 }
 
 export type UserRole = $Enums.UserRole
 
 export const UserRole: typeof $Enums.UserRole
+
+export type EmployeeRole = $Enums.EmployeeRole
+
+export const EmployeeRole: typeof $Enums.EmployeeRole
 
 /**
  * ##  Prisma Client ʲˢ
@@ -4987,6 +5005,7 @@ export namespace Prisma {
     name: string | null
     nameNormalized: string | null
     notes: string | null
+    role: $Enums.EmployeeRole | null
     isActive: boolean | null
     createdAt: Date | null
   }
@@ -5000,6 +5019,7 @@ export namespace Prisma {
     name: string | null
     nameNormalized: string | null
     notes: string | null
+    role: $Enums.EmployeeRole | null
     isActive: boolean | null
     createdAt: Date | null
   }
@@ -5013,6 +5033,7 @@ export namespace Prisma {
     name: number
     nameNormalized: number
     notes: number
+    role: number
     isActive: number
     createdAt: number
     _all: number
@@ -5028,6 +5049,7 @@ export namespace Prisma {
     name?: true
     nameNormalized?: true
     notes?: true
+    role?: true
     isActive?: true
     createdAt?: true
   }
@@ -5041,6 +5063,7 @@ export namespace Prisma {
     name?: true
     nameNormalized?: true
     notes?: true
+    role?: true
     isActive?: true
     createdAt?: true
   }
@@ -5054,6 +5077,7 @@ export namespace Prisma {
     name?: true
     nameNormalized?: true
     notes?: true
+    role?: true
     isActive?: true
     createdAt?: true
     _all?: true
@@ -5140,6 +5164,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes: string | null
+    role: $Enums.EmployeeRole
     isActive: boolean
     createdAt: Date
     _count: EmployeeCountAggregateOutputType | null
@@ -5170,6 +5195,7 @@ export namespace Prisma {
     name?: boolean
     nameNormalized?: boolean
     notes?: boolean
+    role?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5188,6 +5214,7 @@ export namespace Prisma {
     name?: boolean
     nameNormalized?: boolean
     notes?: boolean
+    role?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5204,6 +5231,7 @@ export namespace Prisma {
     name?: boolean
     nameNormalized?: boolean
     notes?: boolean
+    role?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5220,11 +5248,12 @@ export namespace Prisma {
     name?: boolean
     nameNormalized?: boolean
     notes?: boolean
+    role?: boolean
     isActive?: boolean
     createdAt?: boolean
   }
 
-  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "companyId" | "branchId" | "employeeCode" | "name" | "nameNormalized" | "notes" | "isActive" | "createdAt", ExtArgs["result"]["employee"]>
+  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "companyId" | "branchId" | "employeeCode" | "name" | "nameNormalized" | "notes" | "role" | "isActive" | "createdAt", ExtArgs["result"]["employee"]>
   export type EmployeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     company?: boolean | CompanyDefaultArgs<ExtArgs>
@@ -5260,6 +5289,7 @@ export namespace Prisma {
       name: string
       nameNormalized: string
       notes: string | null
+      role: $Enums.EmployeeRole
       isActive: boolean
       createdAt: Date
     }, ExtArgs["result"]["employee"]>
@@ -5697,6 +5727,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Employee", 'String'>
     readonly nameNormalized: FieldRef<"Employee", 'String'>
     readonly notes: FieldRef<"Employee", 'String'>
+    readonly role: FieldRef<"Employee", 'EmployeeRole'>
     readonly isActive: FieldRef<"Employee", 'Boolean'>
     readonly createdAt: FieldRef<"Employee", 'DateTime'>
   }
@@ -8541,6 +8572,7 @@ export namespace Prisma {
     name: 'name',
     nameNormalized: 'nameNormalized',
     notes: 'notes',
+    role: 'role',
     isActive: 'isActive',
     createdAt: 'createdAt'
   };
@@ -8683,6 +8715,20 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'EmployeeRole'
+   */
+  export type EnumEmployeeRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeeRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'EmployeeRole[]'
+   */
+  export type ListEnumEmployeeRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeeRole[]'>
     
   /**
    * Deep Input Types
@@ -8900,6 +8946,7 @@ export namespace Prisma {
     name?: StringFilter<"Employee"> | string
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
+    role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -8917,6 +8964,7 @@ export namespace Prisma {
     name?: SortOrder
     nameNormalized?: SortOrder
     notes?: SortOrderInput | SortOrder
+    role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -8939,6 +8987,7 @@ export namespace Prisma {
     name?: StringFilter<"Employee"> | string
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
+    role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -8956,6 +9005,7 @@ export namespace Prisma {
     name?: SortOrder
     nameNormalized?: SortOrder
     notes?: SortOrderInput | SortOrder
+    role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     _count?: EmployeeCountOrderByAggregateInput
@@ -8975,6 +9025,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Employee"> | string
     nameNormalized?: StringWithAggregatesFilter<"Employee"> | string
     notes?: StringNullableWithAggregatesFilter<"Employee"> | string | null
+    role?: EnumEmployeeRoleWithAggregatesFilter<"Employee"> | $Enums.EmployeeRole
     isActive?: BoolWithAggregatesFilter<"Employee"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
   }
@@ -9371,6 +9422,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -9388,6 +9440,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -9399,6 +9452,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -9416,6 +9470,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -9430,6 +9485,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -9440,6 +9496,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9453,6 +9510,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9978,6 +10036,13 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type EnumEmployeeRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmployeeRoleFilter<$PrismaModel> | $Enums.EmployeeRole
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -10007,6 +10072,7 @@ export namespace Prisma {
     name?: SortOrder
     nameNormalized?: SortOrder
     notes?: SortOrder
+    role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
   }
@@ -10020,6 +10086,7 @@ export namespace Prisma {
     name?: SortOrder
     nameNormalized?: SortOrder
     notes?: SortOrder
+    role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
   }
@@ -10033,8 +10100,19 @@ export namespace Prisma {
     name?: SortOrder
     nameNormalized?: SortOrder
     notes?: SortOrder
+    role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type EnumEmployeeRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmployeeRoleWithAggregatesFilter<$PrismaModel> | $Enums.EmployeeRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmployeeRoleFilter<$PrismaModel>
+    _max?: NestedEnumEmployeeRoleFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -10588,6 +10666,10 @@ export namespace Prisma {
     connect?: AttendanceWhereUniqueInput | AttendanceWhereUniqueInput[]
   }
 
+  export type EnumEmployeeRoleFieldUpdateOperationsInput = {
+    set?: $Enums.EmployeeRole
+  }
+
   export type UserUpdateOneRequiredWithoutEmployeeNestedInput = {
     create?: XOR<UserCreateWithoutEmployeeInput, UserUncheckedCreateWithoutEmployeeInput>
     connectOrCreate?: UserCreateOrConnectWithoutEmployeeInput
@@ -10949,6 +11031,23 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumEmployeeRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmployeeRoleFilter<$PrismaModel> | $Enums.EmployeeRole
+  }
+
+  export type NestedEnumEmployeeRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmployeeRoleWithAggregatesFilter<$PrismaModel> | $Enums.EmployeeRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmployeeRoleFilter<$PrismaModel>
+    _max?: NestedEnumEmployeeRoleFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -11044,6 +11143,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -11059,6 +11159,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11202,6 +11303,7 @@ export namespace Prisma {
     name?: StringFilter<"Employee"> | string
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
+    role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
   }
@@ -11271,6 +11373,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -11286,6 +11389,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11489,6 +11593,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutEmployeesInput
@@ -11504,6 +11609,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11560,6 +11666,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
@@ -11575,6 +11682,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -11990,6 +12098,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -12006,6 +12115,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12119,6 +12229,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12135,6 +12246,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12194,6 +12306,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12282,6 +12395,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12297,6 +12411,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -12310,6 +12425,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12370,6 +12486,7 @@ export namespace Prisma {
     name: string
     nameNormalized: string
     notes?: string | null
+    role?: $Enums.EmployeeRole
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12404,6 +12521,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12419,6 +12537,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -12432,6 +12551,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

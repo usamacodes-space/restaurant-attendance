@@ -3,6 +3,7 @@ import { requireRoles } from "@/lib/authz";
 import { normalizeEmployeeName } from "@/lib/normalize-name";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
+import type { EmployeeRole } from "@/generated/prisma";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -20,6 +21,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     branchId?: string;
     isActive?: boolean;
     employeeCode?: string | null;
+    role?: EmployeeRole;
   };
   try {
     body = await req.json();
@@ -43,6 +45,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     branchId?: string;
     employeeCode?: string | null;
     isActive?: boolean;
+    role?: EmployeeRole;
   } = {};
   if (name !== undefined) {
     if (!name) {
@@ -71,6 +74,9 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   }
   if (body.isActive !== undefined) {
     data.isActive = !!body.isActive;
+  }
+  if (body.role !== undefined) {
+    data.role = body.role;
   }
 
   const userData: { email?: string; passwordHash?: string; isActive?: boolean } = {};

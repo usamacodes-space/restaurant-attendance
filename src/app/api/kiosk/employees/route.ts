@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
     select: {
       id: true,
       name: true,
+      role: true,
       employeeCode: true,
       branch: { select: { id: true, name: true } },
       company: { select: { id: true, name: true } },
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
       id: e.id,
       name: e.name,
       employeeCode: e.employeeCode,
-      role: "EMPLOYEE",
+      role: e.role,
       branch: e.branch,
       company: e.company,
     })),

@@ -1,12 +1,37 @@
  "use client";
 
-import { signOut, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
+import { signOut, useSession } from "next-auth/react";
 import QRCode from "qrcode";
-import { useCallback, useEffect, useState } from "react";
-import { Avatar, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tabs,
+  Tab,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Tab = "companies" | "branches" | "employees" | "company" | "hours" | "logs";
+type TabId = "companies" | "branches" | "company" | "hours" | "logs";
+type EmployeeRole = "DRIVER" | "DELIVERY_DRIVER" | "COFFEE_MAKER" | "CASHIER" | "WAITER" | "CHEF" | "CLEANER" | "OTHER";
 type Company = { id: string; name: string; _count?: { branches: number; employees: number }; companyAdminEmail?: string | null };
 type Branch = {
   id: string;
@@ -21,6 +46,7 @@ type Branch = {
 type Employee = {
   id: string;
   name: string;
+  role?: EmployeeRole;
   employeeCode: string | null;
   notes: string | null;
   user: { email: string; isActive: boolean };
@@ -40,85 +66,131 @@ type AttendanceLogRow = {
   branchRadiusMeters?: number;
 };
 
-const sectionClass =
-  "rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90 dark:shadow-none";
+const EMPLOYEE_ROLE_OPTIONS: { value: EmployeeRole; label: string }[] = [
+  { value: "DRIVER", label: "Driver" },
+  { value: "DELIVERY_DRIVER", label: "Delivery Driver" },
+  { value: "COFFEE_MAKER", label: "Coffee Maker" },
+  { value: "CASHIER", label: "Cashier" },
+  { value: "WAITER", label: "Waiter" },
+  { value: "CHEF", label: "Chef" },
+  { value: "CLEANER", label: "Cleaner" },
+  { value: "OTHER", label: "Other" },
+];
+
 const BranchLocationPicker = dynamic(
   () => import("./branch-location-picker").then((m) => m.BranchLocationPicker),
   { ssr: false }
 );
 
+const shellSx = {
+  borderRadius: 4,
+  border: "1px solid",
+  borderColor: "divider",
+  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",
+  backgroundColor: "background.paper",
+};
+
 export function DashboardClient() {
   const { data } = useSession();
   const role = data?.user?.role;
-  const [tab, setTab] = useState<Tab>("companies");
+  const [roleLabel, setRoleLabel] = useState("Admin");
+  const [tab, setTab] = useState<TabId>("companies");
 
-  const tabs: { id: Tab; label: string; visible: boolean }[] = [
-    { id: "companies", label: "Companies", visible: role === "MASTER_ADMIN" },
-    { id: "branches", label: "Branches", visible: role === "MASTER_ADMIN" },
-    { id: "employees", label: "All Employees", visible: false },
-    { id: "company", label: "Company Workspace", visible: role === "COMPANY_ADMIN" },
-    { id: "hours", label: "Hours", visible: role === "COMPANY_ADMIN" },
-    { id: "logs", label: "Attendance Logs", visible: role === "COMPANY_ADMIN" },
-  ];
+  const tabs = useMemo(() => {
+    if (role === "MASTER_ADMIN") {
+      return [
+        { id: "companies" as TabId, label: "Companies" },
+        { id: "branches" as TabId, label: "Branches" },
+      ];
+    }
+    if (role === "COMPANY_ADMIN") {
+      return [
+        { id: "company" as TabId, label: "Workspace" },
+        { id: "hours" as TabId, label: "Hours" },
+        { id: "logs" as TabId, label: "Attendance Logs" },
+      ];
+    }
+    return [];
+  }, [role]);
 
   useEffect(() => {
-    if (!role) return;
-    if (role === "MASTER_ADMIN") {
-      if (tab !== "companies" && tab !== "branches") setTab("companies");
+    if (!tabs.length) return;
+    const tabExists = tabs.some((t) => t.id === tab);
+    if (!tabExists) setTab(tabs[0].id);
+  }, [tab, tabs]);
+
+  useEffect(() => {
+    if (!role) {
+      setRoleLabel("Admin");
       return;
     }
     if (role === "COMPANY_ADMIN") {
-      if (tab !== "company" && tab !== "hours" && tab !== "logs") setTab("company");
+      void fetch("/api/admin/companies")
+        .then((r) => r.json())
+        .then((d) => {
+          const companyName = d?.companies?.[0]?.name;
+          setRoleLabel(companyName ? `${companyName} Admin` : "Company Admin");
+        })
+        .catch(() => setRoleLabel("Company Admin"));
+      return;
     }
-  }, [role, tab]);
+    setRoleLabel("Master Admin");
+  }, [role]);
 
   return (
-    <div className="min-h-full flex-1">
-      <header className="border-b border-stone-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/95">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-          <div>
-            <h1 className="text-lg font-semibold text-stone-900 dark:text-zinc-50">WAQT Attendance Dashboard</h1>
-            <p className="text-sm text-stone-500 dark:text-zinc-400">{role?.replace("_", " ") ?? "Admin"}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Fdashboard" })}
-              className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-800"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-        <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto border-t border-stone-100 px-4 dark:border-zinc-800">
-          {tabs
-            .filter((t) => t.visible)
-            .map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                  tab === t.id
-                    ? "border-amber-600 text-amber-800 dark:border-amber-500 dark:text-amber-300"
-                    : "border-transparent text-stone-600 hover:text-stone-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-                }`}
-              >
-                {t.label}
-              </button>
+    <Box className="min-h-full flex-1 bg-slate-50/60 dark:bg-zinc-950">
+      <Box className="border-b border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
+          <Box>
+            <Typography variant="h5" fontWeight={700}>
+              WAQT Attendance Dashboard
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {roleLabel}
+            </Typography>
+          </Box>
+          <Button variant="outlined" color="inherit" onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Fdashboard" })}>
+            Sign out
+          </Button>
+        </Box>
+        <Box className="mx-auto max-w-6xl px-4">
+          <Tabs
+            value={tab}
+            onChange={(_, value: TabId) => setTab(value)}
+            variant="scrollable"
+            sx={{ minHeight: 52, "& .MuiTab-root": { minHeight: 52, fontWeight: 600 } }}
+          >
+            {tabs.map((t) => (
+              <Tab key={t.id} value={t.id} label={t.label} />
             ))}
-        </nav>
-      </header>
+          </Tabs>
+        </Box>
+      </Box>
 
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">
-        {tab === "companies" && <CompaniesSection />}
-        {tab === "branches" && <BranchesSection />}
-        {tab === "employees" && <EmployeesSection />}
-        {tab === "company" && <CompanyWorkspaceSection />}
-        {tab === "hours" && <HoursSection />}
-        {tab === "logs" && <LogsSection />}
-      </main>
-    </div>
+      <Box className="mx-auto max-w-6xl px-4 py-8">
+        {role === "MASTER_ADMIN" && <MasterAdminScreen tab={tab} />}
+        {role === "COMPANY_ADMIN" && <CompanyAdminScreen tab={tab} />}
+      </Box>
+    </Box>
+  );
+}
+
+function MasterAdminScreen({ tab }: { tab: TabId }) {
+  return (
+    <Stack spacing={3}>
+      {tab === "companies" && <CompaniesSection />}
+      {tab === "branches" && <BranchesSection />}
+    </Stack>
+  );
+}
+
+function CompanyAdminScreen({ tab }: { tab: TabId }) {
+  return (
+    <Stack spacing={3}>
+      {tab === "company" && <CompanyWorkspaceSection />}
+      {tab === "hours" && <HoursSection />}
+      {tab === "logs" && <LogsSection />}
+    </Stack>
   );
 }
 
@@ -171,111 +243,121 @@ function CompaniesSection() {
   }
 
   return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Companies (Master Admin)</h2>
-      <form onSubmit={createCompany} className="mt-4 grid gap-3 md:grid-cols-4">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Company name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} placeholder="Company admin email" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} placeholder="Company admin password" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Add</button>
-      </form>
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
-        {companies.map((c) => (
-          <li key={c.id} className="py-2 text-sm text-stone-800 dark:text-zinc-100">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex flex-1 items-center gap-2">
-                <input
-                  value={companyNames[c.id] ?? c.name}
-                  onChange={(e) => setCompanyNames((prev) => ({ ...prev, [c.id]: e.target.value }))}
-                  className="w-full max-w-sm rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
-                />
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const newName = (companyNames[c.id] ?? "").trim();
-                    if (!newName) return setError("Company name is required");
-                    const res = await fetch(`/api/admin/companies/${c.id}`, {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ name: newName }),
-                    });
-                    if (res.ok) void load();
-                    else {
-                      const d = await res.json().catch(() => ({ error: "Update failed" }));
-                      setError(d.error ?? "Update failed");
-                    }
-                  }}
-                  className="rounded-lg border border-stone-300 px-3 py-1 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
-                >
-                  Save company
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-stone-500 dark:text-zinc-400">
-                  branches: {c._count?.branches ?? 0}, employees: {c._count?.employees ?? 0}
-                </span>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!confirm("Delete this company and all related data?")) return;
-                    const res = await fetch(`/api/admin/companies/${c.id}`, { method: "DELETE" });
-                    if (res.ok) void load();
-                    else {
-                      const d = await res.json().catch(() => ({ error: "Delete failed" }));
-                      setError(d.error ?? "Delete failed");
-                    }
-                  }}
-                  className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+    <Card sx={shellSx}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Companies
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          Master admin can create companies and manage each company admin credentials.
+        </Typography>
 
-            <div className="mt-3 grid gap-2 md:grid-cols-5 items-center">
-              <input
-                value={adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? ""}
-                onChange={(e) => setAdminEmailDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
-                placeholder="Company admin email"
-                className="md:col-span-2 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
-              />
-              <input
-                type="password"
-                value={adminPasswordDrafts[c.id] ?? ""}
-                onChange={(e) => setAdminPasswordDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
-                placeholder="New password (leave blank to keep)"
-                className="md:col-span-2 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
-              />
-              <button
-                type="button"
-                onClick={async () => {
-                  const email = (adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? "").trim();
-                  const password = adminPasswordDrafts[c.id] ?? "";
-                  if (!email && !password) return setError("Provide email and/or new password.");
-                  const res = await fetch(`/api/admin/companies/${c.id}`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      adminEmail: email || undefined,
-                      adminPassword: password || undefined,
-                    }),
-                  });
-                  if (res.ok) void load();
-                  else {
-                    const d = await res.json().catch(() => ({ error: "Update failed" }));
-                    setError(d.error ?? "Update failed");
-                  }
-                }}
-                className="md:col-span-1 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white dark:bg-amber-500"
-              >
-                Save admin
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
+        <Box component="form" onSubmit={createCompany} sx={{ mt: 2, display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr auto" } }}>
+          <TextField value={name} onChange={(e) => setName(e.target.value)} label="Company name" size="small" />
+          <TextField value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} label="Company admin email" size="small" />
+          <TextField type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} label="Company admin password" size="small" />
+          <Button type="submit" variant="contained">
+            Add company
+          </Button>
+        </Box>
+
+        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+
+        <Stack spacing={1.5} sx={{ mt: 2 }}>
+          {companies.map((c) => (
+            <Paper key={c.id} variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+              <Stack spacing={1.5}>
+                <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ xs: "stretch", md: "center" }} justifyContent="space-between">
+                  <Stack direction={{ xs: "column", md: "row" }} spacing={1.2} alignItems={{ xs: "stretch", md: "center" }} sx={{ flex: 1 }}>
+                    <TextField
+                      value={companyNames[c.id] ?? c.name}
+                      onChange={(e) => setCompanyNames((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                      label="Company"
+                      size="small"
+                      sx={{ maxWidth: 360, width: "100%" }}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={async () => {
+                        const newName = (companyNames[c.id] ?? "").trim();
+                        if (!newName) return setError("Company name is required");
+                        const res = await fetch(`/api/admin/companies/${c.id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ name: newName }),
+                        });
+                        if (res.ok) void load();
+                        else {
+                          const d = await res.json().catch(() => ({ error: "Update failed" }));
+                          setError(d.error ?? "Update failed");
+                        }
+                      }}
+                    >
+                      Save company
+                    </Button>
+                  </Stack>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip size="small" label={`Branches: ${c._count?.branches ?? 0}`} />
+                    <Chip size="small" label={`Employees: ${c._count?.employees ?? 0}`} />
+                    <Button
+                      color="error"
+                      variant="outlined"
+                      onClick={async () => {
+                        if (!confirm("Delete this company and all related data?")) return;
+                        const res = await fetch(`/api/admin/companies/${c.id}`, { method: "DELETE" });
+                        if (res.ok) void load();
+                        else {
+                          const d = await res.json().catch(() => ({ error: "Delete failed" }));
+                          setError(d.error ?? "Delete failed");
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
+                </Stack>
+
+                <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1.25fr 1.25fr auto" } }}>
+                  <TextField
+                    value={adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? ""}
+                    onChange={(e) => setAdminEmailDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                    label="Company admin email"
+                    size="small"
+                  />
+                  <TextField
+                    type="password"
+                    value={adminPasswordDrafts[c.id] ?? ""}
+                    onChange={(e) => setAdminPasswordDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                    label="New password (optional)"
+                    size="small"
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={async () => {
+                      const email = (adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? "").trim();
+                      const password = adminPasswordDrafts[c.id] ?? "";
+                      if (!email && !password) return setError("Provide email and/or new password.");
+                      const res = await fetch(`/api/admin/companies/${c.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ adminEmail: email || undefined, adminPassword: password || undefined }),
+                      });
+                      if (res.ok) void load();
+                      else {
+                        const d = await res.json().catch(() => ({ error: "Update failed" }));
+                        setError(d.error ?? "Update failed");
+                      }
+                    }}
+                  >
+                    Save admin
+                  </Button>
+                </Box>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -333,222 +415,170 @@ function BranchesSection() {
   }
 
   return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Branches (Super Admin only)</h2>
-      <form onSubmit={createBranch} className="mt-4 grid gap-3 md:grid-cols-2">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Branch name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <select value={companyId} onChange={(e) => setCompanyId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">{companies.map((c) => <option value={c.id} key={c.id}>{c.name}</option>)}</select>
-        <div className="md:col-span-2">
-          <BranchLocationPicker
-            latitude={latitude}
-            longitude={longitude}
-            radiusMeters={radiusMeters}
-            onChange={(lat, lng) => {
-              setLatitude(lat);
-              setLongitude(lng);
-            }}
-          />
-          <p className="mt-2 text-xs text-stone-500 dark:text-zinc-400">
-            Selected: {latitude?.toFixed(6) ?? "-"}, {longitude?.toFixed(6) ?? "-"}
-          </p>
-        </div>
-        <div className="md:col-span-2 flex items-center gap-2">
-          <input type="number" min={1} value={radiusMeters} onChange={(e) => setRadiusMeters(Number(e.target.value || 100))} className="w-32 rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Add branch</button>
-        </div>
-      </form>
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
-        {branches.map((b) => (
-          <li key={b.id} className="py-3 text-sm text-stone-800 dark:text-zinc-100">
-            <div className="flex items-center justify-between">
-              <span>
-                {b.name} ({b.company?.name ?? "-"}) [{b.latitude ?? "-"}, {b.longitude ?? "-"}] {b.radiusMeters}m
-              </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingBranchId(b.id);
-                    setEditName(b.name);
-                    setEditRadius(b.radiusMeters);
-                    setEditLatitude(b.latitude);
-                    setEditLongitude(b.longitude);
-                  }}
-                  className="rounded-lg border border-stone-300 px-3 py-1 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
-                >
-                  Edit settings
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!confirm("Delete this branch?")) return;
-                    const res = await fetch(`/api/admin/branches/${b.id}`, { method: "DELETE" });
-                    if (res.ok) void load();
-                    else {
-                      const d = await res.json().catch(() => ({ error: "Delete failed" }));
-                      setError(d.error ?? "Delete failed");
-                    }
-                  }}
-                  className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-            {editingBranchId === b.id && (
-              <div className="mt-3 rounded-xl border border-stone-200 p-3 dark:border-zinc-700">
-                <div className="grid gap-3 md:grid-cols-2">
-                  <input
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    value={editRadius}
-                    onChange={(e) => setEditRadius(Number(e.target.value || 100))}
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
-                  />
-                </div>
-                <div className="mt-3">
-                  <BranchLocationPicker
-                    latitude={editLatitude}
-                    longitude={editLongitude}
-                    radiusMeters={editRadius}
-                    onChange={(lat, lng) => {
-                      setEditLatitude(lat);
-                      setEditLongitude(lng);
+    <Card sx={shellSx}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Branches
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          Set branch geofence from map and control editable radius.
+        </Typography>
+
+        <Box component="form" onSubmit={createBranch} sx={{ mt: 2, display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
+          <TextField value={name} onChange={(e) => setName(e.target.value)} label="Branch name" size="small" />
+          <FormControl size="small">
+            <InputLabel id="company-label">Company</InputLabel>
+            <Select labelId="company-label" label="Company" value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
+              {companies.map((c) => (
+                <MenuItem value={c.id} key={c.id}>
+                  {c.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box sx={{ gridColumn: { xs: "span 1", md: "span 2" } }}>
+            <BranchLocationPicker
+              latitude={latitude}
+              longitude={longitude}
+              radiusMeters={radiusMeters}
+              onChange={(lat, lng) => {
+                setLatitude(lat);
+                setLongitude(lng);
+              }}
+            />
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+              Selected: {latitude?.toFixed(6) ?? "-"}, {longitude?.toFixed(6) ?? "-"}
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1.5} sx={{ gridColumn: { xs: "span 1", md: "span 2" } }}>
+            <TextField
+              size="small"
+              type="number"
+              label="Radius (meters)"
+              value={radiusMeters}
+              onChange={(e) => setRadiusMeters(Number(e.target.value || 100))}
+              sx={{ width: 180 }}
+            />
+            <Button type="submit" variant="contained">
+              Add branch
+            </Button>
+          </Stack>
+        </Box>
+
+        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+
+        <Stack spacing={1.5} sx={{ mt: 2 }}>
+          {branches.map((b) => (
+            <Paper key={b.id} variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+              <Stack direction={{ xs: "column", md: "row" }} spacing={1} justifyContent="space-between">
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={700}>
+                    {b.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {b.company?.name ?? "-"} - {b.latitude ?? "-"}, {b.longitude ?? "-"} - {b.radiusMeters}m
+                  </Typography>
+                </Box>
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setEditingBranchId(b.id);
+                      setEditName(b.name);
+                      setEditRadius(b.radiusMeters);
+                      setEditLatitude(b.latitude);
+                      setEditLongitude(b.longitude);
                     }}
-                  />
-                  <p className="mt-2 text-xs text-stone-500 dark:text-zinc-400">
-                    Selected: {editLatitude?.toFixed(6) ?? "-"}, {editLongitude?.toFixed(6) ?? "-"}
-                  </p>
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
+                  >
+                    Edit settings
+                  </Button>
+                  <Button
+                    color="error"
+                    variant="outlined"
                     onClick={async () => {
-                      const res = await fetch(`/api/admin/branches/${b.id}`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          name: editName,
-                          radiusMeters: editRadius,
-                          latitude: editLatitude,
-                          longitude: editLongitude,
-                        }),
-                      });
-                      if (res.ok) {
-                        setEditingBranchId(null);
-                        void load();
-                      } else {
-                        const d = await res.json().catch(() => ({ error: "Update failed" }));
-                        setError(d.error ?? "Update failed");
+                      if (!confirm("Delete this branch?")) return;
+                      const res = await fetch(`/api/admin/branches/${b.id}`, { method: "DELETE" });
+                      if (res.ok) void load();
+                      else {
+                        const d = await res.json().catch(() => ({ error: "Delete failed" }));
+                        setError(d.error ?? "Delete failed");
                       }
                     }}
-                    className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white"
                   >
-                    Save settings
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditingBranchId(null)}
-                    className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+                    Delete
+                  </Button>
+                </Stack>
+              </Stack>
 
-function EmployeesSection() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [form, setForm] = useState({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "" });
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    const [eRes, bRes] = await Promise.all([fetch("/api/admin/employees"), fetch("/api/admin/branches")]);
-    const eData = await eRes.json();
-    const bData = await bRes.json();
-    if (eRes.ok) setEmployees(eData.employees);
-    if (bRes.ok) {
-      setBranches(bData.branches);
-      setForm((prev) => ({ ...prev, branchId: prev.branchId || bData.branches?.[0]?.id || "" }));
-    }
-    if (!eRes.ok) setError(eData.error ?? "Failed");
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  async function createEmployee(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const res = await fetch("/api/admin/employees", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error ?? "Failed");
-    setForm({ name: "", email: "", password: "", branchId: form.branchId, employeeCode: "", notes: "" });
-    void load();
-  }
-
-  return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Employees</h2>
-      <form onSubmit={createEmployee} className="mt-4 grid gap-3 md:grid-cols-3">
-        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">{branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
-        <input value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} placeholder="Employee code" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <button className="md:col-span-3 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Create employee</button>
-      </form>
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
-        {employees.map((e) => (
-          <li key={e.id} className="flex items-center justify-between py-3 text-sm text-stone-800 dark:text-zinc-100">
-            <div className="grid gap-1">
-              <p className="font-medium">{e.name}</p>
-              <p className="text-xs text-stone-500 dark:text-zinc-400">
-                {e.user.email} | {e.branch?.name ?? "-"} | {e.user.isActive ? "Active" : "Disabled"}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={async () => {
-                if (!confirm("Remove this employee?")) return;
-                const res = await fetch(`/api/admin/employees/${e.id}`, { method: "DELETE" });
-                if (res.ok) void load();
-                else {
-                  const d = await res.json().catch(() => ({ error: "Delete failed" }));
-                  setError(d.error ?? "Delete failed");
-                }
-              }}
-              className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
+              {editingBranchId === b.id && (
+                <Paper variant="outlined" sx={{ mt: 1.5, borderRadius: 2, p: 2 }}>
+                  <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
+                    <TextField size="small" label="Branch name" value={editName} onChange={(e) => setEditName(e.target.value)} />
+                    <TextField
+                      size="small"
+                      type="number"
+                      label="Radius (meters)"
+                      value={editRadius}
+                      onChange={(e) => setEditRadius(Number(e.target.value || 100))}
+                    />
+                  </Box>
+                  <Box sx={{ mt: 1.5 }}>
+                    <BranchLocationPicker
+                      latitude={editLatitude}
+                      longitude={editLongitude}
+                      radiusMeters={editRadius}
+                      onChange={(lat, lng) => {
+                        setEditLatitude(lat);
+                        setEditLongitude(lng);
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+                      Selected: {editLatitude?.toFixed(6) ?? "-"}, {editLongitude?.toFixed(6) ?? "-"}
+                    </Typography>
+                  </Box>
+                  <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                    <Button
+                      variant="contained"
+                      onClick={async () => {
+                        const res = await fetch(`/api/admin/branches/${b.id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            name: editName,
+                            radiusMeters: editRadius,
+                            latitude: editLatitude,
+                            longitude: editLongitude,
+                          }),
+                        });
+                        if (res.ok) {
+                          setEditingBranchId(null);
+                          void load();
+                        } else {
+                          const d = await res.json().catch(() => ({ error: "Update failed" }));
+                          setError(d.error ?? "Update failed");
+                        }
+                      }}
+                    >
+                      Save settings
+                    </Button>
+                    <Button variant="text" onClick={() => setEditingBranchId(null)}>
+                      Cancel
+                    </Button>
+                  </Stack>
+                </Paper>
+              )}
+            </Paper>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 
 function CompanyWorkspaceSection() {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [form, setForm] = useState({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "", role: "OTHER" as EmployeeRole });
   const [error, setError] = useState<string | null>(null);
   const [qrByBranch, setQrByBranch] = useState<
     Record<string, { dataUrl: string; expiresAt: string; publicUrl: string }>
@@ -575,47 +605,7 @@ function CompanyWorkspaceSection() {
     void load();
   }, [load]);
 
-  useEffect(() => {
-    if (!branches.length) return;
-    const missing = branches.filter((b) => !qrByBranch[b.id]).map((b) => b.id);
-    if (!missing.length) return;
-    missing.forEach((id) => {
-      void generateQr(id);
-    });
-    // we intentionally react to branches/qr map to keep one active QR per branch
-  }, [branches, qrByBranch]);
-
-  useEffect(() => {
-    if (!branches.length) return;
-    const t = window.setInterval(() => {
-      const now = Date.now();
-      branches.forEach((b) => {
-        const item = qrByBranch[b.id];
-        if (!item) return;
-        const exp = Date.parse(item.expiresAt);
-        if (Number.isFinite(exp) && exp <= now + 5000) {
-          void generateQr(b.id);
-        }
-      });
-    }, 5000);
-    return () => window.clearInterval(t);
-  }, [branches, qrByBranch]);
-
-  async function createEmployee(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const res = await fetch("/api/admin/employees", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error ?? "Failed");
-    setForm({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "" });
-    void load();
-  }
-
-  async function generateQr(branchId: string) {
+  const generateQr = useCallback(async (branchId: string) => {
     setError(null);
     setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: true }));
     const res = await fetch("/api/admin/kiosk-session", {
@@ -626,7 +616,8 @@ function CompanyWorkspaceSection() {
     const data = await res.json();
     if (!res.ok) {
       setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: false }));
-      return setError(data.error ?? "Failed generating QR");
+      setError(data.error ?? "Failed generating QR");
+      return;
     }
     const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || window.location.origin;
     const kioskUrl = `${base}/kiosk?token=${encodeURIComponent(data.token)}`;
@@ -642,82 +633,166 @@ function CompanyWorkspaceSection() {
     )}&branch=${encodeURIComponent(branchName)}`;
     setQrByBranch((prev) => ({ ...prev, [branchId]: { dataUrl, expiresAt: data.expiresAt, publicUrl } }));
     setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: false }));
+  }, [branches]);
+
+  useEffect(() => {
+    if (!branches.length) return;
+    const missing = branches.filter((b) => !qrByBranch[b.id]).map((b) => b.id);
+    if (!missing.length) return;
+    missing.forEach((id) => void generateQr(id));
+  }, [branches, qrByBranch, generateQr]);
+
+  useEffect(() => {
+    if (!branches.length) return;
+    const t = window.setInterval(() => {
+      const now = Date.now();
+      branches.forEach((b) => {
+        const item = qrByBranch[b.id];
+        if (!item) return;
+        const exp = Date.parse(item.expiresAt);
+        if (Number.isFinite(exp) && exp <= now + 5000) void generateQr(b.id);
+      });
+    }, 5000);
+    return () => window.clearInterval(t);
+  }, [branches, qrByBranch, generateQr]);
+
+  async function createEmployee(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    const res = await fetch("/api/admin/employees", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    if (!res.ok) return setError(data.error ?? "Failed");
+    setForm({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "", role: "OTHER" });
+    void load();
   }
 
   return (
-    <div className="space-y-6">
-      <section className={sectionClass}>
-        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Company Branches & QR</h2>
-        <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
-          QR expiry is enforced to 1-2 hours globally.
-        </p>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {branches.map((b) => (
-            <div key={b.id} className="rounded-xl border border-stone-200 p-4 dark:border-zinc-700">
-              <p className="font-medium text-stone-900 dark:text-zinc-100">{b.name}</p>
-              <p className="text-xs text-stone-500 dark:text-zinc-500">
-                Employees: {b._count?.employees ?? 0} - Radius: {b.radiusMeters}m
-              </p>
-              <p className="mt-3 text-xs text-stone-500 dark:text-zinc-500">QR auto-refreshes on expiry.</p>
-              {qrLoadingByBranch[b.id] && <p className="mt-2 text-xs text-stone-500 dark:text-zinc-500">Generating QR...</p>}
-              {qrByBranch[b.id] && (
-                <div className="mt-3 flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrByBranch[b.id].dataUrl} alt={`${b.name} QR`} className="h-24 w-24 rounded border border-stone-200 bg-white p-1 dark:border-zinc-600" />
-                  <div className="space-y-2">
-                    <p className="text-xs text-stone-500 dark:text-zinc-500">
-                      Expires: {new Date(qrByBranch[b.id].expiresAt).toLocaleString()}
-                    </p>
-                    <a
-                      href={qrByBranch[b.id].publicUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex rounded-lg border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                    >
-                      Open external QR page
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={sectionClass}>
-        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Add Employee (branch-scoped)</h2>
-        <form onSubmit={createEmployee} autoComplete="off" className="mt-4 grid gap-3 md:grid-cols-3">
-          <input autoComplete="off" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <input autoComplete="new-email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <input autoComplete="new-password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">
+    <Stack spacing={3}>
+      <Card sx={shellSx}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight={700}>
+            Branch QR Sessions
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Active QR pages auto-refresh before expiry.
+          </Typography>
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          <Box sx={{ mt: 2, display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" } }}>
             {branches.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
+              <Paper key={b.id} variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  {b.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Employees: {b._count?.employees ?? 0} - Radius: {b.radiusMeters}m
+                </Typography>
+                {qrLoadingByBranch[b.id] && (
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1.2, display: "block" }}>
+                    Generating QR...
+                  </Typography>
+                )}
+                {qrByBranch[b.id] && (
+                  <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 1.5 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={qrByBranch[b.id].dataUrl} alt={`${b.name} QR`} className="h-24 w-24 rounded-lg border border-slate-200 bg-white p-1" />
+                    <Stack spacing={0.7}>
+                      <Typography variant="caption" color="text.secondary">
+                        Expires: {new Date(qrByBranch[b.id].expiresAt).toLocaleString()}
+                      </Typography>
+                      <Button variant="outlined" size="small" href={qrByBranch[b.id].publicUrl} target="_blank" rel="noreferrer">
+                        Open external QR page
+                      </Button>
+                    </Stack>
+                  </Stack>
+                )}
+              </Paper>
             ))}
-          </select>
-          <input autoComplete="off" value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} placeholder="Employee code" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <input autoComplete="off" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-          <button className="md:col-span-3 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white dark:bg-amber-500">Create employee</button>
-        </form>
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      </section>
+          </Box>
+        </CardContent>
+      </Card>
 
-      <section className={sectionClass}>
-        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Employee Details</h2>
-        <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
-          {employees.map((e) => (
-            <li key={e.id} className="py-3 text-sm text-stone-800 dark:text-zinc-100">
-              <p className="font-medium">{e.name}</p>
-              <p className="text-xs text-stone-500 dark:text-zinc-400">
-                {e.user.email} | {e.branch?.name ?? "-"} | {e.user.isActive ? "Active" : "Disabled"}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+      <Card sx={shellSx}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight={700}>
+            Add Employee
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Add and assign employees to a branch with role and credentials.
+          </Typography>
+          <Box component="form" onSubmit={createEmployee} autoComplete="off" sx={{ mt: 2, display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" } }}>
+            <TextField autoComplete="off" label="Name" size="small" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <TextField autoComplete="new-email" label="Email" size="small" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <TextField autoComplete="new-password" label="Password" type="password" size="small" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+            <FormControl size="small">
+              <InputLabel id="branch-employee-label">Branch</InputLabel>
+              <Select labelId="branch-employee-label" label="Branch" value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })}>
+                {branches.map((b) => (
+                  <MenuItem key={b.id} value={b.id}>
+                    {b.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl size="small">
+              <InputLabel id="role-employee-label">Role</InputLabel>
+              <Select labelId="role-employee-label" label="Role" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as EmployeeRole })}>
+                {EMPLOYEE_ROLE_OPTIONS.map((r) => (
+                  <MenuItem key={r.value} value={r.value}>
+                    {r.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField autoComplete="off" label="Employee code" size="small" value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} />
+            <TextField autoComplete="off" label="Notes" size="small" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+            <Box sx={{ gridColumn: { xs: "span 1", md: "span 3" } }}>
+              <Button type="submit" variant="contained">
+                Create employee
+              </Button>
+            </Box>
+          </Box>
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        </CardContent>
+      </Card>
+
+      <Card sx={shellSx}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight={700}>
+            Employee Directory
+          </Typography>
+          <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Branch</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {employees.map((e) => (
+                  <TableRow key={e.id} hover>
+                    <TableCell sx={{ fontWeight: 600 }}>{e.name}</TableCell>
+                    <TableCell>{(e.role ?? "OTHER").replaceAll("_", " ")}</TableCell>
+                    <TableCell>{e.user.email}</TableCell>
+                    <TableCell>{e.branch?.name ?? "-"}</TableCell>
+                    <TableCell>
+                      <Chip size="small" color={e.user.isActive ? "success" : "default"} label={e.user.isActive ? "Active" : "Disabled"} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+    </Stack>
   );
 }
 
@@ -744,16 +819,54 @@ function HoursSection() {
   useEffect(() => { void load(); }, [load]);
 
   return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Hours</h2>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <select value={branchId} onChange={(e) => setBranchId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">{branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
-        <button onClick={() => setMode("week")} className={`rounded-lg px-3 py-2 text-sm ${mode === "week" ? "bg-amber-600 text-white" : "bg-stone-100 dark:bg-zinc-800"}`}>Week</button>
-        <button onClick={() => setMode("month")} className={`rounded-lg px-3 py-2 text-sm ${mode === "month" ? "bg-amber-600 text-white" : "bg-stone-100 dark:bg-zinc-800"}`}>Month</button>
-        {mode === "week" ? <input type="date" value={week} onChange={(e) => setWeek(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" /> : <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />}
-      </div>
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">{rows.map((r) => <li key={r.employeeId} className="py-2 text-sm text-stone-800 dark:text-zinc-100">{r.name}: {r.hours.toFixed(2)}h</li>)}</ul>
-    </section>
+    <Card sx={shellSx}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Work Hours
+        </Typography>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} sx={{ mt: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="hours-branch-label">Branch</InputLabel>
+            <Select labelId="hours-branch-label" label="Branch" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+              {branches.map((b) => (
+                <MenuItem key={b.id} value={b.id}>
+                  {b.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button variant={mode === "week" ? "contained" : "outlined"} onClick={() => setMode("week")}>
+            Week
+          </Button>
+          <Button variant={mode === "month" ? "contained" : "outlined"} onClick={() => setMode("month")}>
+            Month
+          </Button>
+          {mode === "week" ? (
+            <TextField size="small" type="date" value={week} onChange={(e) => setWeek(e.target.value)} />
+          ) : (
+            <TextField size="small" type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
+          )}
+        </Stack>
+        <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Employee</TableCell>
+                <TableCell align="right">Hours</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((r) => (
+                <TableRow key={r.employeeId}>
+                  <TableCell sx={{ fontWeight: 600 }}>{r.name}</TableCell>
+                  <TableCell align="right">{r.hours.toFixed(2)} h</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -790,16 +903,42 @@ function LogsSection() {
   const xlsxParams = new URLSearchParams({ ...(from ? { from } : {}), ...(to ? { to } : {}), ...(branchId ? { branchId } : {}), ...(employeeId ? { employeeId } : {}), format: "xlsx" });
 
   return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Attendance Logs</h2>
-      <div className="mt-4 grid gap-3 md:grid-cols-5">
-        <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <select value={branchId} onChange={(e) => setBranchId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"><option value="">All branches</option>{branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
-        <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"><option value="">All employees</option>{employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
-        <div className="flex gap-2"><a href={`/api/admin/attendance-logs?${csvParams.toString()}`} className="rounded-lg border border-stone-300 px-3 py-2 text-sm">CSV</a><a href={`/api/admin/attendance-logs?${xlsxParams.toString()}`} className="rounded-lg border border-stone-300 px-3 py-2 text-sm">Excel</a></div>
-      </div>
-      <TableContainer component={Paper} sx={{ mt: 2, borderRadius: 3, bgcolor: "transparent" }}>
+    <Card sx={shellSx}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Attendance Logs
+        </Typography>
+        <Box sx={{ mt: 2, display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr 1fr auto" } }}>
+          <TextField size="small" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <TextField size="small" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          <FormControl size="small">
+            <InputLabel id="logs-branch-label">Branch</InputLabel>
+            <Select labelId="logs-branch-label" label="Branch" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+              <MenuItem value="">All branches</MenuItem>
+              {branches.map((b) => (
+                <MenuItem key={b.id} value={b.id}>
+                  {b.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size="small">
+            <InputLabel id="logs-employee-label">Employee</InputLabel>
+            <Select labelId="logs-employee-label" label="Employee" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}>
+              <MenuItem value="">All employees</MenuItem>
+              {employees.map((e) => (
+                <MenuItem key={e.id} value={e.id}>
+                  {e.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Stack direction="row" spacing={1}>
+            <Button href={`/api/admin/attendance-logs?${csvParams.toString()}`} variant="outlined" size="small">CSV</Button>
+            <Button href={`/api/admin/attendance-logs?${xlsxParams.toString()}`} variant="outlined" size="small">Excel</Button>
+          </Stack>
+        </Box>
+        <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -847,6 +986,7 @@ function LogsSection() {
           </TableBody>
         </Table>
       </TableContainer>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

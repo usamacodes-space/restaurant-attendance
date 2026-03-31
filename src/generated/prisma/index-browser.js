@@ -156,6 +156,7 @@ exports.Prisma.EmployeeScalarFieldEnum = {
   name: 'name',
   nameNormalized: 'nameNormalized',
   notes: 'notes',
+  role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt'
 };
@@ -204,6 +205,17 @@ exports.UserRole = exports.$Enums.UserRole = {
   MASTER_ADMIN: 'MASTER_ADMIN',
   COMPANY_ADMIN: 'COMPANY_ADMIN',
   EMPLOYEE: 'EMPLOYEE'
+};
+
+exports.EmployeeRole = exports.$Enums.EmployeeRole = {
+  DRIVER: 'DRIVER',
+  DELIVERY_DRIVER: 'DELIVERY_DRIVER',
+  COFFEE_MAKER: 'COFFEE_MAKER',
+  CASHIER: 'CASHIER',
+  WAITER: 'WAITER',
+  CHEF: 'CHEF',
+  CLEANER: 'CLEANER',
+  OTHER: 'OTHER'
 };
 
 exports.Prisma.ModelName = {
