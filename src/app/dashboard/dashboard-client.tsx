@@ -82,30 +82,38 @@ const BranchLocationPicker = dynamic(
   { ssr: false }
 );
 
+const palette = {
+  darkBlue: "#023E8A",
+  oceanBlue: "#0077B6",
+  softCyan: "#90E0EF",
+  paleBlue: "#CAF0F8",
+};
+
 const dashboardColorSx = {
   "& .MuiButton-contained": {
-    backgroundColor: "#0f766e",
+    backgroundColor: palette.darkBlue,
     color: "#ffffff",
-    "&:hover": { backgroundColor: "#115e59" },
+    "&:hover": { backgroundColor: palette.oceanBlue },
   },
   "& .MuiButton-outlined": {
-    borderColor: "#94a3b8",
-    color: "#334155",
-    "&:hover": { borderColor: "#64748b", backgroundColor: "#f8fafc" },
+    borderColor: palette.oceanBlue,
+    color: palette.darkBlue,
+    "&:hover": { borderColor: palette.darkBlue, backgroundColor: palette.paleBlue },
   },
-  "& .MuiTab-root": { color: "#475569" },
-  "& .MuiTab-root.Mui-selected": { color: "#0f766e" },
-  "& .MuiTabs-indicator": { backgroundColor: "#0f766e" },
+  "& .MuiTab-root": { color: palette.oceanBlue },
+  "& .MuiTab-root.Mui-selected": { color: palette.darkBlue },
+  "& .MuiTabs-indicator": { backgroundColor: palette.darkBlue },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: "#dcfce7",
-    color: "#166534",
+    backgroundColor: palette.softCyan,
+    color: palette.darkBlue,
   },
+  "& .MuiPaper-root": { borderColor: palette.softCyan },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: "#e2e8f0",
+  borderColor: palette.softCyan,
   boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
   backgroundColor: "background.paper",
 };
@@ -158,8 +166,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-slate-50 dark:bg-zinc-950">
-      <Box className="border-b border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#CAF0F8] dark:bg-[#023E8A]">
+      <Box className="border-b border-[#90E0EF] bg-white dark:border-[#0077B6] dark:bg-[#023E8A]">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
@@ -787,7 +795,7 @@ function CompanyWorkspaceSection() {
           <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
             <Table size="small">
               <TableHead>
-              <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+              <TableRow sx={{ backgroundColor: palette.paleBlue }}>
                   <TableCell>Name</TableCell>
                   <TableCell>Role</TableCell>
                   <TableCell>Email</TableCell>
@@ -870,7 +878,7 @@ function HoursSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+              <TableRow sx={{ backgroundColor: palette.paleBlue }}>
                 <TableCell>Employee</TableCell>
                 <TableCell align="right">Hours</TableCell>
               </TableRow>
@@ -961,7 +969,7 @@ function LogsSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+            <TableRow sx={{ backgroundColor: palette.paleBlue }}>
               <TableCell>Photo</TableCell>
               <TableCell>Employee</TableCell>
               <TableCell>Branch</TableCell>
