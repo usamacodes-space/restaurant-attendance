@@ -83,37 +83,38 @@ const BranchLocationPicker = dynamic(
 );
 
 const palette = {
-  darkBlue: "#023E8A",
-  oceanBlue: "#0077B6",
-  softCyan: "#90E0EF",
-  paleBlue: "#CAF0F8",
+  black: "#000000",
+  secondary: "#0077B6",
+  white: "#FFFFFF",
 };
 
 const dashboardColorSx = {
   "& .MuiButton-contained": {
-    backgroundColor: palette.darkBlue,
-    color: "#ffffff",
-    "&:hover": { backgroundColor: palette.oceanBlue },
+    backgroundColor: palette.black,
+    color: palette.white,
+    "&:hover": { backgroundColor: palette.secondary },
   },
   "& .MuiButton-outlined": {
-    borderColor: palette.oceanBlue,
-    color: palette.darkBlue,
-    "&:hover": { borderColor: palette.darkBlue, backgroundColor: palette.paleBlue },
+    borderColor: palette.secondary,
+    color: palette.black,
+    "&:hover": { borderColor: palette.black, backgroundColor: palette.white },
   },
-  "& .MuiTab-root": { color: palette.oceanBlue },
-  "& .MuiTab-root.Mui-selected": { color: palette.darkBlue },
-  "& .MuiTabs-indicator": { backgroundColor: palette.darkBlue },
+  "& .MuiTab-root": { color: palette.secondary },
+  "& .MuiTab-root.Mui-selected": { color: palette.black },
+  "& .MuiTabs-indicator": { backgroundColor: palette.black },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: palette.softCyan,
-    color: palette.darkBlue,
+    backgroundColor: palette.white,
+    color: palette.black,
+    border: `1px solid ${palette.secondary}`,
   },
-  "& .MuiPaper-root": { borderColor: palette.softCyan },
+  "& .MuiPaper-root": { borderColor: palette.secondary },
+  "& .MuiTableCell-head": { color: palette.black, fontWeight: 700 },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: palette.softCyan,
+  borderColor: palette.secondary,
   boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
   backgroundColor: "background.paper",
 };
@@ -166,8 +167,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#CAF0F8] dark:bg-[#023E8A]">
-      <Box className="border-b border-[#90E0EF] bg-white dark:border-[#0077B6] dark:bg-[#023E8A]">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-white">
+      <Box className="border-b border-[#0077B6] bg-white">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
@@ -795,7 +796,7 @@ function CompanyWorkspaceSection() {
           <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
             <Table size="small">
               <TableHead>
-              <TableRow sx={{ backgroundColor: palette.paleBlue }}>
+              <TableRow sx={{ backgroundColor: palette.white }}>
                   <TableCell>Name</TableCell>
                   <TableCell>Role</TableCell>
                   <TableCell>Email</TableCell>
@@ -878,7 +879,7 @@ function HoursSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: palette.paleBlue }}>
+              <TableRow sx={{ backgroundColor: palette.white }}>
                 <TableCell>Employee</TableCell>
                 <TableCell align="right">Hours</TableCell>
               </TableRow>
@@ -969,7 +970,7 @@ function LogsSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: palette.paleBlue }}>
+            <TableRow sx={{ backgroundColor: palette.white }}>
               <TableCell>Photo</TableCell>
               <TableCell>Employee</TableCell>
               <TableCell>Branch</TableCell>
