@@ -83,54 +83,55 @@ const BranchLocationPicker = dynamic(
 );
 
 const palette = {
-  darkBlue: "#023E8A",
-  oceanBlue: "#0077B6",
-  softCyan: "#90E0EF",
-  paleBlue: "#CAF0F8",
+  black: "#0B0B0B",
+  honey: "#F59E0B",
+  honeyDark: "#D97706",
+  textHigh: "#F9FAFB",
+  textMuted: "#FCD34D",
 };
 
 const dashboardColorSx = {
-  color: palette.paleBlue,
-  "& .MuiTypography-root": { color: palette.paleBlue },
-  "& .MuiTypography-colorTextSecondary": { color: palette.softCyan },
-  "& .MuiInputLabel-root": { color: palette.softCyan },
-  "& .MuiInputBase-input": { color: palette.paleBlue },
-  "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.oceanBlue },
-  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
-  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
-  "& .MuiOutlinedInput-root": { backgroundColor: "#03295c" },
-  "& .MuiFormLabel-root.Mui-focused": { color: palette.softCyan },
-  "& .MuiSelect-icon": { color: palette.softCyan },
+  color: palette.textHigh,
+  "& .MuiTypography-root": { color: palette.textHigh },
+  "& .MuiTypography-colorTextSecondary": { color: palette.textMuted },
+  "& .MuiInputLabel-root": { color: palette.textMuted },
+  "& .MuiInputBase-input": { color: palette.textHigh },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.honey },
+  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: palette.honeyDark },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: palette.honeyDark },
+  "& .MuiOutlinedInput-root": { backgroundColor: "#141414" },
+  "& .MuiFormLabel-root.Mui-focused": { color: palette.textMuted },
+  "& .MuiSelect-icon": { color: palette.textMuted },
   "& .MuiButton-contained": {
-    backgroundColor: palette.oceanBlue,
+    backgroundColor: palette.honey,
     color: "#ffffff",
-    "&:hover": { backgroundColor: palette.darkBlue },
+    "&:hover": { backgroundColor: palette.honeyDark },
   },
   "& .MuiButton-outlined": {
-    borderColor: palette.oceanBlue,
-    color: palette.paleBlue,
-    "&:hover": { borderColor: palette.softCyan, backgroundColor: "#03295c" },
+    borderColor: palette.honey,
+    color: palette.textHigh,
+    "&:hover": { borderColor: palette.honeyDark, backgroundColor: "#141414" },
   },
-  "& .MuiTab-root": { color: palette.oceanBlue, opacity: 1 },
-  "& .MuiTab-root.Mui-selected": { color: palette.paleBlue },
-  "& .MuiTabs-indicator": { backgroundColor: palette.softCyan },
+  "& .MuiTab-root": { color: palette.honey, opacity: 1 },
+  "& .MuiTab-root.Mui-selected": { color: palette.textHigh },
+  "& .MuiTabs-indicator": { backgroundColor: palette.honey },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: "#03295c",
-    color: palette.paleBlue,
-    border: `1px solid ${palette.oceanBlue}`,
+    backgroundColor: "#141414",
+    color: palette.textHigh,
+    border: `1px solid ${palette.honey}`,
   },
-  "& .MuiPaper-root": { borderColor: palette.oceanBlue, backgroundColor: palette.darkBlue },
-  "& .MuiTableCell-head": { color: palette.softCyan, fontWeight: 700 },
-  "& .MuiTableCell-body": { color: palette.paleBlue, borderColor: "#043b7a" },
-  "& .MuiTableRow-root:hover": { backgroundColor: "#03295c" },
+  "& .MuiPaper-root": { borderColor: palette.honey, backgroundColor: palette.black },
+  "& .MuiTableCell-head": { color: palette.textMuted, fontWeight: 700 },
+  "& .MuiTableCell-body": { color: palette.textHigh, borderColor: "#2a2a2a" },
+  "& .MuiTableRow-root:hover": { backgroundColor: "#141414" },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: palette.oceanBlue,
+  borderColor: palette.honey,
   boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
-  backgroundColor: palette.darkBlue,
+  backgroundColor: palette.black,
 };
 
 export function DashboardClient() {
@@ -181,8 +182,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#023E8A]">
-      <Box className="border-b border-[#0077B6] bg-[#023E8A]">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#0B0B0B]">
+      <Box className="border-b border-[#F59E0B] bg-[#0B0B0B]">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
