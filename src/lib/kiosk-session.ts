@@ -20,6 +20,8 @@ export async function getValidKioskSessionByPlainToken(plainToken: string) {
 }
 
 export function kioskSessionTtlMs(): number {
-  const hours = Number(process.env.KIOSK_SESSION_HOURS ?? "12");
-  return (Number.isFinite(hours) && hours > 0 ? hours : 12) * 60 * 60 * 1000;
+  const raw = Number(process.env.KIOSK_SESSION_HOURS ?? "2");
+  const hours = Number.isFinite(raw) ? raw : 2;
+  const clamped = Math.min(2, Math.max(1, hours));
+  return clamped * 60 * 60 * 1000;
 }

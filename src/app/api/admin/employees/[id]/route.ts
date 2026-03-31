@@ -121,7 +121,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
-  const required = await requireRoles(["MASTER_ADMIN", "COMPANY_ADMIN"]);
+  const required = await requireRoles(["MASTER_ADMIN"]);
   if (!("user" in required)) return required.error;
 
   const { id } = await ctx.params;
@@ -129,9 +129,6 @@ export async function DELETE(_req: NextRequest, ctx: Ctx) {
   try {
     const existing = await prisma.employee.findUnique({ where: { id } });
     if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (required.user.role === "COMPANY_ADMIN" && existing.companyId !== required.user.companyId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
     await prisma.user.delete({ where: { id: existing.userId } });
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {

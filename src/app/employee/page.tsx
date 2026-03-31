@@ -1,6 +1,5 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -16,7 +15,6 @@ function extractToken(raw: string): string | null {
 }
 
 export default function EmployeePage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [manualInput, setManualInput] = useState("");
@@ -38,18 +36,6 @@ export default function EmployeePage() {
   useEffect(() => {
     return () => stopScanner();
   }, [stopScanner]);
-
-  useEffect(() => {
-    if (status !== "loading" && !session?.user) {
-      router.replace("/login?callbackUrl=%2Femployee");
-    }
-  }, [router, session?.user, status]);
-
-  useEffect(() => {
-    if (status !== "loading" && session?.user?.role && session.user.role !== "EMPLOYEE") {
-      router.replace("/dashboard");
-    }
-  }, [router, session?.user?.role, status]);
 
   const goToKiosk = useCallback(
     (token: string) => {
@@ -101,10 +87,6 @@ export default function EmployeePage() {
       stopScanner();
     }
   }, [goToKiosk, stopScanner]);
-
-  if (status === "loading" || !session?.user) {
-    return <div className="flex flex-1 items-center justify-center text-sm text-stone-600 dark:text-zinc-400">Loading...</div>;
-  }
 
   return (
     <div className="flex min-h-full flex-1 items-center justify-center px-4 py-8">
@@ -167,13 +149,6 @@ export default function EmployeePage() {
 
         {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Femployee" })}
-          className="mt-6 w-full text-xs text-stone-500 underline-offset-2 hover:underline dark:text-zinc-400"
-        >
-          Sign out
-        </button>
       </div>
     </div>
   );

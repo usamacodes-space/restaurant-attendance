@@ -5,15 +5,12 @@ import { prisma } from "@/lib/prisma";
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, ctx: Ctx) {
-  const required = await requireRoles(["MASTER_ADMIN", "COMPANY_ADMIN"]);
+  const required = await requireRoles(["MASTER_ADMIN"]);
   if (!("user" in required)) return required.error;
 
   const { id } = await ctx.params;
   const branch = await prisma.branch.findUnique({ where: { id } });
   if (!branch) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (required.user.role === "COMPANY_ADMIN" && required.user.companyId !== branch.companyId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   let body: { name?: string; latitude?: number | null; longitude?: number | null; radiusMeters?: number };
   try {
@@ -35,15 +32,12 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
-  const required = await requireRoles(["MASTER_ADMIN", "COMPANY_ADMIN"]);
+  const required = await requireRoles(["MASTER_ADMIN"]);
   if (!("user" in required)) return required.error;
 
   const { id } = await ctx.params;
   const branch = await prisma.branch.findUnique({ where: { id } });
   if (!branch) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (required.user.role === "COMPANY_ADMIN" && required.user.companyId !== branch.companyId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
 
   await prisma.branch.delete({ where: { id } });
   return NextResponse.json({ ok: true });

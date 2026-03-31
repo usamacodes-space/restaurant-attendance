@@ -15,10 +15,20 @@ export async function GET() {
     orderBy: { name: "asc" },
     include: {
       _count: { select: { branches: true, employees: true } },
+      users: {
+        where: { role: "COMPANY_ADMIN" },
+        select: { email: true },
+        take: 1,
+      },
     },
   });
 
-  return NextResponse.json({ companies });
+  const normalized = companies.map((c) => ({
+    ...c,
+    companyAdminEmail: c.users?.[0]?.email ?? null,
+  }));
+
+  return NextResponse.json({ companies: normalized });
 }
 
 export async function POST(req: NextRequest) {

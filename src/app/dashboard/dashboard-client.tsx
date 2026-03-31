@@ -1,13 +1,13 @@
-﻿"use client";
+ "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import QRCode from "qrcode";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Avatar, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 
-type Tab = "companies" | "branches" | "employees" | "qr" | "hours" | "logs";
-
-type Company = { id: string; name: string; _count?: { branches: number; employees: number } };
+type Tab = "companies" | "branches" | "employees" | "company" | "hours" | "logs";
+type Company = { id: string; name: string; _count?: { branches: number; employees: number }; companyAdminEmail?: string | null };
 type Branch = {
   id: string;
   name: string;
@@ -16,6 +16,7 @@ type Branch = {
   latitude: number | null;
   longitude: number | null;
   radiusMeters: number;
+  _count?: { employees: number };
 };
 type Employee = {
   id: string;
@@ -28,29 +29,48 @@ type Employee = {
 type AttendanceLogRow = {
   id: string;
   employeeName: string;
+  checkInSelfieUrl?: string;
   branch: string;
   checkInAt: string;
   checkOutAt: string;
   checkInLatitude: number | "";
   checkInLongitude: number | "";
+  locationStatus?: string;
+  distanceMeters?: number | "";
+  branchRadiusMeters?: number;
 };
 
 const sectionClass =
   "rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90 dark:shadow-none";
+const BranchLocationPicker = dynamic(
+  () => import("./branch-location-picker").then((m) => m.BranchLocationPicker),
+  { ssr: false }
+);
 
 export function DashboardClient() {
   const { data } = useSession();
   const role = data?.user?.role;
-  const [tab, setTab] = useState<Tab>(role === "MASTER_ADMIN" ? "companies" : "employees");
+  const [tab, setTab] = useState<Tab>("companies");
 
   const tabs: { id: Tab; label: string; visible: boolean }[] = [
     { id: "companies", label: "Companies", visible: role === "MASTER_ADMIN" },
-    { id: "branches", label: "Branches", visible: role !== "EMPLOYEE" },
-    { id: "employees", label: "Employees", visible: role !== "EMPLOYEE" },
-    { id: "qr", label: "Check-in QR", visible: role !== "EMPLOYEE" },
-    { id: "hours", label: "Hours", visible: role !== "EMPLOYEE" },
-    { id: "logs", label: "Attendance Logs", visible: role !== "EMPLOYEE" },
+    { id: "branches", label: "Branches", visible: role === "MASTER_ADMIN" },
+    { id: "employees", label: "All Employees", visible: false },
+    { id: "company", label: "Company Workspace", visible: role === "COMPANY_ADMIN" },
+    { id: "hours", label: "Hours", visible: role === "COMPANY_ADMIN" },
+    { id: "logs", label: "Attendance Logs", visible: role === "COMPANY_ADMIN" },
   ];
+
+  useEffect(() => {
+    if (!role) return;
+    if (role === "MASTER_ADMIN") {
+      if (tab !== "companies" && tab !== "branches") setTab("companies");
+      return;
+    }
+    if (role === "COMPANY_ADMIN") {
+      if (tab !== "company" && tab !== "hours" && tab !== "logs") setTab("company");
+    }
+  }, [role, tab]);
 
   return (
     <div className="min-h-full flex-1">
@@ -61,12 +81,9 @@ export function DashboardClient() {
             <p className="text-sm text-stone-500 dark:text-zinc-400">{role?.replace("_", " ") ?? "Admin"}</p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-sm text-amber-700 hover:underline dark:text-amber-400">
-              Home
-            </Link>
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => signOut({ callbackUrl: "/login?callbackUrl=%2Fdashboard" })}
               className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
               Sign out
@@ -97,7 +114,7 @@ export function DashboardClient() {
         {tab === "companies" && <CompaniesSection />}
         {tab === "branches" && <BranchesSection />}
         {tab === "employees" && <EmployeesSection />}
-        {tab === "qr" && <QrSection />}
+        {tab === "company" && <CompanyWorkspaceSection />}
         {tab === "hours" && <HoursSection />}
         {tab === "logs" && <LogsSection />}
       </main>
@@ -107,6 +124,9 @@ export function DashboardClient() {
 
 function CompaniesSection() {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [companyNames, setCompanyNames] = useState<Record<string, string>>({});
+  const [adminEmailDrafts, setAdminEmailDrafts] = useState<Record<string, string>>({});
+  const [adminPasswordDrafts, setAdminPasswordDrafts] = useState<Record<string, string>>({});
   const [name, setName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
@@ -115,7 +135,18 @@ function CompaniesSection() {
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/companies");
     const data = await res.json();
-    if (res.ok) setCompanies(data.companies);
+    if (res.ok) {
+      setCompanies(data.companies);
+      setCompanyNames(
+        Object.fromEntries((data.companies as Company[]).map((c) => [c.id, c.name]))
+      );
+      setAdminEmailDrafts(
+        Object.fromEntries(
+          (data.companies as Company[]).map((c) => [c.id, c.companyAdminEmail ?? ""])
+        )
+      );
+      setAdminPasswordDrafts({});
+    }
     else setError(data.error ?? "Failed to load companies");
   }, []);
 
@@ -152,7 +183,95 @@ function CompaniesSection() {
       <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
         {companies.map((c) => (
           <li key={c.id} className="py-2 text-sm text-stone-800 dark:text-zinc-100">
-            {c.name} (branches: {c._count?.branches ?? 0}, employees: {c._count?.employees ?? 0})
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-1 items-center gap-2">
+                <input
+                  value={companyNames[c.id] ?? c.name}
+                  onChange={(e) => setCompanyNames((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                  className="w-full max-w-sm rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+                />
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const newName = (companyNames[c.id] ?? "").trim();
+                    if (!newName) return setError("Company name is required");
+                    const res = await fetch(`/api/admin/companies/${c.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: newName }),
+                    });
+                    if (res.ok) void load();
+                    else {
+                      const d = await res.json().catch(() => ({ error: "Update failed" }));
+                      setError(d.error ?? "Update failed");
+                    }
+                  }}
+                  className="rounded-lg border border-stone-300 px-3 py-1 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
+                >
+                  Save company
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-stone-500 dark:text-zinc-400">
+                  branches: {c._count?.branches ?? 0}, employees: {c._count?.employees ?? 0}
+                </span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm("Delete this company and all related data?")) return;
+                    const res = await fetch(`/api/admin/companies/${c.id}`, { method: "DELETE" });
+                    if (res.ok) void load();
+                    else {
+                      const d = await res.json().catch(() => ({ error: "Delete failed" }));
+                      setError(d.error ?? "Delete failed");
+                    }
+                  }}
+                  className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-3 grid gap-2 md:grid-cols-5 items-center">
+              <input
+                value={adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? ""}
+                onChange={(e) => setAdminEmailDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                placeholder="Company admin email"
+                className="md:col-span-2 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+              />
+              <input
+                type="password"
+                value={adminPasswordDrafts[c.id] ?? ""}
+                onChange={(e) => setAdminPasswordDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                placeholder="New password (leave blank to keep)"
+                className="md:col-span-2 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+              />
+              <button
+                type="button"
+                onClick={async () => {
+                  const email = (adminEmailDrafts[c.id] ?? c.companyAdminEmail ?? "").trim();
+                  const password = adminPasswordDrafts[c.id] ?? "";
+                  if (!email && !password) return setError("Provide email and/or new password.");
+                  const res = await fetch(`/api/admin/companies/${c.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      adminEmail: email || undefined,
+                      adminPassword: password || undefined,
+                    }),
+                  });
+                  if (res.ok) void load();
+                  else {
+                    const d = await res.json().catch(() => ({ error: "Update failed" }));
+                    setError(d.error ?? "Update failed");
+                  }
+                }}
+                className="md:col-span-1 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white dark:bg-amber-500"
+              >
+                Save admin
+              </button>
+            </div>
           </li>
         ))}
       </ul>
@@ -166,8 +285,13 @@ function BranchesSection() {
   const [name, setName] = useState("");
   const [companyId, setCompanyId] = useState("");
   const [radiusMeters, setRadiusMeters] = useState(100);
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editRadius, setEditRadius] = useState(100);
+  const [editLatitude, setEditLatitude] = useState<number | null>(null);
+  const [editLongitude, setEditLongitude] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -196,28 +320,151 @@ function BranchesSection() {
         name,
         companyId,
         radiusMeters,
-        latitude: latitude ? Number(latitude) : null,
-        longitude: longitude ? Number(longitude) : null,
+        latitude: latitude,
+        longitude: longitude,
       }),
     });
     const data = await res.json();
     if (!res.ok) return setError(data.error ?? "Failed");
     setName("");
+    setLatitude(null);
+    setLongitude(null);
     void load();
   }
 
   return (
     <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Branches</h2>
-      <form onSubmit={createBranch} className="mt-4 grid gap-3 md:grid-cols-5">
+      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Branches (Super Admin only)</h2>
+      <form onSubmit={createBranch} className="mt-4 grid gap-3 md:grid-cols-2">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Branch name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
         <select value={companyId} onChange={(e) => setCompanyId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">{companies.map((c) => <option value={c.id} key={c.id}>{c.name}</option>)}</select>
-        <input value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder="Latitude" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <input value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder="Longitude" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
-        <div className="flex gap-2"><input type="number" min={1} value={radiusMeters} onChange={(e) => setRadiusMeters(Number(e.target.value || 100))} className="w-24 rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" /><button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Add</button></div>
+        <div className="md:col-span-2">
+          <BranchLocationPicker
+            latitude={latitude}
+            longitude={longitude}
+            radiusMeters={radiusMeters}
+            onChange={(lat, lng) => {
+              setLatitude(lat);
+              setLongitude(lng);
+            }}
+          />
+          <p className="mt-2 text-xs text-stone-500 dark:text-zinc-400">
+            Selected: {latitude?.toFixed(6) ?? "-"}, {longitude?.toFixed(6) ?? "-"}
+          </p>
+        </div>
+        <div className="md:col-span-2 flex items-center gap-2">
+          <input type="number" min={1} value={radiusMeters} onChange={(e) => setRadiusMeters(Number(e.target.value || 100))} className="w-32 rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Add branch</button>
+        </div>
       </form>
       {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">{branches.map((b) => <li key={b.id} className="py-2 text-sm text-stone-800 dark:text-zinc-100">{b.name} ({b.company?.name ?? "-"}) [{b.latitude ?? "-"}, {b.longitude ?? "-"}] {b.radiusMeters}m</li>)}</ul>
+      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
+        {branches.map((b) => (
+          <li key={b.id} className="py-3 text-sm text-stone-800 dark:text-zinc-100">
+            <div className="flex items-center justify-between">
+              <span>
+                {b.name} ({b.company?.name ?? "-"}) [{b.latitude ?? "-"}, {b.longitude ?? "-"}] {b.radiusMeters}m
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingBranchId(b.id);
+                    setEditName(b.name);
+                    setEditRadius(b.radiusMeters);
+                    setEditLatitude(b.latitude);
+                    setEditLongitude(b.longitude);
+                  }}
+                  className="rounded-lg border border-stone-300 px-3 py-1 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
+                >
+                  Edit settings
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm("Delete this branch?")) return;
+                    const res = await fetch(`/api/admin/branches/${b.id}`, { method: "DELETE" });
+                    if (res.ok) void load();
+                    else {
+                      const d = await res.json().catch(() => ({ error: "Delete failed" }));
+                      setError(d.error ?? "Delete failed");
+                    }
+                  }}
+                  className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+            {editingBranchId === b.id && (
+              <div className="mt-3 rounded-xl border border-stone-200 p-3 dark:border-zinc-700">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    value={editRadius}
+                    onChange={(e) => setEditRadius(Number(e.target.value || 100))}
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+                  />
+                </div>
+                <div className="mt-3">
+                  <BranchLocationPicker
+                    latitude={editLatitude}
+                    longitude={editLongitude}
+                    radiusMeters={editRadius}
+                    onChange={(lat, lng) => {
+                      setEditLatitude(lat);
+                      setEditLongitude(lng);
+                    }}
+                  />
+                  <p className="mt-2 text-xs text-stone-500 dark:text-zinc-400">
+                    Selected: {editLatitude?.toFixed(6) ?? "-"}, {editLongitude?.toFixed(6) ?? "-"}
+                  </p>
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const res = await fetch(`/api/admin/branches/${b.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: editName,
+                          radiusMeters: editRadius,
+                          latitude: editLatitude,
+                          longitude: editLongitude,
+                        }),
+                      });
+                      if (res.ok) {
+                        setEditingBranchId(null);
+                        void load();
+                      } else {
+                        const d = await res.json().catch(() => ({ error: "Update failed" }));
+                        setError(d.error ?? "Update failed");
+                      }
+                    }}
+                    className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white"
+                  >
+                    Save settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingBranchId(null)}
+                    className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -267,59 +514,210 @@ function EmployeesSection() {
         <button className="md:col-span-3 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">Create employee</button>
       </form>
       {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">{employees.map((e) => <li key={e.id} className="py-2 text-sm text-stone-800 dark:text-zinc-100">{e.name} | {e.user.email} | {e.branch?.name ?? "-"} | {e.user.isActive ? "Active" : "Disabled"}</li>)}</ul>
+      <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
+        {employees.map((e) => (
+          <li key={e.id} className="flex items-center justify-between py-3 text-sm text-stone-800 dark:text-zinc-100">
+            <div className="grid gap-1">
+              <p className="font-medium">{e.name}</p>
+              <p className="text-xs text-stone-500 dark:text-zinc-400">
+                {e.user.email} | {e.branch?.name ?? "-"} | {e.user.isActive ? "Active" : "Disabled"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!confirm("Remove this employee?")) return;
+                const res = await fetch(`/api/admin/employees/${e.id}`, { method: "DELETE" });
+                if (res.ok) void load();
+                else {
+                  const d = await res.json().catch(() => ({ error: "Delete failed" }));
+                  setError(d.error ?? "Delete failed");
+                }
+              }}
+              className="rounded-lg border border-red-300 px-3 py-1 text-xs text-red-700 dark:border-red-900/50 dark:text-red-400"
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
 
-function QrSection() {
+function CompanyWorkspaceSection() {
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [branchId, setBranchId] = useState("");
-  const [token, setToken] = useState<string | null>(null);
-  const [expiresAt, setExpiresAt] = useState<string | null>(null);
-  const [dataUrl, setDataUrl] = useState<string | null>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [form, setForm] = useState({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "" });
   const [error, setError] = useState<string | null>(null);
+  const [qrByBranch, setQrByBranch] = useState<
+    Record<string, { dataUrl: string; expiresAt: string; publicUrl: string }>
+  >({});
+  const [qrLoadingByBranch, setQrLoadingByBranch] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    void fetch("/api/admin/branches").then((r) => r.json()).then((d) => {
-      setBranches(d.branches ?? []);
-      if ((d.branches ?? []).length > 0) setBranchId(d.branches[0].id);
-    });
+  const load = useCallback(async () => {
+    const [bRes, eRes] = await Promise.all([fetch("/api/admin/branches"), fetch("/api/admin/employees")]);
+    const bData = await bRes.json();
+    const eData = await eRes.json();
+    if (bRes.ok) {
+      const nextBranches = (bData.branches ?? []) as Branch[];
+      setBranches(nextBranches);
+      setForm((p) => {
+        const hasCurrent = nextBranches.some((b) => b.id === p.branchId);
+        return { ...p, branchId: hasCurrent ? p.branchId : (nextBranches[0]?.id ?? "") };
+      });
+    } else setError(bData.error ?? "Failed loading branches");
+    if (eRes.ok) setEmployees(eData.employees ?? []);
+    else setError(eData.error ?? "Failed loading employees");
   }, []);
 
-  const kioskUrl = useMemo(() => {
-    if (!token || typeof window === "undefined") return "";
-    const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || window.location.origin;
-    return `${base}/kiosk?token=${encodeURIComponent(token)}`;
-  }, [token]);
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   useEffect(() => {
-    if (!kioskUrl) {
-      setDataUrl(null);
-      return;
-    }
-    void QRCode.toDataURL(kioskUrl, { width: 300, margin: 2, errorCorrectionLevel: "M", color: { dark: "#111827", light: "#ffffff" } }).then(setDataUrl);
-  }, [kioskUrl]);
+    if (!branches.length) return;
+    const missing = branches.filter((b) => !qrByBranch[b.id]).map((b) => b.id);
+    if (!missing.length) return;
+    missing.forEach((id) => {
+      void generateQr(id);
+    });
+    // we intentionally react to branches/qr map to keep one active QR per branch
+  }, [branches, qrByBranch]);
 
-  async function generate() {
+  useEffect(() => {
+    if (!branches.length) return;
+    const t = window.setInterval(() => {
+      const now = Date.now();
+      branches.forEach((b) => {
+        const item = qrByBranch[b.id];
+        if (!item) return;
+        const exp = Date.parse(item.expiresAt);
+        if (Number.isFinite(exp) && exp <= now + 5000) {
+          void generateQr(b.id);
+        }
+      });
+    }, 5000);
+    return () => window.clearInterval(t);
+  }, [branches, qrByBranch]);
+
+  async function createEmployee(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
-    const res = await fetch("/api/admin/kiosk-session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ branchId }) });
+    const res = await fetch("/api/admin/employees", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
     const data = await res.json();
     if (!res.ok) return setError(data.error ?? "Failed");
-    setToken(data.token);
-    setExpiresAt(data.expiresAt);
+    setForm({ name: "", email: "", password: "", branchId: "", employeeCode: "", notes: "" });
+    void load();
+  }
+
+  async function generateQr(branchId: string) {
+    setError(null);
+    setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: true }));
+    const res = await fetch("/api/admin/kiosk-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ branchId }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: false }));
+      return setError(data.error ?? "Failed generating QR");
+    }
+    const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || window.location.origin;
+    const kioskUrl = `${base}/kiosk?token=${encodeURIComponent(data.token)}`;
+    const dataUrl = await QRCode.toDataURL(kioskUrl, {
+      width: 220,
+      margin: 2,
+      errorCorrectionLevel: "M",
+      color: { dark: "#111827", light: "#ffffff" },
+    });
+    const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
+    const publicUrl = `${base}/qr?token=${encodeURIComponent(data.token)}&expiresAt=${encodeURIComponent(
+      data.expiresAt
+    )}&branch=${encodeURIComponent(branchName)}`;
+    setQrByBranch((prev) => ({ ...prev, [branchId]: { dataUrl, expiresAt: data.expiresAt, publicUrl } }));
+    setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: false }));
   }
 
   return (
-    <section className={sectionClass}>
-      <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Branch QR</h2>
-      <div className="mt-4 flex gap-3">
-        <select value={branchId} onChange={(e) => setBranchId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">{branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
-        <button onClick={() => void generate()} className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white">New QR</button>
-      </div>
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {dataUrl && <div className="mt-5 flex flex-col items-center gap-2">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={dataUrl} alt="QR" className="rounded-xl border border-stone-200 bg-white p-4 dark:border-zinc-600" />{expiresAt && <p className="text-xs text-stone-500">Expires: {new Date(expiresAt).toLocaleString()}</p>}</div>}
-    </section>
+    <div className="space-y-6">
+      <section className={sectionClass}>
+        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Company Branches & QR</h2>
+        <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
+          QR expiry is enforced to 1-2 hours globally.
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {branches.map((b) => (
+            <div key={b.id} className="rounded-xl border border-stone-200 p-4 dark:border-zinc-700">
+              <p className="font-medium text-stone-900 dark:text-zinc-100">{b.name}</p>
+              <p className="text-xs text-stone-500 dark:text-zinc-500">
+                Employees: {b._count?.employees ?? 0} - Radius: {b.radiusMeters}m
+              </p>
+              <p className="mt-3 text-xs text-stone-500 dark:text-zinc-500">QR auto-refreshes on expiry.</p>
+              {qrLoadingByBranch[b.id] && <p className="mt-2 text-xs text-stone-500 dark:text-zinc-500">Generating QR...</p>}
+              {qrByBranch[b.id] && (
+                <div className="mt-3 flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrByBranch[b.id].dataUrl} alt={`${b.name} QR`} className="h-24 w-24 rounded border border-stone-200 bg-white p-1 dark:border-zinc-600" />
+                  <div className="space-y-2">
+                    <p className="text-xs text-stone-500 dark:text-zinc-500">
+                      Expires: {new Date(qrByBranch[b.id].expiresAt).toLocaleString()}
+                    </p>
+                    <a
+                      href={qrByBranch[b.id].publicUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex rounded-lg border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    >
+                      Open external QR page
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={sectionClass}>
+        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Add Employee (branch-scoped)</h2>
+        <form onSubmit={createEmployee} autoComplete="off" className="mt-4 grid gap-3 md:grid-cols-3">
+          <input autoComplete="off" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Name" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <input autoComplete="new-email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <input autoComplete="new-password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100">
+            {branches.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+          <input autoComplete="off" value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} placeholder="Employee code" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <input autoComplete="off" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes" className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100" />
+          <button className="md:col-span-3 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white dark:bg-amber-500">Create employee</button>
+        </form>
+        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      </section>
+
+      <section className={sectionClass}>
+        <h2 className="text-base font-semibold text-stone-900 dark:text-zinc-50">Employee Details</h2>
+        <ul className="mt-4 divide-y divide-stone-100 dark:divide-zinc-800">
+          {employees.map((e) => (
+            <li key={e.id} className="py-3 text-sm text-stone-800 dark:text-zinc-100">
+              <p className="font-medium">{e.name}</p>
+              <p className="text-xs text-stone-500 dark:text-zinc-400">
+                {e.user.email} | {e.branch?.name ?? "-"} | {e.user.isActive ? "Active" : "Disabled"}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 }
 
@@ -401,7 +799,54 @@ function LogsSection() {
         <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} className="rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"><option value="">All employees</option>{employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</select>
         <div className="flex gap-2"><a href={`/api/admin/attendance-logs?${csvParams.toString()}`} className="rounded-lg border border-stone-300 px-3 py-2 text-sm">CSV</a><a href={`/api/admin/attendance-logs?${xlsxParams.toString()}`} className="rounded-lg border border-stone-300 px-3 py-2 text-sm">Excel</a></div>
       </div>
-      <div className="mt-5 overflow-x-auto"><table className="w-full text-sm"><thead className="text-left text-stone-500"><tr><th className="py-2">Employee</th><th>Branch</th><th>Check-in</th><th>Check-out</th><th>Location</th></tr></thead><tbody className="divide-y divide-stone-100 dark:divide-zinc-800">{rows.map((r) => <tr key={r.id}><td className="py-2 text-stone-900 dark:text-zinc-100">{r.employeeName}</td><td>{r.branch}</td><td>{r.checkInAt ? new Date(r.checkInAt).toLocaleString() : "-"}</td><td>{r.checkOutAt ? new Date(r.checkOutAt).toLocaleString() : "-"}</td><td>{r.checkInLatitude || "-"}, {r.checkInLongitude || "-"}</td></tr>)}</tbody></table></div>
+      <TableContainer component={Paper} sx={{ mt: 2, borderRadius: 3, bgcolor: "transparent" }}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Photo</TableCell>
+              <TableCell>Employee</TableCell>
+              <TableCell>Branch</TableCell>
+              <TableCell>Check-in</TableCell>
+              <TableCell>Check-out</TableCell>
+              <TableCell>Location</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((r) => {
+              const statusColor =
+                r.locationStatus === "Matched" ? "success" : r.locationStatus === "Outside branch radius" ? "error" : "default";
+              return (
+                <TableRow key={r.id} hover>
+                  <TableCell>
+                    <Avatar
+                      src={r.checkInSelfieUrl || undefined}
+                      alt={r.employeeName}
+                      sx={{ width: 38, height: 38 }}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{r.employeeName}</TableCell>
+                  <TableCell>{r.branch}</TableCell>
+                  <TableCell>{r.checkInAt ? new Date(r.checkInAt).toLocaleString() : "-"}</TableCell>
+                  <TableCell>{r.checkOutAt ? new Date(r.checkOutAt).toLocaleString() : "-"}</TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <Chip size="small" label={r.locationStatus ?? "Unknown"} color={statusColor} variant="filled" />
+                      <p className="text-xs text-stone-500 dark:text-zinc-400">
+                        {r.checkInLatitude || "-"}, {r.checkInLongitude || "-"}
+                      </p>
+                      {typeof r.distanceMeters === "number" && typeof r.branchRadiusMeters === "number" && (
+                        <p className="text-xs text-stone-500 dark:text-zinc-400">
+                          Distance: {r.distanceMeters}m / Radius: {r.branchRadiusMeters}m
+                        </p>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </section>
   );
 }

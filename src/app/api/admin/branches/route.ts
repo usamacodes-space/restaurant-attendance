@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const required = await requireRoles(["MASTER_ADMIN", "COMPANY_ADMIN"]);
+  const required = await requireRoles(["MASTER_ADMIN"]);
   if (!("user" in required)) return required.error;
 
   let body: {
@@ -41,8 +41,7 @@ export async function POST(req: NextRequest) {
   const name = body.name?.trim();
   if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
 
-  const companyId =
-    required.user.role === "MASTER_ADMIN" ? body.companyId?.trim() : (required.user.companyId ?? "");
+  const companyId = body.companyId?.trim();
   if (!companyId) return NextResponse.json({ error: "companyId is required" }, { status: 400 });
 
   const company = await prisma.company.findUnique({ where: { id: companyId } });
