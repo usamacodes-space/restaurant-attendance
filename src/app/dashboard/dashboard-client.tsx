@@ -85,25 +85,24 @@ const BranchLocationPicker = dynamic(
 const palette = {
   black: "#000000",
   secondary: "#0077B6",
-  white: "#FFFFFF",
 };
 
 const dashboardColorSx = {
   "& .MuiButton-contained": {
     backgroundColor: palette.black,
-    color: palette.white,
+    color: "#ffffff",
     "&:hover": { backgroundColor: palette.secondary },
   },
   "& .MuiButton-outlined": {
     borderColor: palette.secondary,
     color: palette.black,
-    "&:hover": { borderColor: palette.black, backgroundColor: palette.white },
+    "&:hover": { borderColor: palette.black, backgroundColor: "transparent" },
   },
   "& .MuiTab-root": { color: palette.secondary },
   "& .MuiTab-root.Mui-selected": { color: palette.black },
   "& .MuiTabs-indicator": { backgroundColor: palette.black },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: palette.white,
+    backgroundColor: "transparent",
     color: palette.black,
     border: `1px solid ${palette.secondary}`,
   },
@@ -796,7 +795,7 @@ function CompanyWorkspaceSection() {
           <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
             <Table size="small">
               <TableHead>
-              <TableRow sx={{ backgroundColor: palette.white }}>
+              <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Role</TableCell>
                   <TableCell>Email</TableCell>
@@ -879,7 +878,7 @@ function HoursSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: palette.white }}>
+              <TableRow>
                 <TableCell>Employee</TableCell>
                 <TableCell align="right">Hours</TableCell>
               </TableRow>
@@ -970,7 +969,7 @@ function LogsSection() {
         <TableContainer component={Paper} variant="outlined" sx={{ mt: 2, borderRadius: 2 }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: palette.white }}>
+            <TableRow>
               <TableCell>Photo</TableCell>
               <TableCell>Employee</TableCell>
               <TableCell>Branch</TableCell>
