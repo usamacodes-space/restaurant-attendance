@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Restaurant attendance
 
-## Getting Started
+Web app for restaurant employee **check-in** and **check-out**: admin dashboard (employees, rotating kiosk QR, weekly/monthly hours) and a mobile **kiosk** flow after scanning the QR.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Admin** signs in, manages employees, opens **Check-in QR** (new kiosk token each time the tab loads or when you click **New QR**).
+- **Kiosk** (`/kiosk?token=…`): employee finds their name, then either checks in (selfie + confirm) or checks out if they already have an open shift.
+- **Hours**: completed shifts only (`checkOutAt` set); sums duration per employee for a selected **week** (UTC, Monday-start) or **calendar month** (UTC). Raw attendance rows are kept; totals are computed from the database.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Copy [`.env.example`](./.env.example) to `.env` and set variables.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Start PostgreSQL (optional: use the included Docker Compose from this folder):
 
-## Learn More
+   ```bash
+   docker compose up -d
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+   Default URL in `.env.example` matches Compose: `postgresql://app:app@localhost:5433/attendance`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Apply migrations:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npx prisma migrate deploy
+   ```
 
-## Deploy on Vercel
+   For iterative schema changes in development you can use `npm run db:migrate` instead.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Run the app:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000), sign in with `ADMIN_EMAIL` / `ADMIN_PASSWORD` (or bcrypt `ADMIN_PASSWORD_HASH`), add employees, then open the **Check-in QR** tab and scan with a phone.
+
+### Selfie storage
+
+- **Production (e.g. Vercel):** prefer `BLOB_READ_WRITE_TOKEN` (Vercel Blob) for normal URLs. If Blob is not set, selfies are stored as **data URLs** in the database (works for demos; keep images small).
+- **Local dev:** if Blob is not set, files are written under `public/uploads/selfies/` (ignored by git except `.gitkeep`).
+
+### Neon provisioning (optional)
+
+With `NEON_KEY` (or `NEON_API_KEY`) in `.env`, run `node scripts/provision-neon.mjs` to create a project and write `DATABASE_URL`. If you belong to multiple Neon orgs, set `NEON_ORG_ID` first. **Rotate the API key** if it may have been exposed.
+
+### Public URL in QR codes
+
+If the app is behind a proxy or you need a fixed origin in links, set `NEXT_PUBLIC_APP_URL` (e.g. `https://your-domain.com`). Otherwise the dashboard uses the browser’s current origin when drawing the QR.
+
+## Deploy (Vercel + Neon)
+
+1. Create a **Neon** (or other) Postgres database and set `DATABASE_URL` on Vercel.
+2. Set `AUTH_SECRET` (e.g. `openssl rand -base64 32`), `ADMIN_EMAIL`, and `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH`.
+3. Set `BLOB_READ_WRITE_TOKEN` for selfie uploads.
+4. Run migrations against production: `npx prisma migrate deploy` (CI or one-off with production `DATABASE_URL`).
+5. Set `NEXT_PUBLIC_APP_URL` to your production URL so QR codes point to the live kiosk.
+
+## Scripts
+
+| Script            | Purpose                    |
+|-------------------|----------------------------|
+| `npm run dev`     | Development server         |
+| `npm run build`   | `prisma generate` + build  |
+| `npm run db:migrate` | `prisma migrate dev`    |
+| `npm run db:push` | `prisma db push` (prototyping) |
+
+## Stack
+
+Next.js (App Router), Prisma, PostgreSQL, Auth.js (NextAuth v5) credentials for admin, `qrcode` for QR rendering, optional Vercel Blob for images.

@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MASTER_ADMIN
+  COMPANY_ADMIN
+  EMPLOYEE
+}
+
+model Company {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  createdAt   DateTime     @default(now())
+  branches    Branch[]
+  users       User[]
+  employees   Employee[]
+  attendances Attendance[]
+}
+
+model Branch {
+  id            String         @id @default(cuid())
+  companyId     String
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name          String
+  latitude      Float?
+  longitude     Float?
+  radiusMeters  Int            @default(100)
+  createdAt     DateTime       @default(now())
+  employees     Employee[]
+  kioskSessions KioskSession[]
+  attendances   Attendance[]
+
+  @@unique([companyId, name])
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  role         UserRole
+  isActive     Boolean   @default(true)
+  companyId    String?
+  company      Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  employee     Employee?
+  createdAt    DateTime  @default(now())
+}
+
+model Employee {
+  id             String       @id @default(cuid())
+  userId         String       @unique
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId      String
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  employeeCode   String?
+  name           String
+  nameNormalized String
+  notes          String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  attendances    Attendance[]
+
+  @@unique([companyId, nameNormalized])
+  @@unique([companyId, employeeCode])
+}
+
+model KioskSession {
+  id          String       @id @default(cuid())
+  branchId    String
+  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tokenHash   String       @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  attendances Attendance[]
+}
+
+model Attendance {
+  id                String       @id @default(cuid())
+  companyId         String
+  company           Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  branchId          String
+  branch            Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  employeeId        String
+  employee          Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  kioskSessionId    String
+  kioskSession      KioskSession @relation(fields: [kioskSessionId], references: [id], onDelete: Restrict)
+  checkInAt         DateTime
+  checkOutAt        DateTime?
+  checkInSelfieUrl  String?
+  checkOutSelfieUrl String?
+  checkInLatitude   Float?
+  checkInLongitude  Float?
+  checkOutLatitude  Float?
+  checkOutLongitude Float?
+  createdAt         DateTime     @default(now())
+}
