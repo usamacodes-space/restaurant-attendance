@@ -83,11 +83,14 @@ const BranchLocationPicker = dynamic(
 );
 
 const palette = {
-  black: "#0B0B0B",
+  bg: "#0A0A0A",
+  surface: "#121212",
+  surfaceRaised: "#1A1A1A",
+  border: "#2B2B2B",
   honey: "#F59E0B",
   honeyDark: "#D97706",
-  textHigh: "#F9FAFB",
-  textMuted: "#FCD34D",
+  textHigh: "#F5F5F5",
+  textMuted: "#B8B8B8",
 };
 
 const dashboardColorSx = {
@@ -96,42 +99,43 @@ const dashboardColorSx = {
   "& .MuiTypography-colorTextSecondary": { color: palette.textMuted },
   "& .MuiInputLabel-root": { color: palette.textMuted },
   "& .MuiInputBase-input": { color: palette.textHigh },
-  "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.honey },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.border },
   "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: palette.honeyDark },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: palette.honeyDark },
-  "& .MuiOutlinedInput-root": { backgroundColor: "#141414" },
+  "& .MuiOutlinedInput-root": { backgroundColor: palette.surfaceRaised },
   "& .MuiFormLabel-root.Mui-focused": { color: palette.textMuted },
   "& .MuiSelect-icon": { color: palette.textMuted },
   "& .MuiButton-contained": {
     backgroundColor: palette.honey,
-    color: "#ffffff",
+    color: "#0B0B0B",
     "&:hover": { backgroundColor: palette.honeyDark },
   },
   "& .MuiButton-outlined": {
-    borderColor: palette.honey,
+    borderColor: palette.border,
     color: palette.textHigh,
-    "&:hover": { borderColor: palette.honeyDark, backgroundColor: "#141414" },
+    "&:hover": { borderColor: palette.honeyDark, backgroundColor: palette.surfaceRaised },
   },
-  "& .MuiTab-root": { color: palette.honey, opacity: 1 },
+  "& .MuiTab-root": { color: palette.textMuted, opacity: 1 },
   "& .MuiTab-root.Mui-selected": { color: palette.textHigh },
   "& .MuiTabs-indicator": { backgroundColor: palette.honey },
+  "& .MuiAlert-root": { backgroundColor: palette.surfaceRaised, color: palette.textHigh, border: `1px solid ${palette.border}` },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: "#141414",
+    backgroundColor: palette.surfaceRaised,
     color: palette.textHigh,
-    border: `1px solid ${palette.honey}`,
+    border: `1px solid ${palette.border}`,
   },
-  "& .MuiPaper-root": { borderColor: palette.honey, backgroundColor: palette.black },
-  "& .MuiTableCell-head": { color: palette.textMuted, fontWeight: 700 },
+  "& .MuiPaper-root": { borderColor: palette.border, backgroundColor: palette.surface },
+  "& .MuiTableCell-head": { color: palette.textHigh, fontWeight: 700, backgroundColor: palette.surfaceRaised },
   "& .MuiTableCell-body": { color: palette.textHigh, borderColor: "#2a2a2a" },
-  "& .MuiTableRow-root:hover": { backgroundColor: "#141414" },
+  "& .MuiTableRow-root:hover": { backgroundColor: palette.surfaceRaised },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: palette.honey,
-  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
-  backgroundColor: palette.black,
+  borderColor: palette.border,
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
+  backgroundColor: palette.surface,
 };
 
 export function DashboardClient() {
@@ -182,8 +186,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#0B0B0B]">
-      <Box className="border-b border-[#F59E0B] bg-[#0B0B0B]">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#0A0A0A]">
+      <Box className="border-b border-[#2B2B2B] bg-[#0A0A0A]">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
@@ -742,7 +746,7 @@ function CompanyWorkspaceSection() {
                 {qrByBranch[b.id] && (
                   <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 1.5 }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={qrByBranch[b.id].dataUrl} alt={`${b.name} QR`} className="h-24 w-24 rounded-lg border border-slate-200 bg-white p-1" />
+                    <img src={qrByBranch[b.id].dataUrl} alt={`${b.name} QR`} className="h-24 w-24 rounded-lg border border-[#2B2B2B] bg-white p-1" />
                     <Stack spacing={0.7}>
                       <Typography variant="caption" color="text.secondary">
                         Expires: {new Date(qrByBranch[b.id].expiresAt).toLocaleString()}
@@ -1014,11 +1018,11 @@ function LogsSection() {
                   <TableCell>
                     <div className="space-y-1">
                       <Chip size="small" label={r.locationStatus ?? "Unknown"} color={statusColor} variant="filled" />
-                      <p className="text-xs text-stone-500 dark:text-zinc-400">
+                      <p className="text-xs text-zinc-400">
                         {r.checkInLatitude || "-"}, {r.checkInLongitude || "-"}
                       </p>
                       {typeof r.distanceMeters === "number" && typeof r.branchRadiusMeters === "number" && (
-                        <p className="text-xs text-stone-500 dark:text-zinc-400">
+                        <p className="text-xs text-zinc-400">
                           Distance: {r.distanceMeters}m / Radius: {r.branchRadiusMeters}m
                         </p>
                       )}
