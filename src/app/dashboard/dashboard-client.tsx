@@ -83,37 +83,47 @@ const BranchLocationPicker = dynamic(
 );
 
 const palette = {
-  black: "#000000",
-  secondary: "#0077B6",
+  darkBlue: "#023E8A",
+  oceanBlue: "#0077B6",
+  softCyan: "#90E0EF",
+  paleBlue: "#CAF0F8",
 };
 
 const dashboardColorSx = {
+  color: "#0b1220",
+  "& .MuiTypography-root": { color: "#0b1220" },
+  "& .MuiInputLabel-root": { color: "#0b1220" },
+  "& .MuiInputBase-input": { color: "#0b1220" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.oceanBlue },
+  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
   "& .MuiButton-contained": {
-    backgroundColor: palette.black,
+    backgroundColor: palette.darkBlue,
     color: "#ffffff",
-    "&:hover": { backgroundColor: palette.secondary },
+    "&:hover": { backgroundColor: palette.oceanBlue },
   },
   "& .MuiButton-outlined": {
-    borderColor: palette.secondary,
-    color: palette.black,
-    "&:hover": { borderColor: palette.black, backgroundColor: "transparent" },
+    borderColor: palette.oceanBlue,
+    color: palette.darkBlue,
+    "&:hover": { borderColor: palette.darkBlue, backgroundColor: palette.paleBlue },
   },
-  "& .MuiTab-root": { color: palette.secondary },
-  "& .MuiTab-root.Mui-selected": { color: palette.black },
-  "& .MuiTabs-indicator": { backgroundColor: palette.black },
+  "& .MuiTab-root": { color: palette.oceanBlue, opacity: 1 },
+  "& .MuiTab-root.Mui-selected": { color: palette.darkBlue },
+  "& .MuiTabs-indicator": { backgroundColor: palette.darkBlue },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: "transparent",
-    color: palette.black,
-    border: `1px solid ${palette.secondary}`,
+    backgroundColor: palette.softCyan,
+    color: palette.darkBlue,
+    border: `1px solid ${palette.oceanBlue}`,
   },
-  "& .MuiPaper-root": { borderColor: palette.secondary },
-  "& .MuiTableCell-head": { color: palette.black, fontWeight: 700 },
+  "& .MuiPaper-root": { borderColor: palette.softCyan },
+  "& .MuiTableCell-head": { color: palette.darkBlue, fontWeight: 700 },
+  "& .MuiTableCell-body": { color: "#0b1220" },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: palette.secondary,
+  borderColor: palette.softCyan,
   boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
   backgroundColor: "background.paper",
 };
@@ -166,8 +176,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-white">
-      <Box className="border-b border-[#0077B6] bg-white">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#CAF0F8]">
+      <Box className="border-b border-[#90E0EF] bg-white">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
