@@ -90,42 +90,47 @@ const palette = {
 };
 
 const dashboardColorSx = {
-  color: "#0b1220",
-  "& .MuiTypography-root": { color: "#0b1220" },
-  "& .MuiInputLabel-root": { color: "#0b1220" },
-  "& .MuiInputBase-input": { color: "#0b1220" },
+  color: palette.paleBlue,
+  "& .MuiTypography-root": { color: palette.paleBlue },
+  "& .MuiTypography-colorTextSecondary": { color: palette.softCyan },
+  "& .MuiInputLabel-root": { color: palette.softCyan },
+  "& .MuiInputBase-input": { color: palette.paleBlue },
   "& .MuiOutlinedInput-notchedOutline": { borderColor: palette.oceanBlue },
   "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: palette.darkBlue },
+  "& .MuiOutlinedInput-root": { backgroundColor: "#03295c" },
+  "& .MuiFormLabel-root.Mui-focused": { color: palette.softCyan },
+  "& .MuiSelect-icon": { color: palette.softCyan },
   "& .MuiButton-contained": {
-    backgroundColor: palette.darkBlue,
+    backgroundColor: palette.oceanBlue,
     color: "#ffffff",
-    "&:hover": { backgroundColor: palette.oceanBlue },
+    "&:hover": { backgroundColor: palette.darkBlue },
   },
   "& .MuiButton-outlined": {
     borderColor: palette.oceanBlue,
-    color: palette.darkBlue,
-    "&:hover": { borderColor: palette.darkBlue, backgroundColor: palette.paleBlue },
+    color: palette.paleBlue,
+    "&:hover": { borderColor: palette.softCyan, backgroundColor: "#03295c" },
   },
   "& .MuiTab-root": { color: palette.oceanBlue, opacity: 1 },
-  "& .MuiTab-root.Mui-selected": { color: palette.darkBlue },
-  "& .MuiTabs-indicator": { backgroundColor: palette.darkBlue },
+  "& .MuiTab-root.Mui-selected": { color: palette.paleBlue },
+  "& .MuiTabs-indicator": { backgroundColor: palette.softCyan },
   "& .MuiChip-colorSuccess": {
-    backgroundColor: palette.softCyan,
-    color: palette.darkBlue,
+    backgroundColor: "#03295c",
+    color: palette.paleBlue,
     border: `1px solid ${palette.oceanBlue}`,
   },
-  "& .MuiPaper-root": { borderColor: palette.softCyan },
-  "& .MuiTableCell-head": { color: palette.darkBlue, fontWeight: 700 },
-  "& .MuiTableCell-body": { color: "#0b1220" },
+  "& .MuiPaper-root": { borderColor: palette.oceanBlue, backgroundColor: palette.darkBlue },
+  "& .MuiTableCell-head": { color: palette.softCyan, fontWeight: 700 },
+  "& .MuiTableCell-body": { color: palette.paleBlue, borderColor: "#043b7a" },
+  "& .MuiTableRow-root:hover": { backgroundColor: "#03295c" },
 };
 
 const shellSx = {
   borderRadius: 4,
   border: "1px solid",
-  borderColor: palette.softCyan,
+  borderColor: palette.oceanBlue,
   boxShadow: "0 8px 24px rgba(15, 23, 42, 0.05)",
-  backgroundColor: "background.paper",
+  backgroundColor: palette.darkBlue,
 };
 
 export function DashboardClient() {
@@ -176,8 +181,8 @@ export function DashboardClient() {
   }, [role]);
 
   return (
-    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#CAF0F8]">
-      <Box className="border-b border-[#90E0EF] bg-white">
+    <Box sx={dashboardColorSx} className="min-h-full flex-1 bg-[#023E8A]">
+      <Box className="border-b border-[#0077B6] bg-[#023E8A]">
         <Box className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5">
           <Box>
             <Typography variant="h5" fontWeight={700}>
