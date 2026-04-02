@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRef } from "react";
 
-type Step = "loading" | "select" | "camera" | "confirm" | "checkout" | "done";
+type Step = "loading" | "select" | "camera" | "confirm" | "done";
+type AttendanceFlow = "checkin" | "checkout";
 type Branch = { id: string; name: string };
 type Employee = {
   id: string;
@@ -23,6 +24,7 @@ export function KioskClient({ token }: { token: string }) {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [passcode, setPasscode] = useState("");
+  const [attendanceFlow, setAttendanceFlow] = useState<AttendanceFlow>("checkin");
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [busy, setBusy] = useState(false);
@@ -152,10 +154,8 @@ export function KioskClient({ token }: { token: string }) {
   async function continueAction() {
     const action = await resolveAttendanceAction();
     if (!action) return;
-    if (action === "checkout") {
-      setStep("checkout");
-      return;
-    }
+    setAttendanceFlow(action === "checkout" ? "checkout" : "checkin");
+    setPhoto(null);
     await startCamera();
   }
 
@@ -201,28 +201,28 @@ export function KioskClient({ token }: { token: string }) {
     if (!res.ok) return setError(data.error ?? "Check-in failed");
     setMessage("You are checked-in successfully.");
     setPasscode("");
+    setPhoto(null);
     setStep("done");
   }
 
   async function submitCheckOut() {
+    if (!photo) return;
     setBusy(true);
-    const res = await fetch("/api/kiosk/check-out", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token,
-        branchId: selectedBranchId,
-        employeeId: selectedEmployeeId,
-        passcode,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      }),
-    });
+    const fd = new FormData();
+    fd.set("token", token);
+    fd.set("branchId", selectedBranchId);
+    fd.set("employeeId", selectedEmployeeId);
+    fd.set("passcode", passcode);
+    if (location.latitude != null) fd.set("latitude", String(location.latitude));
+    if (location.longitude != null) fd.set("longitude", String(location.longitude));
+    fd.set("selfie", photo, "checkout-selfie.jpg");
+    const res = await fetch("/api/kiosk/check-out", { method: "POST", body: fd });
     const data = await res.json();
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Check-out failed");
     setMessage("You checked-out successfully.");
     setPasscode("");
+    setPhoto(null);
     setStep("done");
   }
 
@@ -242,7 +242,9 @@ export function KioskClient({ token }: { token: string }) {
   if (step === "camera") {
     return (
       <div className="mx-auto w-full max-w-md">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">Check in</h1>
+        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">
+          {attendanceFlow === "checkout" ? "Check out — take a selfie" : "Check in — take a selfie"}
+        </h1>
         <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
           {selectedEmployee?.name ?? "Employee"} at {selectedEmployee?.branch.name ?? "Branch"}
         </p>
@@ -255,36 +257,29 @@ export function KioskClient({ token }: { token: string }) {
   }
 
   if (step === "confirm") {
+    const isOut = attendanceFlow === "checkout";
     return (
       <div className="mx-auto w-full max-w-md">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">Confirm check-in</h1>
+        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">
+          {isOut ? "Confirm check-out" : "Confirm check-in"}
+        </h1>
+        {isOut && (
+          <div className="mt-2 space-y-0.5 text-sm text-stone-600 dark:text-zinc-400">
+            <p>{selectedEmployee?.company.name ?? "-"} · {selectedEmployee?.branch.name ?? "-"}</p>
+            <p className="font-medium text-stone-800 dark:text-zinc-200">{selectedEmployee?.name ?? "-"} · {(selectedEmployee?.role ?? "OTHER").replaceAll("_", " ")}</p>
+          </div>
+        )}
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Selfie preview" className="mt-4 w-full rounded-2xl object-cover" />
         )}
         {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-        <button disabled={busy} onClick={() => void submitCheckIn()} className="mt-4 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white disabled:opacity-60">{busy ? "Saving..." : "Submit check-in"}</button>
-      </div>
-    );
-  }
-
-  if (step === "checkout") {
-    return (
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">Check out</h1>
-        <div className="mt-3 space-y-1 text-sm text-stone-700 dark:text-zinc-300">
-          <p>Company: {selectedEmployee?.company.name ?? "-"}</p>
-          <p>Branch: {selectedEmployee?.branch.name ?? "-"}</p>
-          <p>Name: {selectedEmployee?.name ?? "-"}</p>
-          <p>Role: {(selectedEmployee?.role ?? "OTHER").replaceAll("_", " ")}</p>
-        </div>
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
         <button
           disabled={busy}
-          onClick={() => void submitCheckOut()}
-          className="mt-6 w-full rounded-xl bg-stone-900 px-4 py-3 text-sm font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+          onClick={() => void (isOut ? submitCheckOut() : submitCheckIn())}
+          className={`mt-4 w-full rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-60 ${isOut ? "bg-stone-900 dark:bg-zinc-100 dark:text-zinc-900" : "bg-amber-600"}`}
         >
-          {busy ? "Saving..." : "Check-out"}
+          {busy ? "Saving..." : isOut ? "Submit check-out" : "Submit check-in"}
         </button>
       </div>
     );

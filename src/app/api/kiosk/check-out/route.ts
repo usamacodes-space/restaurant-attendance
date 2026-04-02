@@ -81,16 +81,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No open shift to check out" }, { status: 409 });
   }
 
-  let checkOutSelfieUrl: string | null = null;
-  if (selfieFile) {
-    const buf = Buffer.from(await selfieFile.arrayBuffer());
-    const ct = selfieFile.type || "image/jpeg";
-    try {
-      checkOutSelfieUrl = await saveSelfie(buf, ct);
-    } catch (e) {
-      console.error(e);
-      return NextResponse.json({ error: "Failed to store selfie" }, { status: 500 });
-    }
+  if (!(selfieFile instanceof File) || selfieFile.size === 0) {
+    return NextResponse.json({ error: "Checkout selfie image required" }, { status: 400 });
+  }
+
+  const buf = Buffer.from(await selfieFile.arrayBuffer());
+  const ct = selfieFile.type || "image/jpeg";
+  let checkOutSelfieUrl: string;
+  try {
+    checkOutSelfieUrl = await saveSelfie(buf, ct);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Failed to store selfie" }, { status: 500 });
   }
 
   const updated = await prisma.attendance.update({
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
       checkOutAt: new Date(),
       checkOutLatitude: Number.isFinite(latitude) ? latitude : null,
       checkOutLongitude: Number.isFinite(longitude) ? longitude : null,
-      ...(checkOutSelfieUrl ? { checkOutSelfieUrl } : {}),
+      checkOutSelfieUrl,
     },
   });
 

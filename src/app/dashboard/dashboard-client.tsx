@@ -56,6 +56,7 @@ type AttendanceLogRow = {
   id: string;
   employeeName: string;
   checkInSelfieUrl?: string;
+  checkOutSelfieUrl?: string;
   branch: string;
   checkInAt: string;
   checkOutAt: string;
@@ -668,7 +669,7 @@ function CompanyWorkspaceSection() {
       return;
     }
     const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || window.location.origin;
-    const kioskUrl = `${base}/kiosk?token=${encodeURIComponent(data.token)}`;
+    const kioskUrl = `${base}/kiosk?branchId=${encodeURIComponent(branchId)}`;
     const dataUrl = await QRCode.toDataURL(kioskUrl, {
       width: 220,
       margin: 2,
@@ -987,7 +988,8 @@ function LogsSection() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Photo</TableCell>
+              <TableCell>Check-in photo</TableCell>
+              <TableCell>Check-out photo</TableCell>
               <TableCell>Employee</TableCell>
               <TableCell>Branch</TableCell>
               <TableCell>Check-in</TableCell>
@@ -1004,9 +1006,22 @@ function LogsSection() {
                   <TableCell>
                     <Avatar
                       src={r.checkInSelfieUrl || undefined}
-                      alt={r.employeeName}
+                      alt={`${r.employeeName} check-in`}
                       sx={{ width: 38, height: 38 }}
                     />
+                  </TableCell>
+                  <TableCell>
+                    {r.checkOutSelfieUrl ? (
+                      <Avatar
+                        src={r.checkOutSelfieUrl}
+                        alt={`${r.employeeName} check-out`}
+                        sx={{ width: 38, height: 38 }}
+                      />
+                    ) : (
+                      <Typography variant="caption" color="text.secondary">
+                        ?
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>{r.employeeName}</TableCell>
                   <TableCell>{r.branch}</TableCell>

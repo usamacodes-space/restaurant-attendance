@@ -69,7 +69,10 @@ export default async function PublicQrPage({
     );
   }
 
-  const kioskUrl = `${appBase}/kiosk?token=${encodeURIComponent(token)}`;
+  // Branch QR: encode only branchId (no token in the barcode). Legacy links still use token in URL.
+  const kioskUrl = branchId
+    ? `${appBase}/kiosk?branchId=${encodeURIComponent(branchId)}`
+    : `${appBase}/kiosk?token=${encodeURIComponent(token)}`;
   let qrDataUrl: string | null = null;
   let error: string | null = null;
   try {
