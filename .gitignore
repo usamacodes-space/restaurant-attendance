@@ -44,5 +44,7 @@ next-env.d.ts
 # local selfie uploads (dev without Blob)
 /public/uploads/selfies/*
 !/public/uploads/selfies/.gitkeep
+/public/uploads/qr-branding/*
+!/public/uploads/qr-branding/.gitkeep
 
 .vercel

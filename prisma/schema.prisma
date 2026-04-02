@@ -25,6 +25,14 @@ enum EmployeeRole {
   OTHER
 }
 
+/// Single row id `singleton` — public QR page logos (master admin).
+model GlobalSettings {
+  id              String   @id
+  qrLogoLeftUrl   String?
+  qrLogoRightUrl  String?
+  updatedAt       DateTime @updatedAt
+}
+
 model Company {
   id         String   @id @default(cuid())
   name       String   @unique

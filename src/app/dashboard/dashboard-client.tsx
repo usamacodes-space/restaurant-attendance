@@ -28,9 +28,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type TabId = "companies" | "branches" | "company" | "hours" | "logs";
+type TabId = "companies" | "branches" | "qrBranding" | "company" | "hours" | "logs";
 type EmployeeRole = "DRIVER" | "DELIVERY_DRIVER" | "COFFEE_MAKER" | "CASHIER" | "WAITER" | "CHEF" | "CLEANER" | "OTHER";
 type Company = { id: string; name: string; _count?: { branches: number; employees: number }; companyAdminEmail?: string | null };
 type Branch = {
@@ -150,6 +150,7 @@ export function DashboardClient() {
       return [
         { id: "companies" as TabId, label: "Companies" },
         { id: "branches" as TabId, label: "Branches" },
+        { id: "qrBranding" as TabId, label: "QR page" },
       ];
     }
     if (role === "COMPANY_ADMIN") {
@@ -229,6 +230,7 @@ function MasterAdminScreen({ tab }: { tab: TabId }) {
     <Stack spacing={3}>
       {tab === "companies" && <CompaniesSection />}
       {tab === "branches" && <BranchesSection />}
+      {tab === "qrBranding" && <QrBrandingSection />}
     </Stack>
   );
 }
@@ -619,6 +621,176 @@ function BranchesSection() {
             </Paper>
           ))}
         </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
+function QrBrandingSection() {
+  const [qrLogoLeftUrl, setQrLogoLeftUrl] = useState("");
+  const [qrLogoRightUrl, setQrLogoRightUrl] = useState("");
+  const [draftLeft, setDraftLeft] = useState("");
+  const [draftRight, setDraftRight] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<false | "left" | "right" | "save">(false);
+  const leftInputRef = useRef<HTMLInputElement>(null);
+  const rightInputRef = useRef<HTMLInputElement>(null);
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/qr-branding");
+    const data = await res.json();
+    if (res.ok) {
+      const l = data.qrLogoLeftUrl ?? "";
+      const r = data.qrLogoRightUrl ?? "";
+      setQrLogoLeftUrl(l);
+      setQrLogoRightUrl(r);
+      setDraftLeft(l);
+      setDraftRight(r);
+      setError(null);
+    } else setError(data.error ?? "Failed to load QR branding");
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function uploadFile(side: "left" | "right", file: File | undefined) {
+    if (!file || file.size === 0) return;
+    setError(null);
+    setBusy(side);
+    const fd = new FormData();
+    fd.set("side", side);
+    fd.set("file", file);
+    const res = await fetch("/api/admin/qr-branding/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) return setError(data.error ?? "Upload failed");
+    void load();
+  }
+
+  async function saveUrls(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setBusy("save");
+    const res = await fetch("/api/admin/qr-branding", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        qrLogoLeftUrl: draftLeft.trim() || null,
+        qrLogoRightUrl: draftRight.trim() || null,
+      }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) return setError(data.error ?? "Save failed");
+    setQrLogoLeftUrl(data.qrLogoLeftUrl ?? "");
+    setQrLogoRightUrl(data.qrLogoRightUrl ?? "");
+    setDraftLeft(data.qrLogoLeftUrl ?? "");
+    setDraftRight(data.qrLogoRightUrl ?? "");
+  }
+
+  return (
+    <Card sx={shellSx}>
+      <CardContent sx={{ p: 3 }}>
+        <Typography variant="h6" fontWeight={700}>
+          Public QR page logos
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          These two images appear on every branch QR page (left and right of the ?). Branch name on that page always comes from the branch itself.
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Stack direction={{ xs: "column", md: "row" }} spacing={3} sx={{ mt: 2 }} alignItems="flex-start">
+          {(["left", "right"] as const).map((side) => {
+            const isLeft = side === "left";
+            const url = isLeft ? qrLogoLeftUrl : qrLogoRightUrl;
+            const label = isLeft ? "Left logo" : "Right logo";
+            const refObj = isLeft ? leftInputRef : rightInputRef;
+            return (
+              <Paper key={side} variant="outlined" sx={{ borderRadius: 2, p: 2, flex: 1, width: "100%", maxWidth: 360 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+                  {label}
+                </Typography>
+                <Box
+                  sx={{
+                    width: 112,
+                    height: 112,
+                    borderRadius: 2,
+                    border: "2px solid",
+                    borderColor: "divider",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "action.hover",
+                    mb: 1.5,
+                  }}
+                >
+                  {url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  ) : (
+                    <Typography variant="caption" color="text.secondary" align="center" sx={{ px: 1 }}>
+                      No image
+                    </Typography>
+                  )}
+                </Box>
+                <input
+                  ref={refObj}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  style={{ display: "none" }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    e.target.value = "";
+                    void uploadFile(side, f);
+                  }}
+                />
+                <Button
+                  size="small"
+                  variant="outlined"
+                  disabled={busy !== false}
+                  onClick={() => refObj.current?.click()}
+                >
+                  {busy === side ? "Uploading?" : "Upload image"}
+                </Button>
+              </Paper>
+            );
+          })}
+        </Stack>
+
+        <Box component="form" onSubmit={saveUrls} sx={{ mt: 3 }}>
+          <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+            Or set image URLs
+          </Typography>
+          <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
+            <TextField
+              size="small"
+              fullWidth
+              label="Left logo URL"
+              value={draftLeft}
+              onChange={(e) => setDraftLeft(e.target.value)}
+              placeholder="https://?"
+            />
+            <TextField
+              size="small"
+              fullWidth
+              label="Right logo URL"
+              value={draftRight}
+              onChange={(e) => setDraftRight(e.target.value)}
+              placeholder="https://?"
+            />
+            <Button type="submit" variant="contained" disabled={busy !== false} sx={{ alignSelf: "flex-start" }}>
+              {busy === "save" ? "Saving?" : "Save URLs"}
+            </Button>
+          </Stack>
+        </Box>
       </CardContent>
     </Card>
   );
