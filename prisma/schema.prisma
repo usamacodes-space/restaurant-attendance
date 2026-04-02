@@ -43,6 +43,9 @@ model Branch {
   latitude      Float?
   longitude     Float?
   radiusMeters  Int      @default(100)
+  /// Latest kiosk plain token for the stable public /qr?branchId= page (rotates when admin refreshes QR).
+  publicKioskToken     String?
+  publicKioskExpiresAt DateTime?
   createdAt     DateTime @default(now())
   employees     Employee[]
   kioskSessions KioskSession[]

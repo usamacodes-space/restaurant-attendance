@@ -675,10 +675,7 @@ function CompanyWorkspaceSection() {
       errorCorrectionLevel: "M",
       color: { dark: "#111827", light: "#ffffff" },
     });
-    const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
-    const publicUrl = `${base}/qr?token=${encodeURIComponent(data.token)}&expiresAt=${encodeURIComponent(
-      data.expiresAt
-    )}&branch=${encodeURIComponent(branchName)}`;
+    const publicUrl = `${base}/qr?branchId=${encodeURIComponent(branchId)}`;
     setQrByBranch((prev) => ({ ...prev, [branchId]: { dataUrl, expiresAt: data.expiresAt, publicUrl } }));
     setQrLoadingByBranch((prev) => ({ ...prev, [branchId]: false }));
   }, [branches]);

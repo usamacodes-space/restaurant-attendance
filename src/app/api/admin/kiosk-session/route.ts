@@ -27,9 +27,15 @@ export async function POST(req: NextRequest) {
   const tokenHash = hashKioskToken(plain);
   const expiresAt = new Date(Date.now() + kioskSessionTtlMs());
 
-  await prisma.kioskSession.create({
-    data: { tokenHash, expiresAt, branchId },
-  });
+  await prisma.$transaction([
+    prisma.kioskSession.create({
+      data: { tokenHash, expiresAt, branchId },
+    }),
+    prisma.branch.update({
+      where: { id: branchId },
+      data: { publicKioskToken: plain, publicKioskExpiresAt: expiresAt },
+    }),
+  ]);
 
   return NextResponse.json({
     token: plain,
