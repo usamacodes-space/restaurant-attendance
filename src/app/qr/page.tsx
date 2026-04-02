@@ -48,11 +48,14 @@ function QrLayout({
   alternateRight?: ReactNode;
 }) {
   return (
-    <div className="min-h-screen px-4 py-8 sm:py-10 md:py-14" style={{ backgroundColor: cream, color: forest }}>
+    <div
+      className="flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:py-10 md:py-14"
+      style={{ backgroundColor: cream, color: forest }}
+    >
       {branchId ? <QrAutoRefresh branchId={branchId} /> : null}
-      <div className="mx-auto flex max-w-5xl flex-col gap-12 md:flex-row md:items-start md:justify-between md:gap-10 lg:gap-16">
-        <div className="flex min-w-0 flex-1 flex-col md:max-w-md">
-          <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-3">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-10 lg:gap-16">
+        <div className="flex min-w-0 flex-col items-center text-center md:max-w-md">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3">
             <LogoTile src={qrLogoLeftUrl} label="Logo 1" />
             <span className="select-none text-2xl font-light leading-none sm:text-3xl" style={{ color: accentOrange }} aria-hidden>
               ×
@@ -60,35 +63,35 @@ function QrLayout({
             <LogoTile src={qrLogoRightUrl} label="Logo 2" />
           </div>
 
-          <div className="mt-8 inline-block max-w-full">
+          <div className="mt-8 flex max-w-full flex-col items-center">
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-[2.75rem]">{branchName}</h1>
-            <p className="mt-1 text-right text-sm font-normal leading-none">Branch</p>
+            <p className="mt-1.5 text-sm font-normal leading-none">Branch</p>
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-center md:w-auto md:min-w-[280px] md:flex-initial lg:min-w-[320px]">
+        <div className="flex w-full flex-col items-center justify-center text-center md:w-auto md:min-w-[280px] md:flex-initial lg:min-w-[320px]">
           {alternateRight ? (
-            <div className="w-full max-w-sm pt-2 md:pt-10">{alternateRight}</div>
+            <div className="flex w-full max-w-sm justify-center">{alternateRight}</div>
           ) : (
             <>
-              <h2 className="text-center text-lg font-bold sm:text-xl">Scan to check-in / check-out</h2>
+              <h2 className="text-lg font-bold sm:text-xl">Scan to check-in / check-out</h2>
 
-              <div className="mt-6 w-full max-w-[min(100%,320px)]">
+              <div className="mt-6 flex w-full max-w-[min(100%,320px)] justify-center">
                 {qrDataUrl ? (
                   <div
-                    className="mx-auto w-fit rounded-2xl bg-white p-3 sm:p-4"
+                    className="w-fit rounded-2xl bg-white p-3 sm:p-4"
                     style={{ border: `6px solid #000000` }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={qrDataUrl} alt="Attendance QR code" className="block h-auto w-full max-w-[260px]" />
                   </div>
                 ) : (
-                  <p className="text-center text-sm opacity-80">{qrError ?? "Generating QR..."}</p>
+                  <p className="text-sm opacity-80">{qrError ?? "Generating QR..."}</p>
                 )}
               </div>
 
               {expiresAt ? (
-                <p className="mt-6 text-center text-sm font-normal sm:text-base">
+                <p className="mt-6 text-sm font-normal sm:text-base">
                   Expires: {expiresAt.toLocaleString()}
                 </p>
               ) : null}
@@ -127,7 +130,10 @@ export default async function PublicQrPage({
     });
     if (!branch) {
       return (
-        <div className="min-h-screen px-4 py-16" style={{ backgroundColor: cream, color: forest }}>
+        <div
+          className="flex min-h-screen flex-col items-center justify-center px-4 py-16"
+          style={{ backgroundColor: cream, color: forest }}
+        >
           <div className="mx-auto max-w-md rounded-2xl border-2 p-6 text-center shadow-sm" style={{ borderColor: forest, backgroundColor: "#fffef5" }}>
             <p className="text-lg font-bold">Branch not found</p>
             <p className="mt-2 text-sm opacity-90">Check the link or ask an admin for the correct QR page.</p>
