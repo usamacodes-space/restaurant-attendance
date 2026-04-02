@@ -1,7 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { primaryButtonClass } from "@/lib/constants-ui";
 
 function extractToken(raw: string): string | null {
   const value = raw.trim();
@@ -52,12 +57,18 @@ export default function EmployeePage() {
       return;
     }
     if (!("BarcodeDetector" in window)) {
-      setError("Live scanner is not supported on this device. Use your phone camera app or paste QR link.");
+      setError("Live scanner is not supported on this device. Paste a kiosk link with token or open the camera app.");
       return;
     }
 
     try {
-      const DetectorCtor = (window as unknown as { BarcodeDetector: new (opts: { formats: string[] }) => { detect: (input: HTMLVideoElement) => Promise<Array<{ rawValue?: string }>> } }).BarcodeDetector;
+      const DetectorCtor = (
+        window as unknown as {
+          BarcodeDetector: new (opts: { formats: string[] }) => {
+            detect: (input: HTMLVideoElement) => Promise<Array<{ rawValue?: string }>>;
+          };
+        }
+      ).BarcodeDetector;
       const detector = new DetectorCtor({ formats: ["qr_code"] });
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: "environment" } },
@@ -89,30 +100,21 @@ export default function EmployeePage() {
   }, [goToKiosk, stopScanner]);
 
   return (
-    <div className="flex min-h-full flex-1 items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">Employee Attendance</h1>
-        <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
-          Open this app icon, scan branch QR, then complete selfie check-in/out.
-        </p>
-
-        <div className="mt-4 space-y-3">
+    <div className="flex min-h-[100dvh] flex-1 items-center justify-center px-4 py-8 sm:py-10">
+      <Card className="w-full max-w-md border-border shadow-lg">
+        <CardHeader className="px-6 pt-8">
+          <CardTitle className="text-xl sm:text-2xl">Employee attendance</CardTitle>
+          <CardDescription>Scan the branch QR, then complete check-in or check-out on the kiosk.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 px-6 pb-8">
           {!scanning ? (
-            <button
-              type="button"
-              onClick={() => void startScanner()}
-              className="w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-400"
-            >
+            <Button type="button" className={`h-12 w-full text-base ${primaryButtonClass}`} onClick={() => void startScanner()}>
               Scan branch QR
-            </button>
+            </Button>
           ) : (
-            <button
-              type="button"
-              onClick={stopScanner}
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
-            >
+            <Button type="button" variant="outline" className="h-12 w-full" onClick={stopScanner}>
               Stop scanner
-            </button>
+            </Button>
           )}
 
           <video
@@ -123,34 +125,36 @@ export default function EmployeePage() {
           />
 
           <div className="space-y-2">
-            <label className="text-xs font-medium text-stone-500 dark:text-zinc-400">Fallback: paste QR link or token</label>
-            <input
+            <Label htmlFor="manual-qr" className="text-muted-foreground text-xs font-medium">
+              Or paste kiosk link / token
+            </Label>
+            <Input
+              id="manual-qr"
               value={manualInput}
               onChange={(e) => setManualInput(e.target.value)}
-              placeholder="https://.../kiosk?token=..."
-              className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+              placeholder="https://…/kiosk?token=…"
+              className="text-sm"
             />
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              className="w-full"
               onClick={() => {
                 const token = extractToken(manualInput);
                 if (!token) {
-                  setError("Invalid QR link/token.");
+                  setError("Enter a valid kiosk link or token.");
                   return;
                 }
                 goToKiosk(token);
               }}
-              className="w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 dark:border-zinc-600 dark:text-zinc-200"
             >
-              Continue with token
-            </button>
+              Continue
+            </Button>
           </div>
-        </div>
 
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
-
-      </div>
+          {error && <p className="text-destructive text-sm">{error}</p>}
+        </CardContent>
+      </Card>
     </div>
   );
 }
-

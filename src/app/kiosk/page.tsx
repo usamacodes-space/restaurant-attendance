@@ -19,10 +19,10 @@ export default async function KioskPage({
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center py-12">
-      <div className="max-w-md rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-        <p className="font-semibold text-stone-900 dark:text-zinc-50">Open this page from the QR code</p>
-        <p className="mt-2 text-sm text-stone-600 dark:text-zinc-400">
+    <div className="flex min-h-[100dvh] flex-1 flex-col items-center justify-center px-4 py-10">
+      <div className="border-border bg-card text-card-foreground max-w-md rounded-2xl border p-6 text-center shadow-sm">
+        <p className="font-semibold">Open this page from the QR code</p>
+        <p className="text-muted-foreground mt-2 text-sm">
           Scan the code on the restaurant screen with your phone&apos;s camera. It will open this check-in page on your
           device.
         </p>

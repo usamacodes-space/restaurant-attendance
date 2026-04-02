@@ -25,9 +25,9 @@ export function BranchLocationPicker({ latitude, longitude, radiusMeters, onChan
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-stone-500 dark:text-zinc-400">Click on map to set branch location.</p>
-      <div className="overflow-hidden rounded-xl border border-stone-200 dark:border-zinc-700">
-        <MapContainer center={center} zoom={hasPoint ? 16 : 12} className="h-64 w-full">
+      <p className="text-muted-foreground text-xs">Tap or click the map to set branch location.</p>
+      <div className="overflow-hidden rounded-xl border border-border">
+        <MapContainer center={center} zoom={hasPoint ? 16 : 12} className="h-48 w-full min-h-[12rem] sm:h-64">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

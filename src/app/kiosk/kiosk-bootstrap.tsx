@@ -39,13 +39,11 @@ export function KioskBootstrap({ branchId }: Props) {
 
   if (error && !token) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center py-12">
-        <div className="max-w-md rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-          <p className="font-semibold text-stone-900 dark:text-zinc-50">Kiosk unavailable</p>
-          <p className="mt-2 text-sm text-stone-600 dark:text-zinc-400">{error}</p>
-          <p className="mt-3 text-xs text-stone-500 dark:text-zinc-500">
-            Ask an admin to refresh the branch QR in the dashboard.
-          </p>
+      <div className="flex min-h-[100dvh] flex-1 flex-col items-center justify-center px-4 py-10">
+        <div className="border-border bg-card text-card-foreground max-w-md rounded-2xl border p-6 text-center shadow-sm">
+          <p className="font-semibold">Kiosk unavailable</p>
+          <p className="text-muted-foreground mt-2 text-sm">{error}</p>
+          <p className="text-muted-foreground mt-3 text-xs">Ask an admin to refresh the branch QR in the dashboard.</p>
         </div>
       </div>
     );
@@ -53,8 +51,8 @@ export function KioskBootstrap({ branchId }: Props) {
 
   if (!token) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center py-12">
-        <p className="text-sm text-stone-600 dark:text-zinc-400">Loading kiosk…</p>
+      <div className="flex min-h-[100dvh] flex-1 flex-col items-center justify-center px-4 py-10">
+        <p className="text-muted-foreground text-sm">Loading kiosk…</p>
       </div>
     );
   }

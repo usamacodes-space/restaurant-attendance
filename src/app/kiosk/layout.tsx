@@ -22,17 +22,13 @@ export const viewport: Viewport = {
  */
 export default function KioskLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[100dvh] flex-1 flex-col bg-gradient-to-b from-stone-50 to-stone-100 dark:from-zinc-950 dark:to-zinc-900">
-      <header className="shrink-0 border-b border-stone-200/80 bg-white/90 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/90">
-        <p className="text-center text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-zinc-400">
-          Restaurant kiosk
-        </p>
-        <p className="text-center text-sm font-semibold text-stone-800 dark:text-zinc-100">
-          Use your phone — scan the QR at work
-        </p>
+    <div className="from-background to-muted/40 flex min-h-[100dvh] flex-1 flex-col bg-gradient-to-b">
+      <header className="bg-card/90 border-border shrink-0 border-b px-4 py-3 backdrop-blur-md">
+        <p className="text-muted-foreground text-center text-xs font-medium tracking-wider uppercase">Restaurant kiosk</p>
+        <p className="text-center text-sm font-semibold">Use your phone — scan the QR at work</p>
       </header>
-      <div className="flex flex-1 flex-col px-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-        {children}
+      <div className="flex flex-1 flex-col px-[max(1rem,env(safe-area-inset-left))] pt-2 pr-[max(1rem,env(safe-area-inset-right))] pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="flex flex-1 flex-col items-stretch justify-center py-4 sm:py-6">{children}</div>
       </div>
     </div>
   );

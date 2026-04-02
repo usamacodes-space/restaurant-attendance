@@ -227,31 +227,37 @@ export function KioskClient({ token }: { token: string }) {
   }
 
   if (step === "loading") {
-    return <p className="mx-auto py-12 text-sm text-stone-600 dark:text-zinc-400">Loading...</p>;
+    return <p className="text-muted-foreground mx-auto px-4 py-12 text-center text-sm">Loading…</p>;
   }
 
   if (step === "done") {
     return (
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-        <p className="text-lg font-semibold text-stone-900 dark:text-zinc-50">{error ? "Action failed" : "Done"}</p>
-        <p className="mt-2 text-sm text-stone-600 dark:text-zinc-400">{error ?? message ?? "Attendance recorded."}</p>
+      <div className="border-border bg-card text-card-foreground mx-auto w-full max-w-md rounded-2xl border p-6 text-center shadow-sm">
+        <p className="text-lg font-semibold">{error ? "Action failed" : "Done"}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{error ?? message ?? "Attendance recorded."}</p>
       </div>
     );
   }
 
   if (step === "camera") {
     return (
-      <div className="mx-auto w-full max-w-md">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">
+      <div className="mx-auto w-full max-w-md px-1 sm:px-0">
+        <h1 className="text-lg font-semibold sm:text-xl">
           {attendanceFlow === "checkout" ? "Check out — take a selfie" : "Check in — take a selfie"}
         </h1>
-        <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
+        <p className="text-muted-foreground mt-1 text-sm">
           {selectedEmployee?.name ?? "Employee"} at {selectedEmployee?.branch.name ?? "Branch"}
         </p>
         <div className="mt-4 overflow-hidden rounded-2xl bg-black">
           <video ref={videoRef} autoPlay playsInline muted className="aspect-[3/4] w-full object-cover" />
         </div>
-        <button onClick={capture} className="mt-4 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white">Capture selfie</button>
+        <button
+          type="button"
+          onClick={capture}
+          className="mt-4 min-h-12 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700 active:bg-amber-800"
+        >
+          Capture selfie
+        </button>
       </div>
     );
   }
@@ -259,43 +265,40 @@ export function KioskClient({ token }: { token: string }) {
   if (step === "confirm") {
     const isOut = attendanceFlow === "checkout";
     return (
-      <div className="mx-auto w-full max-w-md">
-        <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">
-          {isOut ? "Confirm check-out" : "Confirm check-in"}
-        </h1>
+      <div className="mx-auto w-full max-w-md px-1 sm:px-0">
+        <h1 className="text-lg font-semibold sm:text-xl">{isOut ? "Confirm check-out" : "Confirm check-in"}</h1>
         {isOut && (
-          <div className="mt-2 space-y-0.5 text-sm text-stone-600 dark:text-zinc-400">
+          <div className="text-muted-foreground mt-2 space-y-0.5 text-sm">
             <p>{selectedEmployee?.company.name ?? "-"} · {selectedEmployee?.branch.name ?? "-"}</p>
-            <p className="font-medium text-stone-800 dark:text-zinc-200">{selectedEmployee?.name ?? "-"} · {(selectedEmployee?.role ?? "OTHER").replaceAll("_", " ")}</p>
+            <p className="text-foreground font-medium">{selectedEmployee?.name ?? "-"} · {(selectedEmployee?.role ?? "OTHER").replaceAll("_", " ")}</p>
           </div>
         )}
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Selfie preview" className="mt-4 w-full rounded-2xl object-cover" />
         )}
-        {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="text-destructive mt-3 text-sm">{error}</p>}
         <button
+          type="button"
           disabled={busy}
           onClick={() => void (isOut ? submitCheckOut() : submitCheckIn())}
-          className={`mt-4 w-full rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-60 ${isOut ? "bg-stone-900 dark:bg-zinc-100 dark:text-zinc-900" : "bg-amber-600"}`}
+          className={`mt-4 min-h-12 w-full rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-60 ${isOut ? "bg-foreground text-background hover:opacity-90" : "bg-amber-600 hover:bg-amber-700"}`}
         >
-          {busy ? "Saving..." : isOut ? "Submit check-out" : "Submit check-in"}
+          {busy ? "Saving…" : isOut ? "Submit check-out" : "Submit check-in"}
         </button>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/90">
-      <h1 className="text-xl font-semibold text-stone-900 dark:text-zinc-50">Attendance</h1>
-      <p className="mt-1 text-sm text-stone-600 dark:text-zinc-400">
-        Select branch and your name, then continue.
-      </p>
+    <div className="border-border bg-card text-card-foreground mx-auto w-full max-w-md rounded-2xl border p-4 shadow-sm sm:p-6">
+      <h1 className="text-lg font-semibold sm:text-xl">Attendance</h1>
+      <p className="text-muted-foreground mt-1 text-sm">Select branch and your name, then continue.</p>
       <div className="mt-4 space-y-3">
         <select
           value={selectedBranchId}
           onChange={(e) => void refreshForBranch(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+          className="border-input bg-background ring-offset-background focus-visible:ring-ring min-h-11 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
         >
           {branches.map((b) => (
             <option key={b.id} value={b.id}>
@@ -306,7 +309,7 @@ export function KioskClient({ token }: { token: string }) {
         <select
           value={selectedEmployeeId}
           onChange={(e) => setSelectedEmployeeId(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+          className="border-input bg-background ring-offset-background focus-visible:ring-ring min-h-11 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
         >
           {employees.map((e) => (
             <option key={e.id} value={e.id}>
@@ -319,18 +322,18 @@ export function KioskClient({ token }: { token: string }) {
           value={passcode}
           onChange={(e) => setPasscode(e.target.value)}
           placeholder="Enter your passcode"
-          className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+          className="border-input bg-background ring-offset-background focus-visible:ring-ring min-h-11 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
         />
       </div>
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-destructive mt-3 text-sm">{error}</p>}
       <button
         type="button"
         onClick={() => void continueAction()}
-        className="mt-4 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white"
+        className="mt-4 min-h-12 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700"
       >
         Continue
       </button>
-      <p className="mt-3 text-xs text-stone-500 dark:text-zinc-500">Location is captured with attendance.</p>
+      <p className="text-muted-foreground mt-3 text-xs">Location is captured with attendance.</p>
     </div>
   );
 }
