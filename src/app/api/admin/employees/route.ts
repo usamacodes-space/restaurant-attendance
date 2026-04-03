@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { parseEmployeeShiftFields } from "@/lib/employee-shift-input";
 import { requireRoles } from "@/lib/authz";
 import { normalizeEmployeeName } from "@/lib/normalize-name";
 import bcrypt from "bcryptjs";
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
     branchId?: string;
     employeeCode?: string | null;
     role?: EmployeeRole;
+    shiftStartTime?: string | null;
+    shiftEndTime?: string | null;
   };
   try {
     body = await req.json();
@@ -78,6 +81,14 @@ export async function POST(req: NextRequest) {
   const companyId = branch.companyId;
   const passwordHash = await bcrypt.hash(password, 10);
 
+  const shift = parseEmployeeShiftFields({
+    shiftStartTime: body.shiftStartTime,
+    shiftEndTime: body.shiftEndTime,
+  });
+  if ("error" in shift) {
+    return NextResponse.json({ error: shift.error }, { status: 400 });
+  }
+
   try {
     const employee = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
@@ -98,6 +109,8 @@ export async function POST(req: NextRequest) {
           notes: body.notes?.trim() || null,
           employeeCode: body.employeeCode?.trim() || null,
           role,
+          shiftStartTime: shift.shiftStartTime,
+          shiftEndTime: shift.shiftEndTime,
         },
         include: {
           user: { select: { id: true, email: true, isActive: true } },

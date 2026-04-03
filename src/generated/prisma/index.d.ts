@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model GlobalSettings
+ * Single row id `singleton` — public QR page logos (master admin).
+ */
+export type GlobalSettings = $Result.DefaultSelection<Prisma.$GlobalSettingsPayload>
+/**
  * Model Company
  * 
  */
@@ -23,6 +28,11 @@ export type Company = $Result.DefaultSelection<Prisma.$CompanyPayload>
  * 
  */
 export type Branch = $Result.DefaultSelection<Prisma.$BranchPayload>
+/**
+ * Model BranchShift
+ * Expected working window for a branch (local time HH:MM). If startTime is after endTime, shift crosses midnight.
+ */
+export type BranchShift = $Result.DefaultSelection<Prisma.$BranchShiftPayload>
 /**
  * Model User
  * 
@@ -87,8 +97,8 @@ export const EmployeeRole: typeof $Enums.EmployeeRole
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Companies
- * const companies = await prisma.company.findMany()
+ * // Fetch zero or more GlobalSettings
+ * const globalSettings = await prisma.globalSettings.findMany()
  * ```
  *
  *
@@ -108,8 +118,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Companies
-   * const companies = await prisma.company.findMany()
+   * // Fetch zero or more GlobalSettings
+   * const globalSettings = await prisma.globalSettings.findMany()
    * ```
    *
    *
@@ -199,6 +209,16 @@ export class PrismaClient<
   }>>
 
       /**
+   * `prisma.globalSettings`: Exposes CRUD operations for the **GlobalSettings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GlobalSettings
+    * const globalSettings = await prisma.globalSettings.findMany()
+    * ```
+    */
+  get globalSettings(): Prisma.GlobalSettingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.company`: Exposes CRUD operations for the **Company** model.
     * Example usage:
     * ```ts
@@ -217,6 +237,16 @@ export class PrismaClient<
     * ```
     */
   get branch(): Prisma.BranchDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.branchShift`: Exposes CRUD operations for the **BranchShift** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BranchShifts
+    * const branchShifts = await prisma.branchShift.findMany()
+    * ```
+    */
+  get branchShift(): Prisma.BranchShiftDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
@@ -698,8 +728,10 @@ export namespace Prisma {
 
 
   export const ModelName: {
+    GlobalSettings: 'GlobalSettings',
     Company: 'Company',
     Branch: 'Branch',
+    BranchShift: 'BranchShift',
     User: 'User',
     Employee: 'Employee',
     KioskSession: 'KioskSession',
@@ -722,10 +754,84 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "company" | "branch" | "user" | "employee" | "kioskSession" | "attendance"
+      modelProps: "globalSettings" | "company" | "branch" | "branchShift" | "user" | "employee" | "kioskSession" | "attendance"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
+      GlobalSettings: {
+        payload: Prisma.$GlobalSettingsPayload<ExtArgs>
+        fields: Prisma.GlobalSettingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GlobalSettingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GlobalSettingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          findFirst: {
+            args: Prisma.GlobalSettingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GlobalSettingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          findMany: {
+            args: Prisma.GlobalSettingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>[]
+          }
+          create: {
+            args: Prisma.GlobalSettingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          createMany: {
+            args: Prisma.GlobalSettingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GlobalSettingsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>[]
+          }
+          delete: {
+            args: Prisma.GlobalSettingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          update: {
+            args: Prisma.GlobalSettingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.GlobalSettingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GlobalSettingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GlobalSettingsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>[]
+          }
+          upsert: {
+            args: Prisma.GlobalSettingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GlobalSettingsPayload>
+          }
+          aggregate: {
+            args: Prisma.GlobalSettingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGlobalSettings>
+          }
+          groupBy: {
+            args: Prisma.GlobalSettingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GlobalSettingsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GlobalSettingsCountArgs<ExtArgs>
+            result: $Utils.Optional<GlobalSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
       Company: {
         payload: Prisma.$CompanyPayload<ExtArgs>
         fields: Prisma.CompanyFieldRefs
@@ -871,6 +977,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BranchCountArgs<ExtArgs>
             result: $Utils.Optional<BranchCountAggregateOutputType> | number
+          }
+        }
+      }
+      BranchShift: {
+        payload: Prisma.$BranchShiftPayload<ExtArgs>
+        fields: Prisma.BranchShiftFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BranchShiftFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BranchShiftFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          findFirst: {
+            args: Prisma.BranchShiftFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BranchShiftFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          findMany: {
+            args: Prisma.BranchShiftFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>[]
+          }
+          create: {
+            args: Prisma.BranchShiftCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          createMany: {
+            args: Prisma.BranchShiftCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BranchShiftCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>[]
+          }
+          delete: {
+            args: Prisma.BranchShiftDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          update: {
+            args: Prisma.BranchShiftUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          deleteMany: {
+            args: Prisma.BranchShiftDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BranchShiftUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BranchShiftUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>[]
+          }
+          upsert: {
+            args: Prisma.BranchShiftUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchShiftPayload>
+          }
+          aggregate: {
+            args: Prisma.BranchShiftAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBranchShift>
+          }
+          groupBy: {
+            args: Prisma.BranchShiftGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BranchShiftGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BranchShiftCountArgs<ExtArgs>
+            result: $Utils.Optional<BranchShiftCountAggregateOutputType> | number
           }
         }
       }
@@ -1266,8 +1446,10 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
+    globalSettings?: GlobalSettingsOmit
     company?: CompanyOmit
     branch?: BranchOmit
+    branchShift?: BranchShiftOmit
     user?: UserOmit
     employee?: EmployeeOmit
     kioskSession?: KioskSessionOmit
@@ -1413,12 +1595,14 @@ export namespace Prisma {
     employees: number
     kioskSessions: number
     attendances: number
+    shifts: number
   }
 
   export type BranchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     employees?: boolean | BranchCountOutputTypeCountEmployeesArgs
     kioskSessions?: boolean | BranchCountOutputTypeCountKioskSessionsArgs
     attendances?: boolean | BranchCountOutputTypeCountAttendancesArgs
+    shifts?: boolean | BranchCountOutputTypeCountShiftsArgs
   }
 
   // Custom InputTypes
@@ -1451,6 +1635,13 @@ export namespace Prisma {
    */
   export type BranchCountOutputTypeCountAttendancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AttendanceWhereInput
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountShiftsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BranchShiftWhereInput
   }
 
 
@@ -1521,6 +1712,988 @@ export namespace Prisma {
    */
 
   /**
+   * Model GlobalSettings
+   */
+
+  export type AggregateGlobalSettings = {
+    _count: GlobalSettingsCountAggregateOutputType | null
+    _min: GlobalSettingsMinAggregateOutputType | null
+    _max: GlobalSettingsMaxAggregateOutputType | null
+  }
+
+  export type GlobalSettingsMinAggregateOutputType = {
+    id: string | null
+    qrLogoLeftUrl: string | null
+    qrLogoRightUrl: string | null
+    updatedAt: Date | null
+  }
+
+  export type GlobalSettingsMaxAggregateOutputType = {
+    id: string | null
+    qrLogoLeftUrl: string | null
+    qrLogoRightUrl: string | null
+    updatedAt: Date | null
+  }
+
+  export type GlobalSettingsCountAggregateOutputType = {
+    id: number
+    qrLogoLeftUrl: number
+    qrLogoRightUrl: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GlobalSettingsMinAggregateInputType = {
+    id?: true
+    qrLogoLeftUrl?: true
+    qrLogoRightUrl?: true
+    updatedAt?: true
+  }
+
+  export type GlobalSettingsMaxAggregateInputType = {
+    id?: true
+    qrLogoLeftUrl?: true
+    qrLogoRightUrl?: true
+    updatedAt?: true
+  }
+
+  export type GlobalSettingsCountAggregateInputType = {
+    id?: true
+    qrLogoLeftUrl?: true
+    qrLogoRightUrl?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GlobalSettingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GlobalSettings to aggregate.
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GlobalSettings to fetch.
+     */
+    orderBy?: GlobalSettingsOrderByWithRelationInput | GlobalSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GlobalSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GlobalSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GlobalSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GlobalSettings
+    **/
+    _count?: true | GlobalSettingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GlobalSettingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GlobalSettingsMaxAggregateInputType
+  }
+
+  export type GetGlobalSettingsAggregateType<T extends GlobalSettingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateGlobalSettings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGlobalSettings[P]>
+      : GetScalarType<T[P], AggregateGlobalSettings[P]>
+  }
+
+
+
+
+  export type GlobalSettingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GlobalSettingsWhereInput
+    orderBy?: GlobalSettingsOrderByWithAggregationInput | GlobalSettingsOrderByWithAggregationInput[]
+    by: GlobalSettingsScalarFieldEnum[] | GlobalSettingsScalarFieldEnum
+    having?: GlobalSettingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GlobalSettingsCountAggregateInputType | true
+    _min?: GlobalSettingsMinAggregateInputType
+    _max?: GlobalSettingsMaxAggregateInputType
+  }
+
+  export type GlobalSettingsGroupByOutputType = {
+    id: string
+    qrLogoLeftUrl: string | null
+    qrLogoRightUrl: string | null
+    updatedAt: Date
+    _count: GlobalSettingsCountAggregateOutputType | null
+    _min: GlobalSettingsMinAggregateOutputType | null
+    _max: GlobalSettingsMaxAggregateOutputType | null
+  }
+
+  type GetGlobalSettingsGroupByPayload<T extends GlobalSettingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GlobalSettingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GlobalSettingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GlobalSettingsGroupByOutputType[P]>
+            : GetScalarType<T[P], GlobalSettingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GlobalSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    qrLogoLeftUrl?: boolean
+    qrLogoRightUrl?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["globalSettings"]>
+
+  export type GlobalSettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    qrLogoLeftUrl?: boolean
+    qrLogoRightUrl?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["globalSettings"]>
+
+  export type GlobalSettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    qrLogoLeftUrl?: boolean
+    qrLogoRightUrl?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["globalSettings"]>
+
+  export type GlobalSettingsSelectScalar = {
+    id?: boolean
+    qrLogoLeftUrl?: boolean
+    qrLogoRightUrl?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GlobalSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrLogoLeftUrl" | "qrLogoRightUrl" | "updatedAt", ExtArgs["result"]["globalSettings"]>
+
+  export type $GlobalSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GlobalSettings"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      qrLogoLeftUrl: string | null
+      qrLogoRightUrl: string | null
+      updatedAt: Date
+    }, ExtArgs["result"]["globalSettings"]>
+    composites: {}
+  }
+
+  type GlobalSettingsGetPayload<S extends boolean | null | undefined | GlobalSettingsDefaultArgs> = $Result.GetResult<Prisma.$GlobalSettingsPayload, S>
+
+  type GlobalSettingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GlobalSettingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GlobalSettingsCountAggregateInputType | true
+    }
+
+  export interface GlobalSettingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GlobalSettings'], meta: { name: 'GlobalSettings' } }
+    /**
+     * Find zero or one GlobalSettings that matches the filter.
+     * @param {GlobalSettingsFindUniqueArgs} args - Arguments to find a GlobalSettings
+     * @example
+     * // Get one GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GlobalSettingsFindUniqueArgs>(args: SelectSubset<T, GlobalSettingsFindUniqueArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GlobalSettings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GlobalSettingsFindUniqueOrThrowArgs} args - Arguments to find a GlobalSettings
+     * @example
+     * // Get one GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GlobalSettingsFindUniqueOrThrowArgs>(args: SelectSubset<T, GlobalSettingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GlobalSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsFindFirstArgs} args - Arguments to find a GlobalSettings
+     * @example
+     * // Get one GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GlobalSettingsFindFirstArgs>(args?: SelectSubset<T, GlobalSettingsFindFirstArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GlobalSettings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsFindFirstOrThrowArgs} args - Arguments to find a GlobalSettings
+     * @example
+     * // Get one GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GlobalSettingsFindFirstOrThrowArgs>(args?: SelectSubset<T, GlobalSettingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GlobalSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findMany()
+     * 
+     * // Get first 10 GlobalSettings
+     * const globalSettings = await prisma.globalSettings.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const globalSettingsWithIdOnly = await prisma.globalSettings.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GlobalSettingsFindManyArgs>(args?: SelectSubset<T, GlobalSettingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GlobalSettings.
+     * @param {GlobalSettingsCreateArgs} args - Arguments to create a GlobalSettings.
+     * @example
+     * // Create one GlobalSettings
+     * const GlobalSettings = await prisma.globalSettings.create({
+     *   data: {
+     *     // ... data to create a GlobalSettings
+     *   }
+     * })
+     * 
+     */
+    create<T extends GlobalSettingsCreateArgs>(args: SelectSubset<T, GlobalSettingsCreateArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GlobalSettings.
+     * @param {GlobalSettingsCreateManyArgs} args - Arguments to create many GlobalSettings.
+     * @example
+     * // Create many GlobalSettings
+     * const globalSettings = await prisma.globalSettings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GlobalSettingsCreateManyArgs>(args?: SelectSubset<T, GlobalSettingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GlobalSettings and returns the data saved in the database.
+     * @param {GlobalSettingsCreateManyAndReturnArgs} args - Arguments to create many GlobalSettings.
+     * @example
+     * // Create many GlobalSettings
+     * const globalSettings = await prisma.globalSettings.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GlobalSettings and only return the `id`
+     * const globalSettingsWithIdOnly = await prisma.globalSettings.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GlobalSettingsCreateManyAndReturnArgs>(args?: SelectSubset<T, GlobalSettingsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GlobalSettings.
+     * @param {GlobalSettingsDeleteArgs} args - Arguments to delete one GlobalSettings.
+     * @example
+     * // Delete one GlobalSettings
+     * const GlobalSettings = await prisma.globalSettings.delete({
+     *   where: {
+     *     // ... filter to delete one GlobalSettings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GlobalSettingsDeleteArgs>(args: SelectSubset<T, GlobalSettingsDeleteArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GlobalSettings.
+     * @param {GlobalSettingsUpdateArgs} args - Arguments to update one GlobalSettings.
+     * @example
+     * // Update one GlobalSettings
+     * const globalSettings = await prisma.globalSettings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GlobalSettingsUpdateArgs>(args: SelectSubset<T, GlobalSettingsUpdateArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GlobalSettings.
+     * @param {GlobalSettingsDeleteManyArgs} args - Arguments to filter GlobalSettings to delete.
+     * @example
+     * // Delete a few GlobalSettings
+     * const { count } = await prisma.globalSettings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GlobalSettingsDeleteManyArgs>(args?: SelectSubset<T, GlobalSettingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GlobalSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GlobalSettings
+     * const globalSettings = await prisma.globalSettings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GlobalSettingsUpdateManyArgs>(args: SelectSubset<T, GlobalSettingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GlobalSettings and returns the data updated in the database.
+     * @param {GlobalSettingsUpdateManyAndReturnArgs} args - Arguments to update many GlobalSettings.
+     * @example
+     * // Update many GlobalSettings
+     * const globalSettings = await prisma.globalSettings.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GlobalSettings and only return the `id`
+     * const globalSettingsWithIdOnly = await prisma.globalSettings.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GlobalSettingsUpdateManyAndReturnArgs>(args: SelectSubset<T, GlobalSettingsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GlobalSettings.
+     * @param {GlobalSettingsUpsertArgs} args - Arguments to update or create a GlobalSettings.
+     * @example
+     * // Update or create a GlobalSettings
+     * const globalSettings = await prisma.globalSettings.upsert({
+     *   create: {
+     *     // ... data to create a GlobalSettings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GlobalSettings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GlobalSettingsUpsertArgs>(args: SelectSubset<T, GlobalSettingsUpsertArgs<ExtArgs>>): Prisma__GlobalSettingsClient<$Result.GetResult<Prisma.$GlobalSettingsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GlobalSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsCountArgs} args - Arguments to filter GlobalSettings to count.
+     * @example
+     * // Count the number of GlobalSettings
+     * const count = await prisma.globalSettings.count({
+     *   where: {
+     *     // ... the filter for the GlobalSettings we want to count
+     *   }
+     * })
+    **/
+    count<T extends GlobalSettingsCountArgs>(
+      args?: Subset<T, GlobalSettingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GlobalSettingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GlobalSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GlobalSettingsAggregateArgs>(args: Subset<T, GlobalSettingsAggregateArgs>): Prisma.PrismaPromise<GetGlobalSettingsAggregateType<T>>
+
+    /**
+     * Group by GlobalSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GlobalSettingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GlobalSettingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GlobalSettingsGroupByArgs['orderBy'] }
+        : { orderBy?: GlobalSettingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GlobalSettingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGlobalSettingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GlobalSettings model
+   */
+  readonly fields: GlobalSettingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GlobalSettings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GlobalSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GlobalSettings model
+   */
+  interface GlobalSettingsFieldRefs {
+    readonly id: FieldRef<"GlobalSettings", 'String'>
+    readonly qrLogoLeftUrl: FieldRef<"GlobalSettings", 'String'>
+    readonly qrLogoRightUrl: FieldRef<"GlobalSettings", 'String'>
+    readonly updatedAt: FieldRef<"GlobalSettings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GlobalSettings findUnique
+   */
+  export type GlobalSettingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which GlobalSettings to fetch.
+     */
+    where: GlobalSettingsWhereUniqueInput
+  }
+
+  /**
+   * GlobalSettings findUniqueOrThrow
+   */
+  export type GlobalSettingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which GlobalSettings to fetch.
+     */
+    where: GlobalSettingsWhereUniqueInput
+  }
+
+  /**
+   * GlobalSettings findFirst
+   */
+  export type GlobalSettingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which GlobalSettings to fetch.
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GlobalSettings to fetch.
+     */
+    orderBy?: GlobalSettingsOrderByWithRelationInput | GlobalSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GlobalSettings.
+     */
+    cursor?: GlobalSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GlobalSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GlobalSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GlobalSettings.
+     */
+    distinct?: GlobalSettingsScalarFieldEnum | GlobalSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * GlobalSettings findFirstOrThrow
+   */
+  export type GlobalSettingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which GlobalSettings to fetch.
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GlobalSettings to fetch.
+     */
+    orderBy?: GlobalSettingsOrderByWithRelationInput | GlobalSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GlobalSettings.
+     */
+    cursor?: GlobalSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GlobalSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GlobalSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GlobalSettings.
+     */
+    distinct?: GlobalSettingsScalarFieldEnum | GlobalSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * GlobalSettings findMany
+   */
+  export type GlobalSettingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which GlobalSettings to fetch.
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GlobalSettings to fetch.
+     */
+    orderBy?: GlobalSettingsOrderByWithRelationInput | GlobalSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GlobalSettings.
+     */
+    cursor?: GlobalSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GlobalSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GlobalSettings.
+     */
+    skip?: number
+    distinct?: GlobalSettingsScalarFieldEnum | GlobalSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * GlobalSettings create
+   */
+  export type GlobalSettingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a GlobalSettings.
+     */
+    data: XOR<GlobalSettingsCreateInput, GlobalSettingsUncheckedCreateInput>
+  }
+
+  /**
+   * GlobalSettings createMany
+   */
+  export type GlobalSettingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GlobalSettings.
+     */
+    data: GlobalSettingsCreateManyInput | GlobalSettingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GlobalSettings createManyAndReturn
+   */
+  export type GlobalSettingsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * The data used to create many GlobalSettings.
+     */
+    data: GlobalSettingsCreateManyInput | GlobalSettingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GlobalSettings update
+   */
+  export type GlobalSettingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a GlobalSettings.
+     */
+    data: XOR<GlobalSettingsUpdateInput, GlobalSettingsUncheckedUpdateInput>
+    /**
+     * Choose, which GlobalSettings to update.
+     */
+    where: GlobalSettingsWhereUniqueInput
+  }
+
+  /**
+   * GlobalSettings updateMany
+   */
+  export type GlobalSettingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GlobalSettings.
+     */
+    data: XOR<GlobalSettingsUpdateManyMutationInput, GlobalSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which GlobalSettings to update
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * Limit how many GlobalSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GlobalSettings updateManyAndReturn
+   */
+  export type GlobalSettingsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * The data used to update GlobalSettings.
+     */
+    data: XOR<GlobalSettingsUpdateManyMutationInput, GlobalSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which GlobalSettings to update
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * Limit how many GlobalSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GlobalSettings upsert
+   */
+  export type GlobalSettingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the GlobalSettings to update in case it exists.
+     */
+    where: GlobalSettingsWhereUniqueInput
+    /**
+     * In case the GlobalSettings found by the `where` argument doesn't exist, create a new GlobalSettings with this data.
+     */
+    create: XOR<GlobalSettingsCreateInput, GlobalSettingsUncheckedCreateInput>
+    /**
+     * In case the GlobalSettings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GlobalSettingsUpdateInput, GlobalSettingsUncheckedUpdateInput>
+  }
+
+  /**
+   * GlobalSettings delete
+   */
+  export type GlobalSettingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+    /**
+     * Filter which GlobalSettings to delete.
+     */
+    where: GlobalSettingsWhereUniqueInput
+  }
+
+  /**
+   * GlobalSettings deleteMany
+   */
+  export type GlobalSettingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GlobalSettings to delete
+     */
+    where?: GlobalSettingsWhereInput
+    /**
+     * Limit how many GlobalSettings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GlobalSettings without action
+   */
+  export type GlobalSettingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GlobalSettings
+     */
+    select?: GlobalSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GlobalSettings
+     */
+    omit?: GlobalSettingsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model Company
    */
 
@@ -1533,18 +2706,27 @@ export namespace Prisma {
   export type CompanyMinAggregateOutputType = {
     id: string | null
     name: string | null
+    qrCompanyLogoUrl: string | null
+    attendanceGoogleSpreadsheetId: string | null
+    attendanceGoogleSheetTabName: string | null
     createdAt: Date | null
   }
 
   export type CompanyMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    qrCompanyLogoUrl: string | null
+    attendanceGoogleSpreadsheetId: string | null
+    attendanceGoogleSheetTabName: string | null
     createdAt: Date | null
   }
 
   export type CompanyCountAggregateOutputType = {
     id: number
     name: number
+    qrCompanyLogoUrl: number
+    attendanceGoogleSpreadsheetId: number
+    attendanceGoogleSheetTabName: number
     createdAt: number
     _all: number
   }
@@ -1553,18 +2735,27 @@ export namespace Prisma {
   export type CompanyMinAggregateInputType = {
     id?: true
     name?: true
+    qrCompanyLogoUrl?: true
+    attendanceGoogleSpreadsheetId?: true
+    attendanceGoogleSheetTabName?: true
     createdAt?: true
   }
 
   export type CompanyMaxAggregateInputType = {
     id?: true
     name?: true
+    qrCompanyLogoUrl?: true
+    attendanceGoogleSpreadsheetId?: true
+    attendanceGoogleSheetTabName?: true
     createdAt?: true
   }
 
   export type CompanyCountAggregateInputType = {
     id?: true
     name?: true
+    qrCompanyLogoUrl?: true
+    attendanceGoogleSpreadsheetId?: true
+    attendanceGoogleSheetTabName?: true
     createdAt?: true
     _all?: true
   }
@@ -1644,6 +2835,9 @@ export namespace Prisma {
   export type CompanyGroupByOutputType = {
     id: string
     name: string
+    qrCompanyLogoUrl: string | null
+    attendanceGoogleSpreadsheetId: string | null
+    attendanceGoogleSheetTabName: string | null
     createdAt: Date
     _count: CompanyCountAggregateOutputType | null
     _min: CompanyMinAggregateOutputType | null
@@ -1667,6 +2861,9 @@ export namespace Prisma {
   export type CompanySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    qrCompanyLogoUrl?: boolean
+    attendanceGoogleSpreadsheetId?: boolean
+    attendanceGoogleSheetTabName?: boolean
     createdAt?: boolean
     branches?: boolean | Company$branchesArgs<ExtArgs>
     users?: boolean | Company$usersArgs<ExtArgs>
@@ -1678,22 +2875,31 @@ export namespace Prisma {
   export type CompanySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    qrCompanyLogoUrl?: boolean
+    attendanceGoogleSpreadsheetId?: boolean
+    attendanceGoogleSheetTabName?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["company"]>
 
   export type CompanySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    qrCompanyLogoUrl?: boolean
+    attendanceGoogleSpreadsheetId?: boolean
+    attendanceGoogleSheetTabName?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["company"]>
 
   export type CompanySelectScalar = {
     id?: boolean
     name?: boolean
+    qrCompanyLogoUrl?: boolean
+    attendanceGoogleSpreadsheetId?: boolean
+    attendanceGoogleSheetTabName?: boolean
     createdAt?: boolean
   }
 
-  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt", ExtArgs["result"]["company"]>
+  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "qrCompanyLogoUrl" | "attendanceGoogleSpreadsheetId" | "attendanceGoogleSheetTabName" | "createdAt", ExtArgs["result"]["company"]>
   export type CompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     branches?: boolean | Company$branchesArgs<ExtArgs>
     users?: boolean | Company$usersArgs<ExtArgs>
@@ -1715,6 +2921,18 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      /**
+       * Shown on public /qr page next to the global WAQT logo (per company).
+       */
+      qrCompanyLogoUrl: string | null
+      /**
+       * Spreadsheet ID from Google Sheets URL (shared with the service account).
+       */
+      attendanceGoogleSpreadsheetId: string | null
+      /**
+       * Worksheet tab title for attendance sync (default "Attendance" in app).
+       */
+      attendanceGoogleSheetTabName: string | null
       createdAt: Date
     }, ExtArgs["result"]["company"]>
     composites: {}
@@ -2145,6 +3363,9 @@ export namespace Prisma {
   interface CompanyFieldRefs {
     readonly id: FieldRef<"Company", 'String'>
     readonly name: FieldRef<"Company", 'String'>
+    readonly qrCompanyLogoUrl: FieldRef<"Company", 'String'>
+    readonly attendanceGoogleSpreadsheetId: FieldRef<"Company", 'String'>
+    readonly attendanceGoogleSheetTabName: FieldRef<"Company", 'String'>
     readonly createdAt: FieldRef<"Company", 'DateTime'>
   }
     
@@ -2679,6 +3900,8 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number | null
+    publicKioskToken: string | null
+    publicKioskExpiresAt: Date | null
     createdAt: Date | null
   }
 
@@ -2689,6 +3912,8 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number | null
+    publicKioskToken: string | null
+    publicKioskExpiresAt: Date | null
     createdAt: Date | null
   }
 
@@ -2699,6 +3924,8 @@ export namespace Prisma {
     latitude: number
     longitude: number
     radiusMeters: number
+    publicKioskToken: number
+    publicKioskExpiresAt: number
     createdAt: number
     _all: number
   }
@@ -2723,6 +3950,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    publicKioskToken?: true
+    publicKioskExpiresAt?: true
     createdAt?: true
   }
 
@@ -2733,6 +3962,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    publicKioskToken?: true
+    publicKioskExpiresAt?: true
     createdAt?: true
   }
 
@@ -2743,6 +3974,8 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    publicKioskToken?: true
+    publicKioskExpiresAt?: true
     createdAt?: true
     _all?: true
   }
@@ -2840,6 +4073,8 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number
+    publicKioskToken: string | null
+    publicKioskExpiresAt: Date | null
     createdAt: Date
     _count: BranchCountAggregateOutputType | null
     _avg: BranchAvgAggregateOutputType | null
@@ -2869,11 +4104,14 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    publicKioskToken?: boolean
+    publicKioskExpiresAt?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     employees?: boolean | Branch$employeesArgs<ExtArgs>
     kioskSessions?: boolean | Branch$kioskSessionsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
+    shifts?: boolean | Branch$shiftsArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["branch"]>
 
@@ -2884,6 +4122,8 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    publicKioskToken?: boolean
+    publicKioskExpiresAt?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["branch"]>
@@ -2895,6 +4135,8 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    publicKioskToken?: boolean
+    publicKioskExpiresAt?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["branch"]>
@@ -2906,15 +4148,18 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    publicKioskToken?: boolean
+    publicKioskExpiresAt?: boolean
     createdAt?: boolean
   }
 
-  export type BranchOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "name" | "latitude" | "longitude" | "radiusMeters" | "createdAt", ExtArgs["result"]["branch"]>
+  export type BranchOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "name" | "latitude" | "longitude" | "radiusMeters" | "publicKioskToken" | "publicKioskExpiresAt" | "createdAt", ExtArgs["result"]["branch"]>
   export type BranchInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     employees?: boolean | Branch$employeesArgs<ExtArgs>
     kioskSessions?: boolean | Branch$kioskSessionsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
+    shifts?: boolean | Branch$shiftsArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BranchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2931,6 +4176,7 @@ export namespace Prisma {
       employees: Prisma.$EmployeePayload<ExtArgs>[]
       kioskSessions: Prisma.$KioskSessionPayload<ExtArgs>[]
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
+      shifts: Prisma.$BranchShiftPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2939,6 +4185,11 @@ export namespace Prisma {
       latitude: number | null
       longitude: number | null
       radiusMeters: number
+      /**
+       * Latest kiosk plain token for the stable public /qr?branchId= page (rotates when admin refreshes QR).
+       */
+      publicKioskToken: string | null
+      publicKioskExpiresAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["branch"]>
     composites: {}
@@ -3338,6 +4589,7 @@ export namespace Prisma {
     employees<T extends Branch$employeesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$employeesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     kioskSessions<T extends Branch$kioskSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$kioskSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KioskSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attendances<T extends Branch$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shifts<T extends Branch$shiftsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$shiftsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3373,6 +4625,8 @@ export namespace Prisma {
     readonly latitude: FieldRef<"Branch", 'Float'>
     readonly longitude: FieldRef<"Branch", 'Float'>
     readonly radiusMeters: FieldRef<"Branch", 'Int'>
+    readonly publicKioskToken: FieldRef<"Branch", 'String'>
+    readonly publicKioskExpiresAt: FieldRef<"Branch", 'DateTime'>
     readonly createdAt: FieldRef<"Branch", 'DateTime'>
   }
     
@@ -3842,6 +5096,30 @@ export namespace Prisma {
   }
 
   /**
+   * Branch.shifts
+   */
+  export type Branch$shiftsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    where?: BranchShiftWhereInput
+    orderBy?: BranchShiftOrderByWithRelationInput | BranchShiftOrderByWithRelationInput[]
+    cursor?: BranchShiftWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BranchShiftScalarFieldEnum | BranchShiftScalarFieldEnum[]
+  }
+
+  /**
    * Branch without action
    */
   export type BranchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3857,6 +5135,1127 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BranchInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BranchShift
+   */
+
+  export type AggregateBranchShift = {
+    _count: BranchShiftCountAggregateOutputType | null
+    _avg: BranchShiftAvgAggregateOutputType | null
+    _sum: BranchShiftSumAggregateOutputType | null
+    _min: BranchShiftMinAggregateOutputType | null
+    _max: BranchShiftMaxAggregateOutputType | null
+  }
+
+  export type BranchShiftAvgAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type BranchShiftSumAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type BranchShiftMinAggregateOutputType = {
+    id: string | null
+    branchId: string | null
+    name: string | null
+    startTime: string | null
+    endTime: string | null
+    sortOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type BranchShiftMaxAggregateOutputType = {
+    id: string | null
+    branchId: string | null
+    name: string | null
+    startTime: string | null
+    endTime: string | null
+    sortOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type BranchShiftCountAggregateOutputType = {
+    id: number
+    branchId: number
+    name: number
+    startTime: number
+    endTime: number
+    sortOrder: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type BranchShiftAvgAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type BranchShiftSumAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type BranchShiftMinAggregateInputType = {
+    id?: true
+    branchId?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    sortOrder?: true
+    createdAt?: true
+  }
+
+  export type BranchShiftMaxAggregateInputType = {
+    id?: true
+    branchId?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    sortOrder?: true
+    createdAt?: true
+  }
+
+  export type BranchShiftCountAggregateInputType = {
+    id?: true
+    branchId?: true
+    name?: true
+    startTime?: true
+    endTime?: true
+    sortOrder?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type BranchShiftAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BranchShift to aggregate.
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchShifts to fetch.
+     */
+    orderBy?: BranchShiftOrderByWithRelationInput | BranchShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BranchShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchShifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchShifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BranchShifts
+    **/
+    _count?: true | BranchShiftCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BranchShiftAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BranchShiftSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BranchShiftMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BranchShiftMaxAggregateInputType
+  }
+
+  export type GetBranchShiftAggregateType<T extends BranchShiftAggregateArgs> = {
+        [P in keyof T & keyof AggregateBranchShift]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBranchShift[P]>
+      : GetScalarType<T[P], AggregateBranchShift[P]>
+  }
+
+
+
+
+  export type BranchShiftGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BranchShiftWhereInput
+    orderBy?: BranchShiftOrderByWithAggregationInput | BranchShiftOrderByWithAggregationInput[]
+    by: BranchShiftScalarFieldEnum[] | BranchShiftScalarFieldEnum
+    having?: BranchShiftScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BranchShiftCountAggregateInputType | true
+    _avg?: BranchShiftAvgAggregateInputType
+    _sum?: BranchShiftSumAggregateInputType
+    _min?: BranchShiftMinAggregateInputType
+    _max?: BranchShiftMaxAggregateInputType
+  }
+
+  export type BranchShiftGroupByOutputType = {
+    id: string
+    branchId: string
+    name: string | null
+    startTime: string
+    endTime: string
+    sortOrder: number
+    createdAt: Date
+    _count: BranchShiftCountAggregateOutputType | null
+    _avg: BranchShiftAvgAggregateOutputType | null
+    _sum: BranchShiftSumAggregateOutputType | null
+    _min: BranchShiftMinAggregateOutputType | null
+    _max: BranchShiftMaxAggregateOutputType | null
+  }
+
+  type GetBranchShiftGroupByPayload<T extends BranchShiftGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BranchShiftGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BranchShiftGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BranchShiftGroupByOutputType[P]>
+            : GetScalarType<T[P], BranchShiftGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BranchShiftSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchShift"]>
+
+  export type BranchShiftSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchShift"]>
+
+  export type BranchShiftSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchShift"]>
+
+  export type BranchShiftSelectScalar = {
+    id?: boolean
+    branchId?: boolean
+    name?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+  }
+
+  export type BranchShiftOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "branchId" | "name" | "startTime" | "endTime" | "sortOrder" | "createdAt", ExtArgs["result"]["branchShift"]>
+  export type BranchShiftInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+  export type BranchShiftIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+  export type BranchShiftIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+
+  export type $BranchShiftPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BranchShift"
+    objects: {
+      branch: Prisma.$BranchPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      branchId: string
+      name: string | null
+      /**
+       * 24h local time, zero-padded "HH:MM".
+       */
+      startTime: string
+      endTime: string
+      sortOrder: number
+      createdAt: Date
+    }, ExtArgs["result"]["branchShift"]>
+    composites: {}
+  }
+
+  type BranchShiftGetPayload<S extends boolean | null | undefined | BranchShiftDefaultArgs> = $Result.GetResult<Prisma.$BranchShiftPayload, S>
+
+  type BranchShiftCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BranchShiftFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BranchShiftCountAggregateInputType | true
+    }
+
+  export interface BranchShiftDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BranchShift'], meta: { name: 'BranchShift' } }
+    /**
+     * Find zero or one BranchShift that matches the filter.
+     * @param {BranchShiftFindUniqueArgs} args - Arguments to find a BranchShift
+     * @example
+     * // Get one BranchShift
+     * const branchShift = await prisma.branchShift.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BranchShiftFindUniqueArgs>(args: SelectSubset<T, BranchShiftFindUniqueArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BranchShift that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BranchShiftFindUniqueOrThrowArgs} args - Arguments to find a BranchShift
+     * @example
+     * // Get one BranchShift
+     * const branchShift = await prisma.branchShift.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BranchShiftFindUniqueOrThrowArgs>(args: SelectSubset<T, BranchShiftFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BranchShift that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftFindFirstArgs} args - Arguments to find a BranchShift
+     * @example
+     * // Get one BranchShift
+     * const branchShift = await prisma.branchShift.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BranchShiftFindFirstArgs>(args?: SelectSubset<T, BranchShiftFindFirstArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BranchShift that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftFindFirstOrThrowArgs} args - Arguments to find a BranchShift
+     * @example
+     * // Get one BranchShift
+     * const branchShift = await prisma.branchShift.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BranchShiftFindFirstOrThrowArgs>(args?: SelectSubset<T, BranchShiftFindFirstOrThrowArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BranchShifts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BranchShifts
+     * const branchShifts = await prisma.branchShift.findMany()
+     * 
+     * // Get first 10 BranchShifts
+     * const branchShifts = await prisma.branchShift.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const branchShiftWithIdOnly = await prisma.branchShift.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BranchShiftFindManyArgs>(args?: SelectSubset<T, BranchShiftFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BranchShift.
+     * @param {BranchShiftCreateArgs} args - Arguments to create a BranchShift.
+     * @example
+     * // Create one BranchShift
+     * const BranchShift = await prisma.branchShift.create({
+     *   data: {
+     *     // ... data to create a BranchShift
+     *   }
+     * })
+     * 
+     */
+    create<T extends BranchShiftCreateArgs>(args: SelectSubset<T, BranchShiftCreateArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BranchShifts.
+     * @param {BranchShiftCreateManyArgs} args - Arguments to create many BranchShifts.
+     * @example
+     * // Create many BranchShifts
+     * const branchShift = await prisma.branchShift.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BranchShiftCreateManyArgs>(args?: SelectSubset<T, BranchShiftCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BranchShifts and returns the data saved in the database.
+     * @param {BranchShiftCreateManyAndReturnArgs} args - Arguments to create many BranchShifts.
+     * @example
+     * // Create many BranchShifts
+     * const branchShift = await prisma.branchShift.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BranchShifts and only return the `id`
+     * const branchShiftWithIdOnly = await prisma.branchShift.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BranchShiftCreateManyAndReturnArgs>(args?: SelectSubset<T, BranchShiftCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BranchShift.
+     * @param {BranchShiftDeleteArgs} args - Arguments to delete one BranchShift.
+     * @example
+     * // Delete one BranchShift
+     * const BranchShift = await prisma.branchShift.delete({
+     *   where: {
+     *     // ... filter to delete one BranchShift
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BranchShiftDeleteArgs>(args: SelectSubset<T, BranchShiftDeleteArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BranchShift.
+     * @param {BranchShiftUpdateArgs} args - Arguments to update one BranchShift.
+     * @example
+     * // Update one BranchShift
+     * const branchShift = await prisma.branchShift.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BranchShiftUpdateArgs>(args: SelectSubset<T, BranchShiftUpdateArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BranchShifts.
+     * @param {BranchShiftDeleteManyArgs} args - Arguments to filter BranchShifts to delete.
+     * @example
+     * // Delete a few BranchShifts
+     * const { count } = await prisma.branchShift.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BranchShiftDeleteManyArgs>(args?: SelectSubset<T, BranchShiftDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BranchShifts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BranchShifts
+     * const branchShift = await prisma.branchShift.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BranchShiftUpdateManyArgs>(args: SelectSubset<T, BranchShiftUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BranchShifts and returns the data updated in the database.
+     * @param {BranchShiftUpdateManyAndReturnArgs} args - Arguments to update many BranchShifts.
+     * @example
+     * // Update many BranchShifts
+     * const branchShift = await prisma.branchShift.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BranchShifts and only return the `id`
+     * const branchShiftWithIdOnly = await prisma.branchShift.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BranchShiftUpdateManyAndReturnArgs>(args: SelectSubset<T, BranchShiftUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BranchShift.
+     * @param {BranchShiftUpsertArgs} args - Arguments to update or create a BranchShift.
+     * @example
+     * // Update or create a BranchShift
+     * const branchShift = await prisma.branchShift.upsert({
+     *   create: {
+     *     // ... data to create a BranchShift
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BranchShift we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BranchShiftUpsertArgs>(args: SelectSubset<T, BranchShiftUpsertArgs<ExtArgs>>): Prisma__BranchShiftClient<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BranchShifts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftCountArgs} args - Arguments to filter BranchShifts to count.
+     * @example
+     * // Count the number of BranchShifts
+     * const count = await prisma.branchShift.count({
+     *   where: {
+     *     // ... the filter for the BranchShifts we want to count
+     *   }
+     * })
+    **/
+    count<T extends BranchShiftCountArgs>(
+      args?: Subset<T, BranchShiftCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BranchShiftCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BranchShift.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BranchShiftAggregateArgs>(args: Subset<T, BranchShiftAggregateArgs>): Prisma.PrismaPromise<GetBranchShiftAggregateType<T>>
+
+    /**
+     * Group by BranchShift.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchShiftGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BranchShiftGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BranchShiftGroupByArgs['orderBy'] }
+        : { orderBy?: BranchShiftGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BranchShiftGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBranchShiftGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BranchShift model
+   */
+  readonly fields: BranchShiftFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BranchShift.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BranchShiftClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    branch<T extends BranchDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BranchDefaultArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BranchShift model
+   */
+  interface BranchShiftFieldRefs {
+    readonly id: FieldRef<"BranchShift", 'String'>
+    readonly branchId: FieldRef<"BranchShift", 'String'>
+    readonly name: FieldRef<"BranchShift", 'String'>
+    readonly startTime: FieldRef<"BranchShift", 'String'>
+    readonly endTime: FieldRef<"BranchShift", 'String'>
+    readonly sortOrder: FieldRef<"BranchShift", 'Int'>
+    readonly createdAt: FieldRef<"BranchShift", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BranchShift findUnique
+   */
+  export type BranchShiftFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchShift to fetch.
+     */
+    where: BranchShiftWhereUniqueInput
+  }
+
+  /**
+   * BranchShift findUniqueOrThrow
+   */
+  export type BranchShiftFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchShift to fetch.
+     */
+    where: BranchShiftWhereUniqueInput
+  }
+
+  /**
+   * BranchShift findFirst
+   */
+  export type BranchShiftFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchShift to fetch.
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchShifts to fetch.
+     */
+    orderBy?: BranchShiftOrderByWithRelationInput | BranchShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BranchShifts.
+     */
+    cursor?: BranchShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchShifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchShifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BranchShifts.
+     */
+    distinct?: BranchShiftScalarFieldEnum | BranchShiftScalarFieldEnum[]
+  }
+
+  /**
+   * BranchShift findFirstOrThrow
+   */
+  export type BranchShiftFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchShift to fetch.
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchShifts to fetch.
+     */
+    orderBy?: BranchShiftOrderByWithRelationInput | BranchShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BranchShifts.
+     */
+    cursor?: BranchShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchShifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchShifts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BranchShifts.
+     */
+    distinct?: BranchShiftScalarFieldEnum | BranchShiftScalarFieldEnum[]
+  }
+
+  /**
+   * BranchShift findMany
+   */
+  export type BranchShiftFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchShifts to fetch.
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchShifts to fetch.
+     */
+    orderBy?: BranchShiftOrderByWithRelationInput | BranchShiftOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BranchShifts.
+     */
+    cursor?: BranchShiftWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchShifts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchShifts.
+     */
+    skip?: number
+    distinct?: BranchShiftScalarFieldEnum | BranchShiftScalarFieldEnum[]
+  }
+
+  /**
+   * BranchShift create
+   */
+  export type BranchShiftCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BranchShift.
+     */
+    data: XOR<BranchShiftCreateInput, BranchShiftUncheckedCreateInput>
+  }
+
+  /**
+   * BranchShift createMany
+   */
+  export type BranchShiftCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BranchShifts.
+     */
+    data: BranchShiftCreateManyInput | BranchShiftCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BranchShift createManyAndReturn
+   */
+  export type BranchShiftCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * The data used to create many BranchShifts.
+     */
+    data: BranchShiftCreateManyInput | BranchShiftCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BranchShift update
+   */
+  export type BranchShiftUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BranchShift.
+     */
+    data: XOR<BranchShiftUpdateInput, BranchShiftUncheckedUpdateInput>
+    /**
+     * Choose, which BranchShift to update.
+     */
+    where: BranchShiftWhereUniqueInput
+  }
+
+  /**
+   * BranchShift updateMany
+   */
+  export type BranchShiftUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BranchShifts.
+     */
+    data: XOR<BranchShiftUpdateManyMutationInput, BranchShiftUncheckedUpdateManyInput>
+    /**
+     * Filter which BranchShifts to update
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * Limit how many BranchShifts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BranchShift updateManyAndReturn
+   */
+  export type BranchShiftUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * The data used to update BranchShifts.
+     */
+    data: XOR<BranchShiftUpdateManyMutationInput, BranchShiftUncheckedUpdateManyInput>
+    /**
+     * Filter which BranchShifts to update
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * Limit how many BranchShifts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BranchShift upsert
+   */
+  export type BranchShiftUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BranchShift to update in case it exists.
+     */
+    where: BranchShiftWhereUniqueInput
+    /**
+     * In case the BranchShift found by the `where` argument doesn't exist, create a new BranchShift with this data.
+     */
+    create: XOR<BranchShiftCreateInput, BranchShiftUncheckedCreateInput>
+    /**
+     * In case the BranchShift was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BranchShiftUpdateInput, BranchShiftUncheckedUpdateInput>
+  }
+
+  /**
+   * BranchShift delete
+   */
+  export type BranchShiftDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
+    /**
+     * Filter which BranchShift to delete.
+     */
+    where: BranchShiftWhereUniqueInput
+  }
+
+  /**
+   * BranchShift deleteMany
+   */
+  export type BranchShiftDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BranchShifts to delete
+     */
+    where?: BranchShiftWhereInput
+    /**
+     * Limit how many BranchShifts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BranchShift without action
+   */
+  export type BranchShiftDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchShift
+     */
+    select?: BranchShiftSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchShift
+     */
+    omit?: BranchShiftOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchShiftInclude<ExtArgs> | null
   }
 
 
@@ -5006,6 +7405,8 @@ export namespace Prisma {
     nameNormalized: string | null
     notes: string | null
     role: $Enums.EmployeeRole | null
+    shiftStartTime: string | null
+    shiftEndTime: string | null
     isActive: boolean | null
     createdAt: Date | null
   }
@@ -5020,6 +7421,8 @@ export namespace Prisma {
     nameNormalized: string | null
     notes: string | null
     role: $Enums.EmployeeRole | null
+    shiftStartTime: string | null
+    shiftEndTime: string | null
     isActive: boolean | null
     createdAt: Date | null
   }
@@ -5034,6 +7437,8 @@ export namespace Prisma {
     nameNormalized: number
     notes: number
     role: number
+    shiftStartTime: number
+    shiftEndTime: number
     isActive: number
     createdAt: number
     _all: number
@@ -5050,6 +7455,8 @@ export namespace Prisma {
     nameNormalized?: true
     notes?: true
     role?: true
+    shiftStartTime?: true
+    shiftEndTime?: true
     isActive?: true
     createdAt?: true
   }
@@ -5064,6 +7471,8 @@ export namespace Prisma {
     nameNormalized?: true
     notes?: true
     role?: true
+    shiftStartTime?: true
+    shiftEndTime?: true
     isActive?: true
     createdAt?: true
   }
@@ -5078,6 +7487,8 @@ export namespace Prisma {
     nameNormalized?: true
     notes?: true
     role?: true
+    shiftStartTime?: true
+    shiftEndTime?: true
     isActive?: true
     createdAt?: true
     _all?: true
@@ -5165,6 +7576,8 @@ export namespace Prisma {
     nameNormalized: string
     notes: string | null
     role: $Enums.EmployeeRole
+    shiftStartTime: string | null
+    shiftEndTime: string | null
     isActive: boolean
     createdAt: Date
     _count: EmployeeCountAggregateOutputType | null
@@ -5196,6 +7609,8 @@ export namespace Prisma {
     nameNormalized?: boolean
     notes?: boolean
     role?: boolean
+    shiftStartTime?: boolean
+    shiftEndTime?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5215,6 +7630,8 @@ export namespace Prisma {
     nameNormalized?: boolean
     notes?: boolean
     role?: boolean
+    shiftStartTime?: boolean
+    shiftEndTime?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5232,6 +7649,8 @@ export namespace Prisma {
     nameNormalized?: boolean
     notes?: boolean
     role?: boolean
+    shiftStartTime?: boolean
+    shiftEndTime?: boolean
     isActive?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5249,11 +7668,13 @@ export namespace Prisma {
     nameNormalized?: boolean
     notes?: boolean
     role?: boolean
+    shiftStartTime?: boolean
+    shiftEndTime?: boolean
     isActive?: boolean
     createdAt?: boolean
   }
 
-  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "companyId" | "branchId" | "employeeCode" | "name" | "nameNormalized" | "notes" | "role" | "isActive" | "createdAt", ExtArgs["result"]["employee"]>
+  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "companyId" | "branchId" | "employeeCode" | "name" | "nameNormalized" | "notes" | "role" | "shiftStartTime" | "shiftEndTime" | "isActive" | "createdAt", ExtArgs["result"]["employee"]>
   export type EmployeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     company?: boolean | CompanyDefaultArgs<ExtArgs>
@@ -5290,6 +7711,14 @@ export namespace Prisma {
       nameNormalized: string
       notes: string | null
       role: $Enums.EmployeeRole
+      /**
+       * Scheduled shift start in UTC clock time "HH:MM" (same convention as branch shifts). Used at checkout to derive deduction / OT.
+       */
+      shiftStartTime: string | null
+      /**
+       * Scheduled shift end in UTC clock time "HH:MM". If start is after end on the clock, shift crosses midnight UTC.
+       */
+      shiftEndTime: string | null
       isActive: boolean
       createdAt: Date
     }, ExtArgs["result"]["employee"]>
@@ -5728,6 +8157,8 @@ export namespace Prisma {
     readonly nameNormalized: FieldRef<"Employee", 'String'>
     readonly notes: FieldRef<"Employee", 'String'>
     readonly role: FieldRef<"Employee", 'EmployeeRole'>
+    readonly shiftStartTime: FieldRef<"Employee", 'String'>
+    readonly shiftEndTime: FieldRef<"Employee", 'String'>
     readonly isActive: FieldRef<"Employee", 'Boolean'>
     readonly createdAt: FieldRef<"Employee", 'DateTime'>
   }
@@ -7286,6 +9717,8 @@ export namespace Prisma {
     checkInLongitude: number | null
     checkOutLatitude: number | null
     checkOutLongitude: number | null
+    deductionHours: number | null
+    overtimeHours: number | null
   }
 
   export type AttendanceSumAggregateOutputType = {
@@ -7293,6 +9726,8 @@ export namespace Prisma {
     checkInLongitude: number | null
     checkOutLatitude: number | null
     checkOutLongitude: number | null
+    deductionHours: number | null
+    overtimeHours: number | null
   }
 
   export type AttendanceMinAggregateOutputType = {
@@ -7309,6 +9744,8 @@ export namespace Prisma {
     checkInLongitude: number | null
     checkOutLatitude: number | null
     checkOutLongitude: number | null
+    deductionHours: number | null
+    overtimeHours: number | null
     createdAt: Date | null
   }
 
@@ -7326,6 +9763,8 @@ export namespace Prisma {
     checkInLongitude: number | null
     checkOutLatitude: number | null
     checkOutLongitude: number | null
+    deductionHours: number | null
+    overtimeHours: number | null
     createdAt: Date | null
   }
 
@@ -7343,6 +9782,8 @@ export namespace Prisma {
     checkInLongitude: number
     checkOutLatitude: number
     checkOutLongitude: number
+    deductionHours: number
+    overtimeHours: number
     createdAt: number
     _all: number
   }
@@ -7353,6 +9794,8 @@ export namespace Prisma {
     checkInLongitude?: true
     checkOutLatitude?: true
     checkOutLongitude?: true
+    deductionHours?: true
+    overtimeHours?: true
   }
 
   export type AttendanceSumAggregateInputType = {
@@ -7360,6 +9803,8 @@ export namespace Prisma {
     checkInLongitude?: true
     checkOutLatitude?: true
     checkOutLongitude?: true
+    deductionHours?: true
+    overtimeHours?: true
   }
 
   export type AttendanceMinAggregateInputType = {
@@ -7376,6 +9821,8 @@ export namespace Prisma {
     checkInLongitude?: true
     checkOutLatitude?: true
     checkOutLongitude?: true
+    deductionHours?: true
+    overtimeHours?: true
     createdAt?: true
   }
 
@@ -7393,6 +9840,8 @@ export namespace Prisma {
     checkInLongitude?: true
     checkOutLatitude?: true
     checkOutLongitude?: true
+    deductionHours?: true
+    overtimeHours?: true
     createdAt?: true
   }
 
@@ -7410,6 +9859,8 @@ export namespace Prisma {
     checkInLongitude?: true
     checkOutLatitude?: true
     checkOutLongitude?: true
+    deductionHours?: true
+    overtimeHours?: true
     createdAt?: true
     _all?: true
   }
@@ -7514,6 +9965,8 @@ export namespace Prisma {
     checkInLongitude: number | null
     checkOutLatitude: number | null
     checkOutLongitude: number | null
+    deductionHours: number
+    overtimeHours: number
     createdAt: Date
     _count: AttendanceCountAggregateOutputType | null
     _avg: AttendanceAvgAggregateOutputType | null
@@ -7550,6 +10003,8 @@ export namespace Prisma {
     checkInLongitude?: boolean
     checkOutLatitude?: boolean
     checkOutLongitude?: boolean
+    deductionHours?: boolean
+    overtimeHours?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -7571,6 +10026,8 @@ export namespace Prisma {
     checkInLongitude?: boolean
     checkOutLatitude?: boolean
     checkOutLongitude?: boolean
+    deductionHours?: boolean
+    overtimeHours?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -7592,6 +10049,8 @@ export namespace Prisma {
     checkInLongitude?: boolean
     checkOutLatitude?: boolean
     checkOutLongitude?: boolean
+    deductionHours?: boolean
+    overtimeHours?: boolean
     createdAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -7613,10 +10072,12 @@ export namespace Prisma {
     checkInLongitude?: boolean
     checkOutLatitude?: boolean
     checkOutLongitude?: boolean
+    deductionHours?: boolean
+    overtimeHours?: boolean
     createdAt?: boolean
   }
 
-  export type AttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "branchId" | "employeeId" | "kioskSessionId" | "checkInAt" | "checkOutAt" | "checkInSelfieUrl" | "checkOutSelfieUrl" | "checkInLatitude" | "checkInLongitude" | "checkOutLatitude" | "checkOutLongitude" | "createdAt", ExtArgs["result"]["attendance"]>
+  export type AttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "branchId" | "employeeId" | "kioskSessionId" | "checkInAt" | "checkOutAt" | "checkInSelfieUrl" | "checkOutSelfieUrl" | "checkInLatitude" | "checkInLongitude" | "checkOutLatitude" | "checkOutLongitude" | "deductionHours" | "overtimeHours" | "createdAt", ExtArgs["result"]["attendance"]>
   export type AttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -7658,6 +10119,14 @@ export namespace Prisma {
       checkInLongitude: number | null
       checkOutLatitude: number | null
       checkOutLongitude: number | null
+      /**
+       * Time before scheduled shift start (hours), from employee shift at checkout; subtracted for net time.
+       */
+      deductionHours: number
+      /**
+       * Time after scheduled shift end (hours), from employee shift at checkout; added after net in work-hours totals.
+       */
+      overtimeHours: number
       createdAt: Date
     }, ExtArgs["result"]["attendance"]>
     composites: {}
@@ -8099,6 +10568,8 @@ export namespace Prisma {
     readonly checkInLongitude: FieldRef<"Attendance", 'Float'>
     readonly checkOutLatitude: FieldRef<"Attendance", 'Float'>
     readonly checkOutLongitude: FieldRef<"Attendance", 'Float'>
+    readonly deductionHours: FieldRef<"Attendance", 'Float'>
+    readonly overtimeHours: FieldRef<"Attendance", 'Float'>
     readonly createdAt: FieldRef<"Attendance", 'DateTime'>
   }
     
@@ -8528,9 +10999,22 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+  export const GlobalSettingsScalarFieldEnum: {
+    id: 'id',
+    qrLogoLeftUrl: 'qrLogoLeftUrl',
+    qrLogoRightUrl: 'qrLogoRightUrl',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GlobalSettingsScalarFieldEnum = (typeof GlobalSettingsScalarFieldEnum)[keyof typeof GlobalSettingsScalarFieldEnum]
+
+
   export const CompanyScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    qrCompanyLogoUrl: 'qrCompanyLogoUrl',
+    attendanceGoogleSpreadsheetId: 'attendanceGoogleSpreadsheetId',
+    attendanceGoogleSheetTabName: 'attendanceGoogleSheetTabName',
     createdAt: 'createdAt'
   };
 
@@ -8544,10 +11028,25 @@ export namespace Prisma {
     latitude: 'latitude',
     longitude: 'longitude',
     radiusMeters: 'radiusMeters',
+    publicKioskToken: 'publicKioskToken',
+    publicKioskExpiresAt: 'publicKioskExpiresAt',
     createdAt: 'createdAt'
   };
 
   export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
+
+
+  export const BranchShiftScalarFieldEnum: {
+    id: 'id',
+    branchId: 'branchId',
+    name: 'name',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    sortOrder: 'sortOrder',
+    createdAt: 'createdAt'
+  };
+
+  export type BranchShiftScalarFieldEnum = (typeof BranchShiftScalarFieldEnum)[keyof typeof BranchShiftScalarFieldEnum]
 
 
   export const UserScalarFieldEnum: {
@@ -8573,6 +11072,8 @@ export namespace Prisma {
     nameNormalized: 'nameNormalized',
     notes: 'notes',
     role: 'role',
+    shiftStartTime: 'shiftStartTime',
+    shiftEndTime: 'shiftEndTime',
     isActive: 'isActive',
     createdAt: 'createdAt'
   };
@@ -8606,6 +11107,8 @@ export namespace Prisma {
     checkInLongitude: 'checkInLongitude',
     checkOutLatitude: 'checkOutLatitude',
     checkOutLongitude: 'checkOutLongitude',
+    deductionHours: 'deductionHours',
+    overtimeHours: 'overtimeHours',
     createdAt: 'createdAt'
   };
 
@@ -8735,12 +11238,62 @@ export namespace Prisma {
    */
 
 
+  export type GlobalSettingsWhereInput = {
+    AND?: GlobalSettingsWhereInput | GlobalSettingsWhereInput[]
+    OR?: GlobalSettingsWhereInput[]
+    NOT?: GlobalSettingsWhereInput | GlobalSettingsWhereInput[]
+    id?: StringFilter<"GlobalSettings"> | string
+    qrLogoLeftUrl?: StringNullableFilter<"GlobalSettings"> | string | null
+    qrLogoRightUrl?: StringNullableFilter<"GlobalSettings"> | string | null
+    updatedAt?: DateTimeFilter<"GlobalSettings"> | Date | string
+  }
+
+  export type GlobalSettingsOrderByWithRelationInput = {
+    id?: SortOrder
+    qrLogoLeftUrl?: SortOrderInput | SortOrder
+    qrLogoRightUrl?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GlobalSettingsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: GlobalSettingsWhereInput | GlobalSettingsWhereInput[]
+    OR?: GlobalSettingsWhereInput[]
+    NOT?: GlobalSettingsWhereInput | GlobalSettingsWhereInput[]
+    qrLogoLeftUrl?: StringNullableFilter<"GlobalSettings"> | string | null
+    qrLogoRightUrl?: StringNullableFilter<"GlobalSettings"> | string | null
+    updatedAt?: DateTimeFilter<"GlobalSettings"> | Date | string
+  }, "id">
+
+  export type GlobalSettingsOrderByWithAggregationInput = {
+    id?: SortOrder
+    qrLogoLeftUrl?: SortOrderInput | SortOrder
+    qrLogoRightUrl?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: GlobalSettingsCountOrderByAggregateInput
+    _max?: GlobalSettingsMaxOrderByAggregateInput
+    _min?: GlobalSettingsMinOrderByAggregateInput
+  }
+
+  export type GlobalSettingsScalarWhereWithAggregatesInput = {
+    AND?: GlobalSettingsScalarWhereWithAggregatesInput | GlobalSettingsScalarWhereWithAggregatesInput[]
+    OR?: GlobalSettingsScalarWhereWithAggregatesInput[]
+    NOT?: GlobalSettingsScalarWhereWithAggregatesInput | GlobalSettingsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GlobalSettings"> | string
+    qrLogoLeftUrl?: StringNullableWithAggregatesFilter<"GlobalSettings"> | string | null
+    qrLogoRightUrl?: StringNullableWithAggregatesFilter<"GlobalSettings"> | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"GlobalSettings"> | Date | string
+  }
+
   export type CompanyWhereInput = {
     AND?: CompanyWhereInput | CompanyWhereInput[]
     OR?: CompanyWhereInput[]
     NOT?: CompanyWhereInput | CompanyWhereInput[]
     id?: StringFilter<"Company"> | string
     name?: StringFilter<"Company"> | string
+    qrCompanyLogoUrl?: StringNullableFilter<"Company"> | string | null
+    attendanceGoogleSpreadsheetId?: StringNullableFilter<"Company"> | string | null
+    attendanceGoogleSheetTabName?: StringNullableFilter<"Company"> | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     branches?: BranchListRelationFilter
     users?: UserListRelationFilter
@@ -8751,6 +11304,9 @@ export namespace Prisma {
   export type CompanyOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    qrCompanyLogoUrl?: SortOrderInput | SortOrder
+    attendanceGoogleSpreadsheetId?: SortOrderInput | SortOrder
+    attendanceGoogleSheetTabName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     branches?: BranchOrderByRelationAggregateInput
     users?: UserOrderByRelationAggregateInput
@@ -8764,6 +11320,9 @@ export namespace Prisma {
     AND?: CompanyWhereInput | CompanyWhereInput[]
     OR?: CompanyWhereInput[]
     NOT?: CompanyWhereInput | CompanyWhereInput[]
+    qrCompanyLogoUrl?: StringNullableFilter<"Company"> | string | null
+    attendanceGoogleSpreadsheetId?: StringNullableFilter<"Company"> | string | null
+    attendanceGoogleSheetTabName?: StringNullableFilter<"Company"> | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     branches?: BranchListRelationFilter
     users?: UserListRelationFilter
@@ -8774,6 +11333,9 @@ export namespace Prisma {
   export type CompanyOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    qrCompanyLogoUrl?: SortOrderInput | SortOrder
+    attendanceGoogleSpreadsheetId?: SortOrderInput | SortOrder
+    attendanceGoogleSheetTabName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: CompanyCountOrderByAggregateInput
     _max?: CompanyMaxOrderByAggregateInput
@@ -8786,6 +11348,9 @@ export namespace Prisma {
     NOT?: CompanyScalarWhereWithAggregatesInput | CompanyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Company"> | string
     name?: StringWithAggregatesFilter<"Company"> | string
+    qrCompanyLogoUrl?: StringNullableWithAggregatesFilter<"Company"> | string | null
+    attendanceGoogleSpreadsheetId?: StringNullableWithAggregatesFilter<"Company"> | string | null
+    attendanceGoogleSheetTabName?: StringNullableWithAggregatesFilter<"Company"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Company"> | Date | string
   }
 
@@ -8799,11 +11364,14 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Branch"> | number | null
     longitude?: FloatNullableFilter<"Branch"> | number | null
     radiusMeters?: IntFilter<"Branch"> | number
+    publicKioskToken?: StringNullableFilter<"Branch"> | string | null
+    publicKioskExpiresAt?: DateTimeNullableFilter<"Branch"> | Date | string | null
     createdAt?: DateTimeFilter<"Branch"> | Date | string
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     employees?: EmployeeListRelationFilter
     kioskSessions?: KioskSessionListRelationFilter
     attendances?: AttendanceListRelationFilter
+    shifts?: BranchShiftListRelationFilter
   }
 
   export type BranchOrderByWithRelationInput = {
@@ -8813,11 +11381,14 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radiusMeters?: SortOrder
+    publicKioskToken?: SortOrderInput | SortOrder
+    publicKioskExpiresAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     company?: CompanyOrderByWithRelationInput
     employees?: EmployeeOrderByRelationAggregateInput
     kioskSessions?: KioskSessionOrderByRelationAggregateInput
     attendances?: AttendanceOrderByRelationAggregateInput
+    shifts?: BranchShiftOrderByRelationAggregateInput
   }
 
   export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -8831,11 +11402,14 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Branch"> | number | null
     longitude?: FloatNullableFilter<"Branch"> | number | null
     radiusMeters?: IntFilter<"Branch"> | number
+    publicKioskToken?: StringNullableFilter<"Branch"> | string | null
+    publicKioskExpiresAt?: DateTimeNullableFilter<"Branch"> | Date | string | null
     createdAt?: DateTimeFilter<"Branch"> | Date | string
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     employees?: EmployeeListRelationFilter
     kioskSessions?: KioskSessionListRelationFilter
     attendances?: AttendanceListRelationFilter
+    shifts?: BranchShiftListRelationFilter
   }, "id" | "companyId_name">
 
   export type BranchOrderByWithAggregationInput = {
@@ -8845,6 +11419,8 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radiusMeters?: SortOrder
+    publicKioskToken?: SortOrderInput | SortOrder
+    publicKioskExpiresAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: BranchCountOrderByAggregateInput
     _avg?: BranchAvgOrderByAggregateInput
@@ -8863,7 +11439,76 @@ export namespace Prisma {
     latitude?: FloatNullableWithAggregatesFilter<"Branch"> | number | null
     longitude?: FloatNullableWithAggregatesFilter<"Branch"> | number | null
     radiusMeters?: IntWithAggregatesFilter<"Branch"> | number
+    publicKioskToken?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    publicKioskExpiresAt?: DateTimeNullableWithAggregatesFilter<"Branch"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
+  }
+
+  export type BranchShiftWhereInput = {
+    AND?: BranchShiftWhereInput | BranchShiftWhereInput[]
+    OR?: BranchShiftWhereInput[]
+    NOT?: BranchShiftWhereInput | BranchShiftWhereInput[]
+    id?: StringFilter<"BranchShift"> | string
+    branchId?: StringFilter<"BranchShift"> | string
+    name?: StringNullableFilter<"BranchShift"> | string | null
+    startTime?: StringFilter<"BranchShift"> | string
+    endTime?: StringFilter<"BranchShift"> | string
+    sortOrder?: IntFilter<"BranchShift"> | number
+    createdAt?: DateTimeFilter<"BranchShift"> | Date | string
+    branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
+  }
+
+  export type BranchShiftOrderByWithRelationInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    branch?: BranchOrderByWithRelationInput
+  }
+
+  export type BranchShiftWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BranchShiftWhereInput | BranchShiftWhereInput[]
+    OR?: BranchShiftWhereInput[]
+    NOT?: BranchShiftWhereInput | BranchShiftWhereInput[]
+    branchId?: StringFilter<"BranchShift"> | string
+    name?: StringNullableFilter<"BranchShift"> | string | null
+    startTime?: StringFilter<"BranchShift"> | string
+    endTime?: StringFilter<"BranchShift"> | string
+    sortOrder?: IntFilter<"BranchShift"> | number
+    createdAt?: DateTimeFilter<"BranchShift"> | Date | string
+    branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
+  }, "id">
+
+  export type BranchShiftOrderByWithAggregationInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    _count?: BranchShiftCountOrderByAggregateInput
+    _avg?: BranchShiftAvgOrderByAggregateInput
+    _max?: BranchShiftMaxOrderByAggregateInput
+    _min?: BranchShiftMinOrderByAggregateInput
+    _sum?: BranchShiftSumOrderByAggregateInput
+  }
+
+  export type BranchShiftScalarWhereWithAggregatesInput = {
+    AND?: BranchShiftScalarWhereWithAggregatesInput | BranchShiftScalarWhereWithAggregatesInput[]
+    OR?: BranchShiftScalarWhereWithAggregatesInput[]
+    NOT?: BranchShiftScalarWhereWithAggregatesInput | BranchShiftScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BranchShift"> | string
+    branchId?: StringWithAggregatesFilter<"BranchShift"> | string
+    name?: StringNullableWithAggregatesFilter<"BranchShift"> | string | null
+    startTime?: StringWithAggregatesFilter<"BranchShift"> | string
+    endTime?: StringWithAggregatesFilter<"BranchShift"> | string
+    sortOrder?: IntWithAggregatesFilter<"BranchShift"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"BranchShift"> | Date | string
   }
 
   export type UserWhereInput = {
@@ -8947,6 +11592,8 @@ export namespace Prisma {
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
     role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
+    shiftStartTime?: StringNullableFilter<"Employee"> | string | null
+    shiftEndTime?: StringNullableFilter<"Employee"> | string | null
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -8965,6 +11612,8 @@ export namespace Prisma {
     nameNormalized?: SortOrder
     notes?: SortOrderInput | SortOrder
     role?: SortOrder
+    shiftStartTime?: SortOrderInput | SortOrder
+    shiftEndTime?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -8988,6 +11637,8 @@ export namespace Prisma {
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
     role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
+    shiftStartTime?: StringNullableFilter<"Employee"> | string | null
+    shiftEndTime?: StringNullableFilter<"Employee"> | string | null
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9006,6 +11657,8 @@ export namespace Prisma {
     nameNormalized?: SortOrder
     notes?: SortOrderInput | SortOrder
     role?: SortOrder
+    shiftStartTime?: SortOrderInput | SortOrder
+    shiftEndTime?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     _count?: EmployeeCountOrderByAggregateInput
@@ -9026,6 +11679,8 @@ export namespace Prisma {
     nameNormalized?: StringWithAggregatesFilter<"Employee"> | string
     notes?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     role?: EnumEmployeeRoleWithAggregatesFilter<"Employee"> | $Enums.EmployeeRole
+    shiftStartTime?: StringNullableWithAggregatesFilter<"Employee"> | string | null
+    shiftEndTime?: StringNullableWithAggregatesFilter<"Employee"> | string | null
     isActive?: BoolWithAggregatesFilter<"Employee"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
   }
@@ -9110,6 +11765,8 @@ export namespace Prisma {
     checkInLongitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLatitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLongitude?: FloatNullableFilter<"Attendance"> | number | null
+    deductionHours?: FloatFilter<"Attendance"> | number
+    overtimeHours?: FloatFilter<"Attendance"> | number
     createdAt?: DateTimeFilter<"Attendance"> | Date | string
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
@@ -9131,6 +11788,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrderInput | SortOrder
     checkOutLatitude?: SortOrderInput | SortOrder
     checkOutLongitude?: SortOrderInput | SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
     createdAt?: SortOrder
     company?: CompanyOrderByWithRelationInput
     branch?: BranchOrderByWithRelationInput
@@ -9155,6 +11814,8 @@ export namespace Prisma {
     checkInLongitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLatitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLongitude?: FloatNullableFilter<"Attendance"> | number | null
+    deductionHours?: FloatFilter<"Attendance"> | number
+    overtimeHours?: FloatFilter<"Attendance"> | number
     createdAt?: DateTimeFilter<"Attendance"> | Date | string
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
     branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
@@ -9176,6 +11837,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrderInput | SortOrder
     checkOutLatitude?: SortOrderInput | SortOrder
     checkOutLongitude?: SortOrderInput | SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
     createdAt?: SortOrder
     _count?: AttendanceCountOrderByAggregateInput
     _avg?: AttendanceAvgOrderByAggregateInput
@@ -9201,12 +11864,66 @@ export namespace Prisma {
     checkInLongitude?: FloatNullableWithAggregatesFilter<"Attendance"> | number | null
     checkOutLatitude?: FloatNullableWithAggregatesFilter<"Attendance"> | number | null
     checkOutLongitude?: FloatNullableWithAggregatesFilter<"Attendance"> | number | null
+    deductionHours?: FloatWithAggregatesFilter<"Attendance"> | number
+    overtimeHours?: FloatWithAggregatesFilter<"Attendance"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Attendance"> | Date | string
+  }
+
+  export type GlobalSettingsCreateInput = {
+    id: string
+    qrLogoLeftUrl?: string | null
+    qrLogoRightUrl?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type GlobalSettingsUncheckedCreateInput = {
+    id: string
+    qrLogoLeftUrl?: string | null
+    qrLogoRightUrl?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type GlobalSettingsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrLogoLeftUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    qrLogoRightUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GlobalSettingsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrLogoLeftUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    qrLogoRightUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GlobalSettingsCreateManyInput = {
+    id: string
+    qrLogoLeftUrl?: string | null
+    qrLogoRightUrl?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type GlobalSettingsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrLogoLeftUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    qrLogoRightUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GlobalSettingsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    qrLogoLeftUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    qrLogoRightUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CompanyCreateInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchCreateNestedManyWithoutCompanyInput
     users?: UserCreateNestedManyWithoutCompanyInput
@@ -9217,6 +11934,9 @@ export namespace Prisma {
   export type CompanyUncheckedCreateInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchUncheckedCreateNestedManyWithoutCompanyInput
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
@@ -9227,6 +11947,9 @@ export namespace Prisma {
   export type CompanyUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUpdateManyWithoutCompanyNestedInput
     users?: UserUpdateManyWithoutCompanyNestedInput
@@ -9237,6 +11960,9 @@ export namespace Prisma {
   export type CompanyUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUncheckedUpdateManyWithoutCompanyNestedInput
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
@@ -9247,18 +11973,27 @@ export namespace Prisma {
   export type CompanyCreateManyInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
   }
 
   export type CompanyUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CompanyUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9268,11 +12003,14 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutBranchesInput
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateInput = {
@@ -9282,10 +12020,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUpdateInput = {
@@ -9294,11 +12035,14 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateInput = {
@@ -9308,10 +12052,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchCreateManyInput = {
@@ -9321,6 +12068,8 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -9330,6 +12079,8 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9340,6 +12091,77 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftCreateInput = {
+    id?: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
+    createdAt?: Date | string
+    branch: BranchCreateNestedOneWithoutShiftsInput
+  }
+
+  export type BranchShiftUncheckedCreateInput = {
+    id?: string
+    branchId: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BranchShiftUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneRequiredWithoutShiftsNestedInput
+  }
+
+  export type BranchShiftUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    branchId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftCreateManyInput = {
+    id?: string
+    branchId: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BranchShiftUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    branchId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9423,6 +12245,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -9441,6 +12265,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -9453,6 +12279,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -9471,6 +12299,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -9486,6 +12316,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -9497,6 +12329,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9511,6 +12345,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9591,6 +12427,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutAttendancesInput
     branch: BranchCreateNestedOneWithoutAttendancesInput
@@ -9612,6 +12450,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -9625,6 +12465,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutAttendancesNestedInput
     branch?: BranchUpdateOneRequiredWithoutAttendancesNestedInput
@@ -9646,6 +12488,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9663,6 +12507,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -9676,6 +12522,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9693,6 +12541,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9711,6 +12561,21 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9720,6 +12585,82 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type GlobalSettingsCountOrderByAggregateInput = {
+    id?: SortOrder
+    qrLogoLeftUrl?: SortOrder
+    qrLogoRightUrl?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GlobalSettingsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    qrLogoLeftUrl?: SortOrder
+    qrLogoRightUrl?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GlobalSettingsMinOrderByAggregateInput = {
+    id?: SortOrder
+    qrLogoLeftUrl?: SortOrder
+    qrLogoRightUrl?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type BranchListRelationFilter = {
@@ -9765,51 +12706,28 @@ export namespace Prisma {
   export type CompanyCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    qrCompanyLogoUrl?: SortOrder
+    attendanceGoogleSpreadsheetId?: SortOrder
+    attendanceGoogleSheetTabName?: SortOrder
     createdAt?: SortOrder
   }
 
   export type CompanyMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    qrCompanyLogoUrl?: SortOrder
+    attendanceGoogleSpreadsheetId?: SortOrder
+    attendanceGoogleSheetTabName?: SortOrder
     createdAt?: SortOrder
   }
 
   export type CompanyMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    qrCompanyLogoUrl?: SortOrder
+    attendanceGoogleSpreadsheetId?: SortOrder
+    attendanceGoogleSheetTabName?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type FloatNullableFilter<$PrismaModel = never> = {
@@ -9834,6 +12752,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type CompanyScalarRelationFilter = {
     is?: CompanyWhereInput
     isNot?: CompanyWhereInput
@@ -9845,12 +12774,17 @@ export namespace Prisma {
     none?: KioskSessionWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type BranchShiftListRelationFilter = {
+    every?: BranchShiftWhereInput
+    some?: BranchShiftWhereInput
+    none?: BranchShiftWhereInput
   }
 
   export type KioskSessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BranchShiftOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9866,6 +12800,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    publicKioskToken?: SortOrder
+    publicKioskExpiresAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9882,6 +12818,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    publicKioskToken?: SortOrder
+    publicKioskExpiresAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9892,6 +12830,8 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    publicKioskToken?: SortOrder
+    publicKioskExpiresAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9933,6 +12873,63 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type BranchScalarRelationFilter = {
+    is?: BranchWhereInput
+    isNot?: BranchWhereInput
+  }
+
+  export type BranchShiftCountOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BranchShiftAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type BranchShiftMaxOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BranchShiftMinOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    name?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BranchShiftSumOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
   export type EnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -9943,21 +12940,6 @@ export namespace Prisma {
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type CompanyNullableScalarRelationFilter = {
@@ -10018,24 +13000,6 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
   export type EnumEmployeeRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
     in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
@@ -10046,11 +13010,6 @@ export namespace Prisma {
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
-  }
-
-  export type BranchScalarRelationFilter = {
-    is?: BranchWhereInput
-    isNot?: BranchWhereInput
   }
 
   export type EmployeeCompanyIdNameNormalizedCompoundUniqueInput = {
@@ -10073,6 +13032,8 @@ export namespace Prisma {
     nameNormalized?: SortOrder
     notes?: SortOrder
     role?: SortOrder
+    shiftStartTime?: SortOrder
+    shiftEndTime?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
   }
@@ -10087,6 +13048,8 @@ export namespace Prisma {
     nameNormalized?: SortOrder
     notes?: SortOrder
     role?: SortOrder
+    shiftStartTime?: SortOrder
+    shiftEndTime?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
   }
@@ -10101,6 +13064,8 @@ export namespace Prisma {
     nameNormalized?: SortOrder
     notes?: SortOrder
     role?: SortOrder
+    shiftStartTime?: SortOrder
+    shiftEndTime?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
   }
@@ -10113,17 +13078,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumEmployeeRoleFilter<$PrismaModel>
     _max?: NestedEnumEmployeeRoleFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type KioskSessionCountOrderByAggregateInput = {
@@ -10153,18 +13107,15 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type EmployeeScalarRelationFilter = {
@@ -10191,6 +13142,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrder
     checkOutLatitude?: SortOrder
     checkOutLongitude?: SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -10199,6 +13152,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrder
     checkOutLatitude?: SortOrder
     checkOutLongitude?: SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
   }
 
   export type AttendanceMaxOrderByAggregateInput = {
@@ -10215,6 +13170,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrder
     checkOutLatitude?: SortOrder
     checkOutLongitude?: SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -10232,6 +13189,8 @@ export namespace Prisma {
     checkInLongitude?: SortOrder
     checkOutLatitude?: SortOrder
     checkOutLongitude?: SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -10240,6 +13199,36 @@ export namespace Prisma {
     checkInLongitude?: SortOrder
     checkOutLatitude?: SortOrder
     checkOutLongitude?: SortOrder
+    deductionHours?: SortOrder
+    overtimeHours?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type BranchCreateNestedManyWithoutCompanyInput = {
@@ -10296,14 +13285,6 @@ export namespace Prisma {
     connectOrCreate?: AttendanceCreateOrConnectWithoutCompanyInput | AttendanceCreateOrConnectWithoutCompanyInput[]
     createMany?: AttendanceCreateManyCompanyInputEnvelope
     connect?: AttendanceWhereUniqueInput | AttendanceWhereUniqueInput[]
-  }
-
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
   }
 
   export type BranchUpdateManyWithoutCompanyNestedInput = {
@@ -10445,6 +13426,13 @@ export namespace Prisma {
     connect?: AttendanceWhereUniqueInput | AttendanceWhereUniqueInput[]
   }
 
+  export type BranchShiftCreateNestedManyWithoutBranchInput = {
+    create?: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput> | BranchShiftCreateWithoutBranchInput[] | BranchShiftUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchShiftCreateOrConnectWithoutBranchInput | BranchShiftCreateOrConnectWithoutBranchInput[]
+    createMany?: BranchShiftCreateManyBranchInputEnvelope
+    connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+  }
+
   export type EmployeeUncheckedCreateNestedManyWithoutBranchInput = {
     create?: XOR<EmployeeCreateWithoutBranchInput, EmployeeUncheckedCreateWithoutBranchInput> | EmployeeCreateWithoutBranchInput[] | EmployeeUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutBranchInput | EmployeeCreateOrConnectWithoutBranchInput[]
@@ -10466,6 +13454,13 @@ export namespace Prisma {
     connect?: AttendanceWhereUniqueInput | AttendanceWhereUniqueInput[]
   }
 
+  export type BranchShiftUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput> | BranchShiftCreateWithoutBranchInput[] | BranchShiftUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchShiftCreateOrConnectWithoutBranchInput | BranchShiftCreateOrConnectWithoutBranchInput[]
+    createMany?: BranchShiftCreateManyBranchInputEnvelope
+    connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+  }
+
   export type NullableFloatFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -10480,6 +13475,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type CompanyUpdateOneRequiredWithoutBranchesNestedInput = {
@@ -10532,6 +13531,20 @@ export namespace Prisma {
     deleteMany?: AttendanceScalarWhereInput | AttendanceScalarWhereInput[]
   }
 
+  export type BranchShiftUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput> | BranchShiftCreateWithoutBranchInput[] | BranchShiftUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchShiftCreateOrConnectWithoutBranchInput | BranchShiftCreateOrConnectWithoutBranchInput[]
+    upsert?: BranchShiftUpsertWithWhereUniqueWithoutBranchInput | BranchShiftUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: BranchShiftCreateManyBranchInputEnvelope
+    set?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    disconnect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    delete?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    update?: BranchShiftUpdateWithWhereUniqueWithoutBranchInput | BranchShiftUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: BranchShiftUpdateManyWithWhereWithoutBranchInput | BranchShiftUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
+  }
+
   export type EmployeeUncheckedUpdateManyWithoutBranchNestedInput = {
     create?: XOR<EmployeeCreateWithoutBranchInput, EmployeeUncheckedCreateWithoutBranchInput> | EmployeeCreateWithoutBranchInput[] | EmployeeUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutBranchInput | EmployeeCreateOrConnectWithoutBranchInput[]
@@ -10572,6 +13585,34 @@ export namespace Prisma {
     update?: AttendanceUpdateWithWhereUniqueWithoutBranchInput | AttendanceUpdateWithWhereUniqueWithoutBranchInput[]
     updateMany?: AttendanceUpdateManyWithWhereWithoutBranchInput | AttendanceUpdateManyWithWhereWithoutBranchInput[]
     deleteMany?: AttendanceScalarWhereInput | AttendanceScalarWhereInput[]
+  }
+
+  export type BranchShiftUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput> | BranchShiftCreateWithoutBranchInput[] | BranchShiftUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchShiftCreateOrConnectWithoutBranchInput | BranchShiftCreateOrConnectWithoutBranchInput[]
+    upsert?: BranchShiftUpsertWithWhereUniqueWithoutBranchInput | BranchShiftUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: BranchShiftCreateManyBranchInputEnvelope
+    set?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    disconnect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    delete?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+    update?: BranchShiftUpdateWithWhereUniqueWithoutBranchInput | BranchShiftUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: BranchShiftUpdateManyWithWhereWithoutBranchInput | BranchShiftUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
+  }
+
+  export type BranchCreateNestedOneWithoutShiftsInput = {
+    create?: XOR<BranchCreateWithoutShiftsInput, BranchUncheckedCreateWithoutShiftsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutShiftsInput
+    connect?: BranchWhereUniqueInput
+  }
+
+  export type BranchUpdateOneRequiredWithoutShiftsNestedInput = {
+    create?: XOR<BranchCreateWithoutShiftsInput, BranchUncheckedCreateWithoutShiftsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutShiftsInput
+    upsert?: BranchUpsertWithoutShiftsInput
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutShiftsInput, BranchUpdateWithoutShiftsInput>, BranchUncheckedUpdateWithoutShiftsInput>
   }
 
   export type CompanyCreateNestedOneWithoutUsersInput = {
@@ -10618,10 +13659,6 @@ export namespace Prisma {
     delete?: EmployeeWhereInput | boolean
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type EmployeeUncheckedUpdateOneWithoutUserNestedInput = {
@@ -10742,10 +13779,6 @@ export namespace Prisma {
     connect?: AttendanceWhereUniqueInput | AttendanceWhereUniqueInput[]
   }
 
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
-  }
-
   export type BranchUpdateOneRequiredWithoutKioskSessionsNestedInput = {
     create?: XOR<BranchCreateWithoutKioskSessionsInput, BranchUncheckedCreateWithoutKioskSessionsInput>
     connectOrCreate?: BranchCreateOrConnectWithoutKioskSessionsInput
@@ -10806,6 +13839,14 @@ export namespace Prisma {
     connect?: KioskSessionWhereUniqueInput
   }
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type CompanyUpdateOneRequiredWithoutAttendancesNestedInput = {
     create?: XOR<CompanyCreateWithoutAttendancesInput, CompanyUncheckedCreateWithoutAttendancesInput>
     connectOrCreate?: CompanyCreateOrConnectWithoutAttendancesInput
@@ -10852,6 +13893,20 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -10891,6 +13946,34 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -10916,6 +13999,17 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -10930,17 +14024,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -10970,6 +14053,20 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
     in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
@@ -10980,20 +14077,6 @@ export namespace Prisma {
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -11014,23 +14097,6 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
   export type NestedEnumEmployeeRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.EmployeeRole | EnumEmployeeRoleFieldRefInput<$PrismaModel>
     in?: $Enums.EmployeeRole[] | ListEnumEmployeeRoleFieldRefInput<$PrismaModel>
@@ -11048,29 +14114,20 @@ export namespace Prisma {
     _max?: NestedEnumEmployeeRoleFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type BranchCreateWithoutCompanyInput = {
@@ -11079,10 +14136,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutCompanyInput = {
@@ -11091,10 +14151,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutCompanyInput = {
@@ -11144,6 +14207,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -11160,6 +14225,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11185,6 +14252,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
     branch: BranchCreateNestedOneWithoutAttendancesInput
     employee: EmployeeCreateNestedOneWithoutAttendancesInput
@@ -11204,6 +14273,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -11243,6 +14314,8 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Branch"> | number | null
     longitude?: FloatNullableFilter<"Branch"> | number | null
     radiusMeters?: IntFilter<"Branch"> | number
+    publicKioskToken?: StringNullableFilter<"Branch"> | string | null
+    publicKioskExpiresAt?: DateTimeNullableFilter<"Branch"> | Date | string | null
     createdAt?: DateTimeFilter<"Branch"> | Date | string
   }
 
@@ -11304,6 +14377,8 @@ export namespace Prisma {
     nameNormalized?: StringFilter<"Employee"> | string
     notes?: StringNullableFilter<"Employee"> | string | null
     role?: EnumEmployeeRoleFilter<"Employee"> | $Enums.EmployeeRole
+    shiftStartTime?: StringNullableFilter<"Employee"> | string | null
+    shiftEndTime?: StringNullableFilter<"Employee"> | string | null
     isActive?: BoolFilter<"Employee"> | boolean
     createdAt?: DateTimeFilter<"Employee"> | Date | string
   }
@@ -11341,12 +14416,17 @@ export namespace Prisma {
     checkInLongitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLatitude?: FloatNullableFilter<"Attendance"> | number | null
     checkOutLongitude?: FloatNullableFilter<"Attendance"> | number | null
+    deductionHours?: FloatFilter<"Attendance"> | number
+    overtimeHours?: FloatFilter<"Attendance"> | number
     createdAt?: DateTimeFilter<"Attendance"> | Date | string
   }
 
   export type CompanyCreateWithoutBranchesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     employees?: EmployeeCreateNestedManyWithoutCompanyInput
@@ -11356,6 +14436,9 @@ export namespace Prisma {
   export type CompanyUncheckedCreateWithoutBranchesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     employees?: EmployeeUncheckedCreateNestedManyWithoutCompanyInput
@@ -11374,6 +14457,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -11390,6 +14475,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11443,6 +14530,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutAttendancesInput
     employee: EmployeeCreateNestedOneWithoutAttendancesInput
@@ -11462,6 +14551,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -11472,6 +14563,34 @@ export namespace Prisma {
 
   export type AttendanceCreateManyBranchInputEnvelope = {
     data: AttendanceCreateManyBranchInput | AttendanceCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BranchShiftCreateWithoutBranchInput = {
+    id?: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BranchShiftUncheckedCreateWithoutBranchInput = {
+    id?: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BranchShiftCreateOrConnectWithoutBranchInput = {
+    where: BranchShiftWhereUniqueInput
+    create: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput>
+  }
+
+  export type BranchShiftCreateManyBranchInputEnvelope = {
+    data: BranchShiftCreateManyBranchInput | BranchShiftCreateManyBranchInput[]
     skipDuplicates?: boolean
   }
 
@@ -11489,6 +14608,9 @@ export namespace Prisma {
   export type CompanyUpdateWithoutBranchesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     employees?: EmployeeUpdateManyWithoutCompanyNestedInput
@@ -11498,6 +14620,9 @@ export namespace Prisma {
   export type CompanyUncheckedUpdateWithoutBranchesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     employees?: EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
@@ -11564,9 +14689,117 @@ export namespace Prisma {
     data: XOR<AttendanceUpdateManyMutationInput, AttendanceUncheckedUpdateManyWithoutBranchInput>
   }
 
+  export type BranchShiftUpsertWithWhereUniqueWithoutBranchInput = {
+    where: BranchShiftWhereUniqueInput
+    update: XOR<BranchShiftUpdateWithoutBranchInput, BranchShiftUncheckedUpdateWithoutBranchInput>
+    create: XOR<BranchShiftCreateWithoutBranchInput, BranchShiftUncheckedCreateWithoutBranchInput>
+  }
+
+  export type BranchShiftUpdateWithWhereUniqueWithoutBranchInput = {
+    where: BranchShiftWhereUniqueInput
+    data: XOR<BranchShiftUpdateWithoutBranchInput, BranchShiftUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type BranchShiftUpdateManyWithWhereWithoutBranchInput = {
+    where: BranchShiftScalarWhereInput
+    data: XOR<BranchShiftUpdateManyMutationInput, BranchShiftUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type BranchShiftScalarWhereInput = {
+    AND?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
+    OR?: BranchShiftScalarWhereInput[]
+    NOT?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
+    id?: StringFilter<"BranchShift"> | string
+    branchId?: StringFilter<"BranchShift"> | string
+    name?: StringNullableFilter<"BranchShift"> | string | null
+    startTime?: StringFilter<"BranchShift"> | string
+    endTime?: StringFilter<"BranchShift"> | string
+    sortOrder?: IntFilter<"BranchShift"> | number
+    createdAt?: DateTimeFilter<"BranchShift"> | Date | string
+  }
+
+  export type BranchCreateWithoutShiftsInput = {
+    id?: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
+    createdAt?: Date | string
+    company: CompanyCreateNestedOneWithoutBranchesInput
+    employees?: EmployeeCreateNestedManyWithoutBranchInput
+    kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutShiftsInput = {
+    id?: string
+    companyId: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
+    createdAt?: Date | string
+    employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
+    kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutShiftsInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutShiftsInput, BranchUncheckedCreateWithoutShiftsInput>
+  }
+
+  export type BranchUpsertWithoutShiftsInput = {
+    update: XOR<BranchUpdateWithoutShiftsInput, BranchUncheckedUpdateWithoutShiftsInput>
+    create: XOR<BranchCreateWithoutShiftsInput, BranchUncheckedCreateWithoutShiftsInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutShiftsInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutShiftsInput, BranchUncheckedUpdateWithoutShiftsInput>
+  }
+
+  export type BranchUpdateWithoutShiftsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
+    employees?: EmployeeUpdateManyWithoutBranchNestedInput
+    kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutShiftsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
+    kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  }
+
   export type CompanyCreateWithoutUsersInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchCreateNestedManyWithoutCompanyInput
     employees?: EmployeeCreateNestedManyWithoutCompanyInput
@@ -11576,6 +14809,9 @@ export namespace Prisma {
   export type CompanyUncheckedCreateWithoutUsersInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchUncheckedCreateNestedManyWithoutCompanyInput
     employees?: EmployeeUncheckedCreateNestedManyWithoutCompanyInput
@@ -11594,6 +14830,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutEmployeesInput
@@ -11610,6 +14848,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     attendances?: AttendanceUncheckedCreateNestedManyWithoutEmployeeInput
@@ -11634,6 +14874,9 @@ export namespace Prisma {
   export type CompanyUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUpdateManyWithoutCompanyNestedInput
     employees?: EmployeeUpdateManyWithoutCompanyNestedInput
@@ -11643,6 +14886,9 @@ export namespace Prisma {
   export type CompanyUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUncheckedUpdateManyWithoutCompanyNestedInput
     employees?: EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
@@ -11667,6 +14913,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
@@ -11683,6 +14931,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -11716,6 +14966,9 @@ export namespace Prisma {
   export type CompanyCreateWithoutEmployeesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchCreateNestedManyWithoutCompanyInput
     users?: UserCreateNestedManyWithoutCompanyInput
@@ -11725,6 +14978,9 @@ export namespace Prisma {
   export type CompanyUncheckedCreateWithoutEmployeesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchUncheckedCreateNestedManyWithoutCompanyInput
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
@@ -11742,10 +14998,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutBranchesInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutEmployeesInput = {
@@ -11755,9 +15014,12 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutEmployeesInput = {
@@ -11775,6 +15037,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutAttendancesInput
     branch: BranchCreateNestedOneWithoutAttendancesInput
@@ -11794,6 +15058,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -11852,6 +15118,9 @@ export namespace Prisma {
   export type CompanyUpdateWithoutEmployeesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUpdateManyWithoutCompanyNestedInput
     users?: UserUpdateManyWithoutCompanyNestedInput
@@ -11861,6 +15130,9 @@ export namespace Prisma {
   export type CompanyUncheckedUpdateWithoutEmployeesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUncheckedUpdateManyWithoutCompanyNestedInput
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
@@ -11884,10 +15156,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutEmployeesInput = {
@@ -11897,9 +15172,12 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -11924,10 +15202,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutBranchesInput
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutKioskSessionsInput = {
@@ -11937,9 +15218,12 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutKioskSessionsInput = {
@@ -11957,6 +15241,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutAttendancesInput
     branch: BranchCreateNestedOneWithoutAttendancesInput
@@ -11976,6 +15262,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -12006,10 +15294,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutKioskSessionsInput = {
@@ -12019,9 +15310,12 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutKioskSessionInput = {
@@ -12043,6 +15337,9 @@ export namespace Prisma {
   export type CompanyCreateWithoutAttendancesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchCreateNestedManyWithoutCompanyInput
     users?: UserCreateNestedManyWithoutCompanyInput
@@ -12052,6 +15349,9 @@ export namespace Prisma {
   export type CompanyUncheckedCreateWithoutAttendancesInput = {
     id?: string
     name: string
+    qrCompanyLogoUrl?: string | null
+    attendanceGoogleSpreadsheetId?: string | null
+    attendanceGoogleSheetTabName?: string | null
     createdAt?: Date | string
     branches?: BranchUncheckedCreateNestedManyWithoutCompanyInput
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
@@ -12069,10 +15369,13 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     company: CompanyCreateNestedOneWithoutBranchesInput
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutAttendancesInput = {
@@ -12082,9 +15385,12 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutAttendancesInput = {
@@ -12099,6 +15405,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutEmployeeInput
@@ -12116,6 +15424,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12162,6 +15472,9 @@ export namespace Prisma {
   export type CompanyUpdateWithoutAttendancesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUpdateManyWithoutCompanyNestedInput
     users?: UserUpdateManyWithoutCompanyNestedInput
@@ -12171,6 +15484,9 @@ export namespace Prisma {
   export type CompanyUncheckedUpdateWithoutAttendancesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    qrCompanyLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSpreadsheetId?: NullableStringFieldUpdateOperationsInput | string | null
+    attendanceGoogleSheetTabName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branches?: BranchUncheckedUpdateManyWithoutCompanyNestedInput
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
@@ -12194,10 +15510,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutAttendancesInput = {
@@ -12207,9 +15526,12 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type EmployeeUpsertWithoutAttendancesInput = {
@@ -12230,6 +15552,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12247,6 +15571,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12286,6 +15612,8 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -12307,6 +15635,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12324,6 +15654,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -12333,10 +15665,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutCompanyInput = {
@@ -12345,10 +15680,13 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateManyWithoutCompanyInput = {
@@ -12357,6 +15695,8 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12396,6 +15736,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12412,6 +15754,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -12426,6 +15770,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12440,6 +15786,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branch?: BranchUpdateOneRequiredWithoutAttendancesNestedInput
     employee?: EmployeeUpdateOneRequiredWithoutAttendancesNestedInput
@@ -12459,6 +15807,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12475,6 +15825,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12487,6 +15839,8 @@ export namespace Prisma {
     nameNormalized: string
     notes?: string | null
     role?: $Enums.EmployeeRole
+    shiftStartTime?: string | null
+    shiftEndTime?: string | null
     isActive?: boolean
     createdAt?: Date | string
   }
@@ -12512,6 +15866,17 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
+    createdAt?: Date | string
+  }
+
+  export type BranchShiftCreateManyBranchInput = {
+    id?: string
+    name?: string | null
+    startTime: string
+    endTime: string
+    sortOrder?: number
     createdAt?: Date | string
   }
 
@@ -12522,6 +15887,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
@@ -12538,6 +15905,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attendances?: AttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -12552,6 +15921,8 @@ export namespace Prisma {
     nameNormalized?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    shiftStartTime?: NullableStringFieldUpdateOperationsInput | string | null
+    shiftEndTime?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12592,6 +15963,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutAttendancesNestedInput
     employee?: EmployeeUpdateOneRequiredWithoutAttendancesNestedInput
@@ -12611,6 +15984,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12627,6 +16002,35 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchShiftUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12643,6 +16047,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -12656,6 +16062,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutAttendancesNestedInput
     branch?: BranchUpdateOneRequiredWithoutAttendancesNestedInput
@@ -12675,6 +16083,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12691,6 +16101,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12707,6 +16119,8 @@ export namespace Prisma {
     checkInLongitude?: number | null
     checkOutLatitude?: number | null
     checkOutLongitude?: number | null
+    deductionHours?: number
+    overtimeHours?: number
     createdAt?: Date | string
   }
 
@@ -12720,6 +16134,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutAttendancesNestedInput
     branch?: BranchUpdateOneRequiredWithoutAttendancesNestedInput
@@ -12739,6 +16155,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12755,6 +16173,8 @@ export namespace Prisma {
     checkInLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLatitude?: NullableFloatFieldUpdateOperationsInput | number | null
     checkOutLongitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    deductionHours?: FloatFieldUpdateOperationsInput | number
+    overtimeHours?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

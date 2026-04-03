@@ -121,9 +121,19 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.GlobalSettingsScalarFieldEnum = {
+  id: 'id',
+  qrLogoLeftUrl: 'qrLogoLeftUrl',
+  qrLogoRightUrl: 'qrLogoRightUrl',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  qrCompanyLogoUrl: 'qrCompanyLogoUrl',
+  attendanceGoogleSpreadsheetId: 'attendanceGoogleSpreadsheetId',
+  attendanceGoogleSheetTabName: 'attendanceGoogleSheetTabName',
   createdAt: 'createdAt'
 };
 
@@ -134,6 +144,18 @@ exports.Prisma.BranchScalarFieldEnum = {
   latitude: 'latitude',
   longitude: 'longitude',
   radiusMeters: 'radiusMeters',
+  publicKioskToken: 'publicKioskToken',
+  publicKioskExpiresAt: 'publicKioskExpiresAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.BranchShiftScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  sortOrder: 'sortOrder',
   createdAt: 'createdAt'
 };
 
@@ -157,6 +179,8 @@ exports.Prisma.EmployeeScalarFieldEnum = {
   nameNormalized: 'nameNormalized',
   notes: 'notes',
   role: 'role',
+  shiftStartTime: 'shiftStartTime',
+  shiftEndTime: 'shiftEndTime',
   isActive: 'isActive',
   createdAt: 'createdAt'
 };
@@ -184,6 +208,8 @@ exports.Prisma.AttendanceScalarFieldEnum = {
   checkInLongitude: 'checkInLongitude',
   checkOutLatitude: 'checkOutLatitude',
   checkOutLongitude: 'checkOutLongitude',
+  deductionHours: 'deductionHours',
+  overtimeHours: 'overtimeHours',
   createdAt: 'createdAt'
 };
 
@@ -219,8 +245,10 @@ exports.EmployeeRole = exports.$Enums.EmployeeRole = {
 };
 
 exports.Prisma.ModelName = {
+  GlobalSettings: 'GlobalSettings',
   Company: 'Company',
   Branch: 'Branch',
+  BranchShift: 'BranchShift',
   User: 'User',
   Employee: 'Employee',
   KioskSession: 'KioskSession',

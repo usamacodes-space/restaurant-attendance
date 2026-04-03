@@ -30,6 +30,7 @@ export function DashboardClient() {
     if (role === "COMPANY_ADMIN") {
       return [
         { id: "company" as TabId, label: "Workspace" },
+        { id: "shifts" as TabId, label: "Shifts" },
         { id: "hours" as TabId, label: "Hours" },
         { id: "logs" as TabId, label: "Logs" },
       ];
@@ -95,7 +96,7 @@ export function DashboardClient() {
                 onClick={() => setTab(t.id)}
                 className={cn(
                   tabBtn,
-                  tab === t.id ? "bg-amber-500 text-black shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  tab === t.id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 {t.label}

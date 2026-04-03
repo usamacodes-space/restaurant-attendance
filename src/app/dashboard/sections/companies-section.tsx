@@ -19,6 +19,9 @@ export function CompaniesSection() {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [logoBusyByCompany, setLogoBusyByCompany] = useState<Record<string, boolean>>({});
+  const [sheetIdDrafts, setSheetIdDrafts] = useState<Record<string, string>>({});
+  const [sheetTabDrafts, setSheetTabDrafts] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/companies");
@@ -30,6 +33,14 @@ export function CompaniesSection() {
         Object.fromEntries((data.companies as Company[]).map((c) => [c.id, c.companyAdminEmail ?? ""]))
       );
       setAdminPasswordDrafts({});
+      setSheetIdDrafts(
+        Object.fromEntries((data.companies as Company[]).map((c) => [c.id, c.attendanceGoogleSpreadsheetId ?? ""]))
+      );
+      setSheetTabDrafts(
+        Object.fromEntries(
+          (data.companies as Company[]).map((c) => [c.id, c.attendanceGoogleSheetTabName?.trim() || "Attendance"])
+        )
+      );
     } else setError(data.error ?? "Failed to load companies");
   }, []);
 
@@ -180,6 +191,89 @@ export function CompaniesSection() {
                   }}
                 >
                   Save admin
+                </Button>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-border pt-3">
+                <span className="text-muted-foreground text-sm font-medium">QR company logo</span>
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-muted/30">
+                  {c.qrCompanyLogoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.qrCompanyLogoUrl} alt="" className="max-h-full max-w-full object-contain p-0.5" />
+                  ) : (
+                    <span className="text-muted-foreground px-1 text-center text-[10px]">None</span>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="sr-only"
+                  id={`qr-co-logo-${c.id}`}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (!file) return;
+                    setError(null);
+                    setLogoBusyByCompany((p) => ({ ...p, [c.id]: true }));
+                    const fd = new FormData();
+                    fd.set("file", file);
+                    const res = await fetch(`/api/admin/companies/${c.id}/qr-logo/upload`, { method: "POST", body: fd });
+                    const data = await res.json();
+                    setLogoBusyByCompany((p) => ({ ...p, [c.id]: false }));
+                    if (!res.ok) return setError(data.error ?? "Upload failed");
+                    void load();
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!!logoBusyByCompany[c.id]}
+                  onClick={() => document.getElementById(`qr-co-logo-${c.id}`)?.click()}
+                >
+                  {logoBusyByCompany[c.id] ? "Uploading…" : "Upload"}
+                </Button>
+                <p className="text-muted-foreground w-full text-xs md:w-auto">
+                  Shown next to WAQT on that company&apos;s public QR pages. Company admins can also change this.
+                </p>
+              </div>
+              <div className="mt-3 grid w-full grid-cols-1 gap-3 border-t border-border pt-3 md:grid-cols-3 md:items-end">
+                <div className="space-y-2 md:col-span-1">
+                  <Label htmlFor={`sheet-id-${c.id}`}>Google Sheet ID or URL</Label>
+                  <Input
+                    id={`sheet-id-${c.id}`}
+                    value={sheetIdDrafts[c.id] ?? ""}
+                    onChange={(e) => setSheetIdDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                    placeholder="Optional — attendance sync target"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-1">
+                  <Label htmlFor={`sheet-tab-${c.id}`}>Sheet tab name</Label>
+                  <Input
+                    id={`sheet-tab-${c.id}`}
+                    value={sheetTabDrafts[c.id] ?? "Attendance"}
+                    onChange={(e) => setSheetTabDrafts((prev) => ({ ...prev, [c.id]: e.target.value }))}
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full md:w-auto"
+                  onClick={async () => {
+                    const res = await fetch(`/api/admin/companies/${c.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        attendanceGoogleSpreadsheetId: (sheetIdDrafts[c.id] ?? "").trim() || null,
+                        attendanceGoogleSheetTabName: (sheetTabDrafts[c.id] ?? "").trim() || null,
+                      }),
+                    });
+                    if (res.ok) void load();
+                    else {
+                      const d = await res.json().catch(() => ({ error: "Update failed" }));
+                      setError(d.error ?? "Update failed");
+                    }
+                  }}
+                >
+                  Save sheet link
                 </Button>
               </div>
             </li>

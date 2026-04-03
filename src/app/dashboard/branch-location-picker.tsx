@@ -37,7 +37,7 @@ export function BranchLocationPicker({ latitude, longitude, radiusMeters, onChan
             <Circle
               center={[latitude!, longitude!]}
               radius={radiusMeters}
-              pathOptions={{ color: "#d97706", fillColor: "#f59e0b", fillOpacity: 0.2 }}
+              pathOptions={{ color: "#0a4646", fillColor: "#7d98a1", fillOpacity: 0.25 }}
             />
           )}
         </MapContainer>

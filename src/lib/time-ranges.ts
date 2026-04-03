@@ -1,4 +1,8 @@
-/** Monday 00:00:00.000 UTC of the week containing `d` (ISO week, Monday start). */
+/**
+ * Week boundaries are UTC calendar weeks: Monday 00:00 UTC through the following Monday 00:00 UTC
+ * (exclusive end) — i.e. Monday–Sunday in UTC, not local timezone.
+ * Monday 00:00:00.000 UTC of the week containing `d` (ISO week, Monday start).
+ */
 export function utcMondayStartOfWeek(d: Date): Date {
   const x = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   const dow = x.getUTCDay();

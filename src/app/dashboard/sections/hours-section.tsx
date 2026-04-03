@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCallback, useEffect, useState } from "react";
 import type { Branch } from "../types";
-import { primaryButtonClass as amberBtn } from "../types";
+import { primaryButtonClass as primaryBtn } from "../types";
+
+const ALL_BRANCHES = "all";
 
 export function HoursSection() {
   const [mode, setMode] = useState<"week" | "month">("week");
@@ -17,16 +19,18 @@ export function HoursSection() {
     const d = new Date();
     return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
   });
-  const [branchId, setBranchId] = useState("");
+  /** `all` = every employee in the company; otherwise a branch id (employees + hours at that branch only). */
+  const [branchId, setBranchId] = useState(ALL_BRANCHES);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [rows, setRows] = useState<{ employeeId: string; name: string; hours: number }[]>([]);
+  const [rows, setRows] = useState<
+    { employeeId: string; name: string; hours: number; branchName?: string }[]
+  >([]);
 
   useEffect(() => {
     void fetch("/api/admin/branches")
       .then((r) => r.json())
       .then((d) => {
         setBranches(d.branches ?? []);
-        if ((d.branches ?? []).length) setBranchId(d.branches[0].id);
       });
   }, []);
 
@@ -34,7 +38,7 @@ export function HoursSection() {
     const params = new URLSearchParams({ mode });
     if (mode === "week") params.set("week", week);
     else params.set("month", month);
-    if (branchId) params.set("branchId", branchId);
+    params.set("branchId", branchId);
     const res = await fetch(`/api/admin/hours?${params.toString()}`);
     const data = await res.json();
     if (res.ok) setRows(data.rows ?? []);
@@ -44,24 +48,35 @@ export function HoursSection() {
     void load();
   }, [load]);
 
+  const exportParams = new URLSearchParams({ mode, branchId, ...(mode === "week" ? { week } : { month }) });
+  const csvExport = new URLSearchParams(exportParams);
+  csvExport.set("format", "csv");
+  const xlsxExport = new URLSearchParams(exportParams);
+  xlsxExport.set("format", "xlsx");
+
   return (
     <Card className="border-border shadow-md">
       <CardHeader className="px-4 pt-6 sm:px-6">
         <CardTitle className="text-lg sm:text-xl">Work hours</CardTitle>
-        <CardDescription>Per employee totals for the selected period.</CardDescription>
+        <CardDescription>
+          Per employee totals for the selected period: net time after shift-based deductions plus prorated overtime
+          (stored at checkout from each employee&apos;s scheduled UTC shift), using the same overlap rules across
+          week/month boundaries. Choose all branches or one branch. Export matches the filters below (CSV or Excel).
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 pb-6 sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-          <div className="min-w-[200px] flex-1 space-y-2 sm:max-w-xs">
-            <Label>Branch</Label>
-            <Select value={branchId || undefined} onValueChange={setBranchId}>
+          <div className="min-w-[220px] flex-1 space-y-2 sm:max-w-sm">
+            <Label>Scope</Label>
+            <Select value={branchId} onValueChange={setBranchId}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Branch" />
+                <SelectValue placeholder="Branch or company" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value={ALL_BRANCHES}>All branches (company)</SelectItem>
                 {branches.map((b) => (
                   <SelectItem key={b.id} value={b.id}>
-                    {b.name}
+                    {b.company?.name ? `${b.name} · ${b.company.name}` : b.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -72,7 +87,7 @@ export function HoursSection() {
               type="button"
               variant={mode === "week" ? "default" : "outline"}
               size="sm"
-              className={mode === "week" ? amberBtn : ""}
+              className={mode === "week" ? primaryBtn : ""}
               onClick={() => setMode("week")}
             >
               Week
@@ -81,7 +96,7 @@ export function HoursSection() {
               type="button"
               variant={mode === "month" ? "default" : "outline"}
               size="sm"
-              className={mode === "month" ? amberBtn : ""}
+              className={mode === "month" ? primaryBtn : ""}
               onClick={() => setMode("month")}
             >
               Month
@@ -98,6 +113,14 @@ export function HoursSection() {
               <Input id="month-pick" type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="w-full sm:w-auto" />
             </div>
           )}
+          <div className="flex w-full flex-col gap-2 sm:ml-auto sm:w-auto sm:flex-row sm:justify-end">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" asChild>
+              <a href={`/api/admin/hours?${csvExport.toString()}`}>Export CSV</a>
+            </Button>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" asChild>
+              <a href={`/api/admin/hours?${xlsxExport.toString()}`}>Export Excel</a>
+            </Button>
+          </div>
         </div>
 
         <div className="overflow-x-auto rounded-lg border border-border">
@@ -105,13 +128,17 @@ export function HoursSection() {
             <TableHeader>
               <TableRow>
                 <TableHead>Employee</TableHead>
-                <TableHead className="text-right">Hours</TableHead>
+                {branchId === ALL_BRANCHES ? <TableHead>Home branch</TableHead> : null}
+                <TableHead className="text-right">Total h</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((r) => (
                 <TableRow key={r.employeeId}>
                   <TableCell className="font-medium">{r.name}</TableCell>
+                  {branchId === ALL_BRANCHES ? (
+                    <TableCell className="text-muted-foreground">{r.branchName ?? "—"}</TableCell>
+                  ) : null}
                   <TableCell className="text-right tabular-nums">{r.hours.toFixed(2)} h</TableCell>
                 </TableRow>
               ))}

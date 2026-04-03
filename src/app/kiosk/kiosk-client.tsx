@@ -28,6 +28,7 @@ export function KioskClient({ token }: { token: string }) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [busy, setBusy] = useState(false);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [location, setLocation] = useState<{ latitude: number | null; longitude: number | null }>({ latitude: null, longitude: null });
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -83,6 +84,12 @@ export function KioskClient({ token }: { token: string }) {
     };
   }, [preview]);
 
+  useEffect(() => {
+    if (!successNotice) return;
+    const t = window.setTimeout(() => setSuccessNotice(null), 6000);
+    return () => window.clearTimeout(t);
+  }, [successNotice]);
+
   function getLocation() {
     return new Promise<{ latitude: number | null; longitude: number | null }>((resolve) => {
       if (!navigator.geolocation) return resolve({ latitude: null, longitude: null });
@@ -103,19 +110,46 @@ export function KioskClient({ token }: { token: string }) {
     setSelectedEmployee(found);
   }, [employees, selectedEmployeeId]);
 
-  async function refreshForBranch(branchId: string) {
+  async function refreshForBranch(branchId: string, opts?: { clearEmployee?: boolean }) {
     setError(null);
     const q = new URLSearchParams({ token, branchId });
     const res = await fetch(`/api/kiosk/employees?${q.toString()}`);
     const data = await res.json();
     if (!res.ok) return setError(data.error ?? "Failed to load branch employees");
-    setEmployees(data.employees ?? []);
+    const list = (data.employees ?? []) as Employee[];
+    setEmployees(list);
     setSelectedBranchId(data.selectedBranchId ?? branchId);
-    setSelectedEmployeeId((data.employees ?? [])[0]?.id ?? "");
+    if (opts?.clearEmployee) {
+      setSelectedEmployeeId("");
+    } else {
+      setSelectedEmployeeId((prev) => (prev && list.some((e) => e.id === prev) ? prev : list[0]?.id ?? ""));
+    }
+  }
+
+  /** Clear identity and return to the picker so the next person cannot continue as the previous employee. */
+  async function discardUserAfterSuccess(notice: string) {
+    setMessage(null);
+    setError(null);
+    setPasscode("");
+    setPhoto(null);
+    stream?.getTracks().forEach((t) => t.stop());
+    setStream(null);
+    setSelectedEmployeeId("");
+    setAttendanceFlow("checkin");
+    setSuccessNotice(notice);
+    setStep("select");
+    if (selectedBranchId) await refreshForBranch(selectedBranchId, { clearEmployee: true });
   }
 
   async function resolveAttendanceAction(): Promise<"checkout" | "checkin" | null> {
-    if (!selectedEmployeeId || !selectedBranchId) return null;
+    if (!selectedBranchId) {
+      setError("Select a branch.");
+      return null;
+    }
+    if (!selectedEmployeeId) {
+      setError("Select your name from the list.");
+      return null;
+    }
     if (!passcode.trim()) {
       setError("Enter your passcode.");
       return null;
@@ -199,10 +233,7 @@ export function KioskClient({ token }: { token: string }) {
     const data = await res.json();
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Check-in failed");
-    setMessage("You are checked-in successfully.");
-    setPasscode("");
-    setPhoto(null);
-    setStep("done");
+    await discardUserAfterSuccess("Checked in. Next person: select your name and enter your passcode.");
   }
 
   async function submitCheckOut() {
@@ -220,10 +251,7 @@ export function KioskClient({ token }: { token: string }) {
     const data = await res.json();
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Check-out failed");
-    setMessage("You checked-out successfully.");
-    setPasscode("");
-    setPhoto(null);
-    setStep("done");
+    await discardUserAfterSuccess("Checked out. Next person: select your name and enter your passcode.");
   }
 
   if (step === "loading") {
@@ -254,7 +282,7 @@ export function KioskClient({ token }: { token: string }) {
         <button
           type="button"
           onClick={capture}
-          className="mt-4 min-h-12 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700 active:bg-amber-800"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/85 mt-4 min-h-12 w-full rounded-xl px-4 py-3 text-sm font-medium"
         >
           Capture selfie
         </button>
@@ -282,7 +310,7 @@ export function KioskClient({ token }: { token: string }) {
           type="button"
           disabled={busy}
           onClick={() => void (isOut ? submitCheckOut() : submitCheckIn())}
-          className={`mt-4 min-h-12 w-full rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-60 ${isOut ? "bg-foreground text-background hover:opacity-90" : "bg-amber-600 hover:bg-amber-700"}`}
+          className={`mt-4 min-h-12 w-full rounded-xl px-4 py-3 text-sm font-medium disabled:opacity-60 ${isOut ? "bg-foreground text-background hover:opacity-90" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
         >
           {busy ? "Saving…" : isOut ? "Submit check-out" : "Submit check-in"}
         </button>
@@ -294,6 +322,9 @@ export function KioskClient({ token }: { token: string }) {
     <div className="border-border bg-card text-card-foreground mx-auto w-full max-w-md rounded-2xl border p-4 shadow-sm sm:p-6">
       <h1 className="text-lg font-semibold sm:text-xl">Attendance</h1>
       <p className="text-muted-foreground mt-1 text-sm">Select branch and your name, then continue.</p>
+      {successNotice && (
+        <p className="border-border bg-muted/50 text-foreground mt-3 rounded-lg border px-3 py-2 text-sm">{successNotice}</p>
+      )}
       <div className="mt-4 space-y-3">
         <select
           value={selectedBranchId}
@@ -311,6 +342,7 @@ export function KioskClient({ token }: { token: string }) {
           onChange={(e) => setSelectedEmployeeId(e.target.value)}
           className="border-input bg-background ring-offset-background focus-visible:ring-ring min-h-11 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
         >
+          <option value="">Select your name</option>
           {employees.map((e) => (
             <option key={e.id} value={e.id}>
               {e.name}
@@ -329,7 +361,7 @@ export function KioskClient({ token }: { token: string }) {
       <button
         type="button"
         onClick={() => void continueAction()}
-        className="mt-4 min-h-12 w-full rounded-xl bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 min-h-12 w-full rounded-xl px-4 py-3 text-sm font-medium"
       >
         Continue
       </button>

@@ -1,4 +1,4 @@
-export type TabId = "companies" | "branches" | "qrBranding" | "company" | "hours" | "logs";
+export type TabId = "companies" | "branches" | "qrBranding" | "company" | "hours" | "shifts" | "logs";
 
 export type EmployeeRole =
   | "DRIVER"
@@ -13,6 +13,9 @@ export type EmployeeRole =
 export type Company = {
   id: string;
   name: string;
+  qrCompanyLogoUrl?: string | null;
+  attendanceGoogleSpreadsheetId?: string | null;
+  attendanceGoogleSheetTabName?: string | null;
   _count?: { branches: number; employees: number };
   companyAdminEmail?: string | null;
 };
@@ -34,6 +37,9 @@ export type Employee = {
   role?: EmployeeRole;
   employeeCode: string | null;
   notes: string | null;
+  /** UTC clock HH:MM; used at checkout for deduction (early) / OT (late). */
+  shiftStartTime?: string | null;
+  shiftEndTime?: string | null;
   user: { email: string; isActive: boolean };
   branch?: { id: string; name: string };
 };
@@ -46,6 +52,16 @@ export type AttendanceLogRow = {
   branch: string;
   checkInAt: string;
   checkOutAt: string;
+  /** Shift length in hours (null if not checked out yet). */
+  hours: number | null;
+  /** Hours before scheduled shift start (set at checkout from employee shift). */
+  deductionHours: number;
+  /** Gross minus deduction (null if open shift). */
+  netHours: number | null;
+  /** Hours after scheduled shift end (set at checkout from employee shift). */
+  overtimeHours: number;
+  /** Net + overtime when checked out (null if open shift). */
+  totalHours: number | null;
   checkInLatitude: number | "";
   checkInLongitude: number | "";
   locationStatus?: string;

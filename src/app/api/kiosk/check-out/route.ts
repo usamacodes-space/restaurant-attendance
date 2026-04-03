@@ -1,5 +1,7 @@
+import { computeShiftDeductionOvertimeHours } from "@/lib/employee-shift-attendance";
 import { prisma } from "@/lib/prisma";
 import { getValidKioskSessionByPlainToken } from "@/lib/kiosk-session";
+import { parseHHMM } from "@/lib/shift-time";
 import { saveSelfie } from "@/lib/upload-selfie";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -60,7 +62,14 @@ export async function POST(req: NextRequest) {
 
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId },
-    select: { id: true, companyId: true, branchId: true, user: { select: { passwordHash: true } } },
+    select: {
+      id: true,
+      companyId: true,
+      branchId: true,
+      shiftStartTime: true,
+      shiftEndTime: true,
+      user: { select: { passwordHash: true } },
+    },
   });
   if (!employee) {
     return NextResponse.json({ error: "Employee not found" }, { status: 404 });
@@ -95,13 +104,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to store selfie" }, { status: 500 });
   }
 
+  const checkOutAt = new Date();
+  let deductionHours = 0;
+  let overtimeHours = 0;
+  const ss = employee.shiftStartTime?.trim();
+  const se = employee.shiftEndTime?.trim();
+  if (ss && se && parseHHMM(ss) !== null && parseHHMM(se) !== null) {
+    const calc = computeShiftDeductionOvertimeHours(open.checkInAt, checkOutAt, ss, se);
+    deductionHours = calc.deductionHours;
+    overtimeHours = calc.overtimeHours;
+  }
+
   const updated = await prisma.attendance.update({
     where: { id: open.id },
     data: {
-      checkOutAt: new Date(),
+      checkOutAt,
       checkOutLatitude: Number.isFinite(latitude) ? latitude : null,
       checkOutLongitude: Number.isFinite(longitude) ? longitude : null,
       checkOutSelfieUrl,
+      deductionHours,
+      overtimeHours,
     },
   });
 

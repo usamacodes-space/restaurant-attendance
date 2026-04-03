@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Restaurant attendance",
-  description: "Employee check-in and check-out",
+  title: {
+    default: "WAQT Attendance",
+    template: "%s · WAQT",
+  },
+  description: "QR-based staff check-in and admin attendance for restaurants.",
   formatDetection: {
     telephone: false,
   },
@@ -26,8 +29,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#fdfeea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a4646" },
   ],
 };
 

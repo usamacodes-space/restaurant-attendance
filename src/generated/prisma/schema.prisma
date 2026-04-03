@@ -25,30 +25,63 @@ enum EmployeeRole {
   OTHER
 }
 
+/// Single row id `singleton` — public QR page logos (master admin).
+model GlobalSettings {
+  id             String   @id
+  qrLogoLeftUrl  String?
+  qrLogoRightUrl String?
+  updatedAt      DateTime @updatedAt
+}
+
 model Company {
-  id          String       @id @default(cuid())
-  name        String       @unique
-  createdAt   DateTime     @default(now())
-  branches    Branch[]
-  users       User[]
-  employees   Employee[]
-  attendances Attendance[]
+  id                            String       @id @default(cuid())
+  name                          String       @unique
+  /// Shown on public /qr page next to the global WAQT logo (per company).
+  qrCompanyLogoUrl              String?
+  /// Spreadsheet ID from Google Sheets URL (shared with the service account).
+  attendanceGoogleSpreadsheetId String?
+  /// Worksheet tab title for attendance sync (default "Attendance" in app).
+  attendanceGoogleSheetTabName  String?
+  createdAt                     DateTime     @default(now())
+  branches                      Branch[]
+  users                         User[]
+  employees                     Employee[]
+  attendances                   Attendance[]
 }
 
 model Branch {
-  id            String         @id @default(cuid())
-  companyId     String
-  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name          String
-  latitude      Float?
-  longitude     Float?
-  radiusMeters  Int            @default(100)
-  createdAt     DateTime       @default(now())
-  employees     Employee[]
-  kioskSessions KioskSession[]
-  attendances   Attendance[]
+  id                   String         @id @default(cuid())
+  companyId            String
+  company              Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name                 String
+  latitude             Float?
+  longitude            Float?
+  radiusMeters         Int            @default(100)
+  /// Latest kiosk plain token for the stable public /qr?branchId= page (rotates when admin refreshes QR).
+  publicKioskToken     String?
+  publicKioskExpiresAt DateTime?
+  createdAt            DateTime       @default(now())
+  employees            Employee[]
+  kioskSessions        KioskSession[]
+  attendances          Attendance[]
+  shifts               BranchShift[]
 
   @@unique([companyId, name])
+}
+
+/// Expected working window for a branch (local time HH:MM). If startTime is after endTime, shift crosses midnight.
+model BranchShift {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  name      String?
+  /// 24h local time, zero-padded "HH:MM".
+  startTime String
+  endTime   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([branchId])
 }
 
 model User {
@@ -76,6 +109,10 @@ model Employee {
   nameNormalized String
   notes          String?
   role           EmployeeRole @default(OTHER)
+  /// Scheduled shift start in UTC clock time "HH:MM" (same convention as branch shifts). Used at checkout to derive deduction / OT.
+  shiftStartTime String?
+  /// Scheduled shift end in UTC clock time "HH:MM". If start is after end on the clock, shift crosses midnight UTC.
+  shiftEndTime   String?
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
   attendances    Attendance[]
@@ -113,5 +150,9 @@ model Attendance {
   checkInLongitude  Float?
   checkOutLatitude  Float?
   checkOutLongitude Float?
+  /// Time before scheduled shift start (hours), from employee shift at checkout; subtracted for net time.
+  deductionHours    Float        @default(0)
+  /// Time after scheduled shift end (hours), from employee shift at checkout; added after net in work-hours totals.
+  overtimeHours     Float        @default(0)
   createdAt         DateTime     @default(now())
 }

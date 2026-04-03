@@ -21,6 +21,8 @@ export function LogsSection() {
   const [to, setTo] = useState("");
   const [branchId, setBranchId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
+  const [sheetsBusy, setSheetsBusy] = useState(false);
+  const [sheetsMessage, setSheetsMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void Promise.all([fetch("/api/admin/branches"), fetch("/api/admin/employees")]).then(async ([b, e]) =>
@@ -61,11 +63,34 @@ export function LogsSection() {
     format: "xlsx",
   });
 
+  async function pushToGoogleSheets() {
+    setSheetsMessage(null);
+    setSheetsBusy(true);
+    const p = new URLSearchParams();
+    if (from) p.set("from", from);
+    if (to) p.set("to", to);
+    if (branchId) p.set("branchId", branchId);
+    if (employeeId) p.set("employeeId", employeeId);
+    const res = await fetch(`/api/admin/attendance-logs/google-sheets?${p.toString()}`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    setSheetsBusy(false);
+    if (!res.ok) {
+      setSheetsMessage(data.error ?? `Sync failed (${res.status})`);
+      return;
+    }
+    setSheetsMessage(`Synced ${data.rowCount ?? 0} row(s) to tab “${data.tabName ?? "Attendance"}”.`);
+  }
+
   return (
     <Card className="border-border shadow-md">
       <CardHeader className="px-4 pt-6 sm:px-6">
         <CardTitle className="text-lg sm:text-xl">Attendance logs</CardTitle>
-        <CardDescription>Filter and export check-in/out records.</CardDescription>
+        <CardDescription>
+          Deduction and overtime are set at checkout from each employee&apos;s scheduled shift (Workspace → employee
+          shift times, UTC clock). Early arrival counts as deduction; time after shift end counts as OT. Open shifts
+          show no net/total until checkout. Google Sheets uses the same columns as CSV; configure the spreadsheet under
+          Workspace.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 pb-6 sm:px-6">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end">
@@ -116,8 +141,26 @@ export function LogsSection() {
             <Button variant="outline" size="sm" className="w-full xl:flex-1" asChild>
               <a href={`/api/admin/attendance-logs?${xlsxParams.toString()}`}>Excel</a>
             </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full xl:flex-1"
+              disabled={sheetsBusy}
+              onClick={() => void pushToGoogleSheets()}
+            >
+              {sheetsBusy ? "Sheets…" : "Google Sheets"}
+            </Button>
           </div>
         </div>
+
+        {sheetsMessage && (
+          <p
+            className={`text-sm ${sheetsMessage.startsWith("Synced") ? "text-muted-foreground" : "text-destructive"}`}
+          >
+            {sheetsMessage}
+          </p>
+        )}
 
         <div className="overflow-x-auto rounded-lg border border-border">
           <Table>
@@ -129,6 +172,11 @@ export function LogsSection() {
                 <TableHead className="min-w-[100px]">Branch</TableHead>
                 <TableHead className="min-w-[140px]">Check-in</TableHead>
                 <TableHead className="min-w-[140px]">Check-out</TableHead>
+                <TableHead className="min-w-[72px] text-right">Gross h</TableHead>
+                <TableHead className="min-w-[88px] text-right">Deduct</TableHead>
+                <TableHead className="min-w-[72px] text-right">Net h</TableHead>
+                <TableHead className="min-w-[88px] text-right">OT</TableHead>
+                <TableHead className="min-w-[72px] text-right">Total</TableHead>
                 <TableHead className="min-w-[160px]">Location</TableHead>
               </TableRow>
             </TableHeader>
@@ -161,6 +209,21 @@ export function LogsSection() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs sm:text-sm">
                       {r.checkOutAt ? new Date(r.checkOutAt).toLocaleString() : "-"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-xs sm:text-sm">
+                      {typeof r.hours === "number" ? `${r.hours.toFixed(2)}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-xs sm:text-sm">
+                      {typeof r.hours === "number" ? `${Number(r.deductionHours).toFixed(2)}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-xs sm:text-sm">
+                      {typeof r.netHours === "number" ? `${r.netHours.toFixed(2)}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-xs sm:text-sm">
+                      {typeof r.hours === "number" ? `${Number(r.overtimeHours).toFixed(2)}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-xs sm:text-sm">
+                      {typeof r.totalHours === "number" ? `${r.totalHours.toFixed(2)}` : "—"}
                     </TableCell>
                     <TableCell>
                       <div className="flex max-w-[200px] flex-col gap-1">

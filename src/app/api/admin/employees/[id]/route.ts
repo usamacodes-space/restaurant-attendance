@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { parseEmployeeShiftFields } from "@/lib/employee-shift-input";
 import { requireRoles } from "@/lib/authz";
 import { normalizeEmployeeName } from "@/lib/normalize-name";
 import bcrypt from "bcryptjs";
@@ -22,6 +23,8 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     isActive?: boolean;
     employeeCode?: string | null;
     role?: EmployeeRole;
+    shiftStartTime?: string | null;
+    shiftEndTime?: string | null;
   };
   try {
     body = await req.json();
@@ -29,7 +32,10 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const existing = await prisma.employee.findUnique({ where: { id }, include: { user: true } });
+  const existing = await prisma.employee.findUnique({
+    where: { id },
+    include: { user: true },
+  });
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -46,6 +52,8 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     employeeCode?: string | null;
     isActive?: boolean;
     role?: EmployeeRole;
+    shiftStartTime?: string | null;
+    shiftEndTime?: string | null;
   } = {};
   if (name !== undefined) {
     if (!name) {
@@ -77,6 +85,18 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   }
   if (body.role !== undefined) {
     data.role = body.role;
+  }
+  if (body.shiftStartTime !== undefined || body.shiftEndTime !== undefined) {
+    const shift = parseEmployeeShiftFields({
+      shiftStartTime:
+        body.shiftStartTime !== undefined ? body.shiftStartTime : existing.shiftStartTime,
+      shiftEndTime: body.shiftEndTime !== undefined ? body.shiftEndTime : existing.shiftEndTime,
+    });
+    if ("error" in shift) {
+      return NextResponse.json({ error: shift.error }, { status: 400 });
+    }
+    data.shiftStartTime = shift.shiftStartTime;
+    data.shiftEndTime = shift.shiftEndTime;
   }
 
   const userData: { email?: string; passwordHash?: string; isActive?: boolean } = {};

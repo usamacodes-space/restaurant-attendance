@@ -6,9 +6,9 @@ import { QrAutoRefresh } from "./qr-auto-refresh";
 
 export const dynamic = "force-dynamic";
 
-const cream = "#F9F9E0";
-const forest = "#00332C";
-const accentOrange = "#E85D04";
+const cream = "#fdfeea";
+const forest = "#0a4646";
+const accentSlate = "#7d98a1";
 
 function LogoTile({ src, label }: { src: string | null; label: string }) {
   return (
@@ -30,8 +30,8 @@ function LogoTile({ src, label }: { src: string | null; label: string }) {
 
 function QrLayout({
   branchName,
-  qrLogoLeftUrl,
-  qrLogoRightUrl,
+  waqtLogoUrl,
+  companyLogoUrl,
   expiresAt,
   qrDataUrl,
   qrError,
@@ -39,8 +39,10 @@ function QrLayout({
   alternateRight,
 }: {
   branchName: string;
-  qrLogoLeftUrl: string | null;
-  qrLogoRightUrl: string | null;
+  /** Global WAQT logo (same on every QR page). */
+  waqtLogoUrl: string | null;
+  /** Per-company logo on public QR page (optional). */
+  companyLogoUrl: string | null;
   expiresAt: Date | null;
   qrDataUrl: string | null;
   qrError: string | null;
@@ -56,11 +58,11 @@ function QrLayout({
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-10 lg:gap-16">
         <div className="flex min-w-0 flex-col items-center text-center md:max-w-md">
           <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3">
-            <LogoTile src={qrLogoLeftUrl} label="Logo 1" />
-            <span className="select-none text-2xl font-light leading-none sm:text-3xl" style={{ color: accentOrange }} aria-hidden>
+            <LogoTile src={waqtLogoUrl} label="WAQT" />
+            <span className="select-none text-2xl font-light leading-none sm:text-3xl" style={{ color: accentSlate }} aria-hidden>
               ×
             </span>
-            <LogoTile src={qrLogoRightUrl} label="Logo 2" />
+            <LogoTile src={companyLogoUrl} label="Company" />
           </div>
 
           <div className="mt-8 flex max-w-full flex-col items-center">
@@ -80,7 +82,7 @@ function QrLayout({
                 {qrDataUrl ? (
                   <div
                     className="w-fit rounded-2xl bg-white p-3 sm:p-4"
-                    style={{ border: `6px solid #000000` }}
+                    style={{ border: `6px solid ${forest}` }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={qrDataUrl} alt="Attendance QR code" className="block h-auto w-full max-w-[260px]" />
@@ -115,6 +117,7 @@ export default async function PublicQrPage({
   const legacyBranchName = params.branch?.trim() ?? "";
 
   const branding = await getQrBranding();
+  const waqtLogoUrl = branding.qrLogoLeftUrl;
 
   const appBase =
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://restaurant-attendance.vercel.app";
@@ -123,10 +126,17 @@ export default async function PublicQrPage({
   let expiresAt: Date | null = null;
   let branchName = "";
 
+  let companyLogoUrl: string | null = null;
+
   if (branchId) {
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },
-      select: { name: true, publicKioskToken: true, publicKioskExpiresAt: true },
+      select: {
+        name: true,
+        publicKioskToken: true,
+        publicKioskExpiresAt: true,
+        company: { select: { qrCompanyLogoUrl: true } },
+      },
     });
     if (!branch) {
       return (
@@ -134,7 +144,10 @@ export default async function PublicQrPage({
           className="flex min-h-screen flex-col items-center justify-center px-4 py-16"
           style={{ backgroundColor: cream, color: forest }}
         >
-          <div className="mx-auto max-w-md rounded-2xl border-2 p-6 text-center shadow-sm" style={{ borderColor: forest, backgroundColor: "#fffef5" }}>
+          <div
+            className="mx-auto max-w-md rounded-2xl border-2 p-6 text-center shadow-sm"
+            style={{ borderColor: accentSlate, backgroundColor: "color-mix(in srgb, white 35%, #fdfeea)" }}
+          >
             <p className="text-lg font-bold">Branch not found</p>
             <p className="mt-2 text-sm opacity-90">Check the link or ask an admin for the correct QR page.</p>
           </div>
@@ -142,6 +155,7 @@ export default async function PublicQrPage({
       );
     }
     branchName = branch.name;
+    companyLogoUrl = branch.company.qrCompanyLogoUrl ?? null;
     const now = new Date();
     if (
       branch.publicKioskToken &&
@@ -174,20 +188,22 @@ export default async function PublicQrPage({
         width: 520,
         margin: 2,
         errorCorrectionLevel: "M",
-        color: { dark: "#000000", light: "#ffffff" },
+        color: { dark: forest, light: cream },
       });
     } catch {
       qrGenError = "Failed to render QR code.";
     }
   }
 
+  const resolvedCompanyLogo = companyLogoUrl;
+
   if (!token) {
     const displayName = branchName || (branchId ? "Branch" : "Branch");
     return (
       <QrLayout
         branchName={displayName}
-        qrLogoLeftUrl={branding.qrLogoLeftUrl}
-        qrLogoRightUrl={branding.qrLogoRightUrl}
+        waqtLogoUrl={waqtLogoUrl}
+        companyLogoUrl={resolvedCompanyLogo}
         expiresAt={null}
         qrDataUrl={null}
         qrError={null}
@@ -195,7 +211,7 @@ export default async function PublicQrPage({
         alternateRight={
           <div
             className="mx-auto rounded-2xl border-2 px-5 py-6 text-center text-sm leading-relaxed"
-            style={{ borderColor: forest, backgroundColor: "#fffef5" }}
+            style={{ borderColor: accentSlate, backgroundColor: "color-mix(in srgb, white 35%, #fdfeea)" }}
           >
             <p className="font-bold">No active kiosk session</p>
             <p className="mt-2 opacity-90">
@@ -210,8 +226,8 @@ export default async function PublicQrPage({
   return (
     <QrLayout
       branchName={branchName || "Branch"}
-      qrLogoLeftUrl={branding.qrLogoLeftUrl}
-      qrLogoRightUrl={branding.qrLogoRightUrl}
+      waqtLogoUrl={waqtLogoUrl}
+      companyLogoUrl={resolvedCompanyLogo}
       expiresAt={expiresAt}
       qrDataUrl={qrDataUrl}
       qrError={qrGenError}
