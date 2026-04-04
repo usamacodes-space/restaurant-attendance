@@ -10,19 +10,37 @@ const cream = "#fdfeea";
 const forest = "#0a4646";
 const accentSlate = "#7d98a1";
 
+/** Framed logo: inner rounded well so artwork matches the border radius; empty state uses a soft fill, not a blank tile. */
 function LogoTile({ src, label }: { src: string | null; label: string }) {
+  const frame =
+    "flex h-[88px] w-[88px] shrink-0 flex-col rounded-xl border-2 border-[#0a4646] bg-white p-2 shadow-sm sm:h-[100px] sm:w-[100px] sm:p-2.5 md:h-[112px] md:w-[112px]";
+  const inner = "flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-lg";
+
   return (
-    <div
-      className="flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm sm:h-[100px] sm:w-[100px] md:h-[112px] md:w-[112px]"
-      style={{ border: `2px solid ${forest}` }}
-    >
+    <div className={frame}>
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="h-full w-full object-contain p-1.5" />
+        <div className={`${inner} bg-white`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt=""
+            className="max-h-full max-w-full rounded-md object-contain object-center"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
       ) : (
-        <span className="px-2 text-center text-[10px] font-medium leading-tight opacity-40" style={{ color: forest }}>
-          {label}
-        </span>
+        <div
+          className={`${inner} bg-gradient-to-br from-white via-[#fdfeea] to-[#e4eded]`}
+          aria-label={label === "WAQT" ? "WAQT logo not set" : "Company logo not set"}
+        >
+          <span
+            className="px-1 text-center text-[9px] font-bold uppercase leading-snug tracking-wide text-balance opacity-75 sm:text-[10px]"
+            style={{ color: forest }}
+          >
+            {label}
+          </span>
+        </div>
       )}
     </div>
   );

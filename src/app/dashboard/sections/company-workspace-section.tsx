@@ -132,13 +132,18 @@ export function CompanyWorkspaceSection() {
     e.preventDefault();
     setError(null);
     const { shiftStart, shiftEnd, ...rest } = form;
+    const st = shiftStart.trim();
+    const en = shiftEnd.trim();
+    if ((st && !en) || (!st && en)) {
+      setError("Enter both shift start and end, or leave both empty.");
+      return;
+    }
     const res = await fetch("/api/admin/employees", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...rest,
-        shiftStartTime: shiftStart.trim() || undefined,
-        shiftEndTime: shiftEnd.trim() || undefined,
+        ...(st && en ? { shiftStartTime: st, shiftEndTime: en } : {}),
       }),
     });
     const data = await res.json();
