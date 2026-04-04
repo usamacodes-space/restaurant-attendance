@@ -10,32 +10,36 @@ const cream = "#fdfeea";
 const forest = "#0a4646";
 const accentSlate = "#7d98a1";
 
-/** Framed logo: inner rounded well so artwork matches the border radius; empty state uses a soft fill, not a blank tile. */
+/**
+ * Reference layout: white outer mat + #0a4646 border + padding, then an inner “squircle”
+ * (large radius) that holds the brand artwork—like two app icons side by side.
+ */
 function LogoTile({ src, label }: { src: string | null; label: string }) {
-  const frame =
-    "flex h-[88px] w-[88px] shrink-0 flex-col rounded-xl border-2 border-[#0a4646] bg-white p-2 shadow-sm sm:h-[100px] sm:w-[100px] sm:p-2.5 md:h-[112px] md:w-[112px]";
-  const inner = "flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-lg";
+  const outer =
+    "box-border flex h-[92px] w-[92px] shrink-0 flex-col rounded-xl border-2 border-[#0a4646] bg-white p-2 shadow-sm sm:h-[104px] sm:w-[104px] sm:p-2.5 md:h-[118px] md:w-[118px] md:p-3";
+  const squircle =
+    "flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-2xl bg-white sm:rounded-[0.9rem] md:rounded-[1.05rem]";
 
   return (
-    <div className={frame}>
+    <div className={outer}>
       {src ? (
-        <div className={`${inner} bg-white`}>
+        <div className={squircle}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
             alt=""
-            className="max-h-full max-w-full rounded-md object-contain object-center"
+            className="h-full w-full object-contain object-center"
             loading="eager"
             decoding="async"
           />
         </div>
       ) : (
         <div
-          className={`${inner} bg-gradient-to-br from-white via-[#fdfeea] to-[#e4eded]`}
+          className={`${squircle} bg-gradient-to-br from-[#e8f4f4] via-[#fdfeea] to-[#f0e8ee]`}
           aria-label={label === "WAQT" ? "WAQT logo not set" : "Company logo not set"}
         >
           <span
-            className="px-1 text-center text-[9px] font-bold uppercase leading-snug tracking-wide text-balance opacity-75 sm:text-[10px]"
+            className="px-1.5 text-center text-[9px] font-bold uppercase leading-snug tracking-wide text-balance sm:text-[10px]"
             style={{ color: forest }}
           >
             {label}
@@ -77,7 +81,11 @@ function QrLayout({
         <div className="flex min-w-0 flex-col items-center text-center md:max-w-md">
           <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3">
             <LogoTile src={waqtLogoUrl} label="WAQT" />
-            <span className="select-none text-2xl font-light leading-none sm:text-3xl" style={{ color: accentSlate }} aria-hidden>
+            <span
+              className="select-none px-0.5 text-3xl font-light leading-none sm:text-4xl"
+              style={{ color: accentSlate }}
+              aria-hidden
+            >
               ×
             </span>
             <LogoTile src={companyLogoUrl} label="Company" />
