@@ -32,7 +32,7 @@ function LogoTile({ src, label }: { src: string | null; label: string }) {
       ) : (
         <div
           className={`${inner} bg-gradient-to-br from-white via-[#fdfeea] to-[#e4eded]`}
-          aria-label={label === "WAQT" ? "WAQT logo not set" : "Company logo not set"}
+          aria-label="WAQT logo not set"
         >
           <span
             className="px-1 text-center text-[9px] font-bold uppercase leading-snug tracking-wide text-balance opacity-75 sm:text-[10px]"
@@ -49,7 +49,6 @@ function LogoTile({ src, label }: { src: string | null; label: string }) {
 function QrLayout({
   branchName,
   waqtLogoUrl,
-  companyLogoUrl,
   expiresAt,
   qrDataUrl,
   qrError,
@@ -59,8 +58,6 @@ function QrLayout({
   branchName: string;
   /** Global WAQT logo (same on every QR page). */
   waqtLogoUrl: string | null;
-  /** Per-company logo on public QR page (optional). */
-  companyLogoUrl: string | null;
   expiresAt: Date | null;
   qrDataUrl: string | null;
   qrError: string | null;
@@ -75,12 +72,8 @@ function QrLayout({
       {branchId ? <QrAutoRefresh branchId={branchId} /> : null}
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-12 md:flex-row md:gap-10 lg:gap-16">
         <div className="flex min-w-0 flex-col items-center text-center md:max-w-md">
-          <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <div className="flex flex-row flex-wrap items-center justify-center">
             <LogoTile src={waqtLogoUrl} label="WAQT" />
-            <span className="select-none text-2xl font-light leading-none sm:text-3xl" style={{ color: accentSlate }} aria-hidden>
-              ×
-            </span>
-            <LogoTile src={companyLogoUrl} label="Company" />
           </div>
 
           <div className="mt-8 flex max-w-full flex-col items-center">
@@ -144,8 +137,6 @@ export default async function PublicQrPage({
   let expiresAt: Date | null = null;
   let branchName = "";
 
-  let companyLogoUrl: string | null = null;
-
   if (branchId) {
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },
@@ -153,7 +144,6 @@ export default async function PublicQrPage({
         name: true,
         publicKioskToken: true,
         publicKioskExpiresAt: true,
-        company: { select: { qrCompanyLogoUrl: true } },
       },
     });
     if (!branch) {
@@ -173,7 +163,6 @@ export default async function PublicQrPage({
       );
     }
     branchName = branch.name;
-    companyLogoUrl = branch.company.qrCompanyLogoUrl ?? null;
     const now = new Date();
     if (
       branch.publicKioskToken &&
@@ -213,15 +202,12 @@ export default async function PublicQrPage({
     }
   }
 
-  const resolvedCompanyLogo = companyLogoUrl;
-
   if (!token) {
     const displayName = branchName || (branchId ? "Branch" : "Branch");
     return (
       <QrLayout
         branchName={displayName}
         waqtLogoUrl={waqtLogoUrl}
-        companyLogoUrl={resolvedCompanyLogo}
         expiresAt={null}
         qrDataUrl={null}
         qrError={null}
@@ -245,7 +231,6 @@ export default async function PublicQrPage({
     <QrLayout
       branchName={branchName || "Branch"}
       waqtLogoUrl={waqtLogoUrl}
-      companyLogoUrl={resolvedCompanyLogo}
       expiresAt={expiresAt}
       qrDataUrl={qrDataUrl}
       qrError={qrGenError}
