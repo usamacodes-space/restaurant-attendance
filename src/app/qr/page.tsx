@@ -18,7 +18,7 @@ function LogoTile({ src, label }: { src: string | null; label: string }) {
   const outer =
     "box-border flex h-[92px] w-[92px] shrink-0 flex-col rounded-xl border-2 border-[#0a4646] bg-white p-2 shadow-sm sm:h-[104px] sm:w-[104px] sm:p-2.5 md:h-[118px] md:w-[118px] md:p-3";
   const squircle =
-    "flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-2xl bg-white sm:rounded-[0.9rem] md:rounded-[1.05rem]";
+    "flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-2xl sm:rounded-[0.9rem] md:rounded-[1.05rem]";
 
   return (
     <div className={outer}>
