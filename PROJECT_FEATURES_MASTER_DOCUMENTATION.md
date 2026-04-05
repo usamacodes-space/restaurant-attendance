@@ -506,6 +506,8 @@ Evidence:
 - After successful submit:
   - identity selection and passcode are cleared
   - flow resets for next employee
+- Success now routes to `/kiosk/thank-you` with mode query (`checkin`/`checkout`) and uses history replacement to prevent normal browser-back return to scan/confirm steps.
+- The thank-you route is implemented with a Suspense-wrapped client content block for `useSearchParams`, ensuring Next.js production builds do not fail on static prerender checks.
 
 Evidence:
 - `/workspace/src/app/kiosk/page.tsx`
