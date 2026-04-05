@@ -17,7 +17,6 @@ type Employee = {
 export function KioskClient({ token }: { token: string }) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState("");
@@ -247,7 +246,7 @@ export function KioskClient({ token }: { token: string }) {
     return (
       <div className="border-border bg-card text-card-foreground mx-auto w-full max-w-md rounded-2xl border p-6 text-center shadow-sm">
         <p className="text-lg font-semibold">{error ? "Action failed" : "Done"}</p>
-        <p className="text-muted-foreground mt-2 text-sm">{error ?? message ?? "Attendance recorded."}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{error ?? "Attendance recorded."}</p>
       </div>
     );
   }
