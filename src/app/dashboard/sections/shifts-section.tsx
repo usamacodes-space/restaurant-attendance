@@ -58,7 +58,7 @@ export function ShiftsSection() {
       .then((d) => {
         const list = (d.branches ?? []) as Branch[];
         setBranches(list);
-        if (list.length && !branchId) setBranchId(list[0]!.id);
+        setBranchId((prev) => (prev || !list.length ? prev : list[0]!.id));
       });
   }, []);
 
