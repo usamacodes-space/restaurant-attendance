@@ -1,5 +1,6 @@
 import { getQrBranding } from "@/lib/global-settings";
 import { prisma } from "@/lib/prisma";
+import { formatDateHoursMinutes } from "@/lib/utils";
 import QRCode from "qrcode";
 import type { ReactNode } from "react";
 import { QrAutoRefresh } from "./qr-auto-refresh";
@@ -120,7 +121,7 @@ function QrLayout({
 
               {expiresAt ? (
                 <p className="mt-6 text-sm font-normal sm:text-base">
-                  Expires: {expiresAt.toLocaleString()}
+                  Expires: {formatDateHoursMinutes(expiresAt)}
                 </p>
               ) : null}
             </>
