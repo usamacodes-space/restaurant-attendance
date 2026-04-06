@@ -97,9 +97,9 @@ export type NormalizedAttendanceLogRow = ReturnType<typeof normalizeAttendanceLo
 
 /** Same columns as CSV / Excel export (no selfie URLs). */
 export function toAttendanceExportRow(row: NormalizedAttendanceLogRow) {
-  const rest = { ...row };
-  delete rest.checkInSelfieUrl;
-  delete rest.checkOutSelfieUrl;
+  const { checkInSelfieUrl, checkOutSelfieUrl, ...rest } = row;
+  void checkInSelfieUrl;
+  void checkOutSelfieUrl;
   return rest;
 }
 
