@@ -5,7 +5,6 @@ import { useRef } from "react";
 
 type Step = "loading" | "select" | "camera" | "confirm" | "done";
 type AttendanceFlow = "checkin" | "checkout";
-type Branch = { id: string; name: string };
 type Employee = {
   id: string;
   name: string;
@@ -17,7 +16,6 @@ type Employee = {
 export function KioskClient({ token }: { token: string }) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
-  const [branches, setBranches] = useState<Branch[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
@@ -31,9 +29,8 @@ export function KioskClient({ token }: { token: string }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    async function load(branchId?: string) {
+    async function load() {
       const q = new URLSearchParams({ token });
-      if (branchId) q.set("branchId", branchId);
       const res = await fetch(`/api/kiosk/employees?${q.toString()}`);
       const data = await res.json();
       if (!res.ok) {
@@ -41,7 +38,6 @@ export function KioskClient({ token }: { token: string }) {
         setStep("done");
         return;
       }
-      setBranches(data.branches ?? []);
       setEmployees(data.employees ?? []);
       const nextBranch = data.selectedBranchId ?? "";
       setSelectedBranchId(nextBranch);
@@ -102,22 +98,6 @@ export function KioskClient({ token }: { token: string }) {
     setSelectedEmployee(found);
   }, [employees, selectedEmployeeId]);
 
-  async function refreshForBranch(branchId: string, opts?: { clearEmployee?: boolean }) {
-    setError(null);
-    const q = new URLSearchParams({ token, branchId });
-    const res = await fetch(`/api/kiosk/employees?${q.toString()}`);
-    const data = await res.json();
-    if (!res.ok) return setError(data.error ?? "Failed to load branch employees");
-    const list = (data.employees ?? []) as Employee[];
-    setEmployees(list);
-    setSelectedBranchId(data.selectedBranchId ?? branchId);
-    if (opts?.clearEmployee) {
-      setSelectedEmployeeId("");
-    } else {
-      setSelectedEmployeeId((prev) => (prev && list.some((e) => e.id === prev) ? prev : list[0]?.id ?? ""));
-    }
-  }
-
   function goToThankYouPage(mode: AttendanceFlow) {
     stream?.getTracks().forEach((t) => t.stop());
     setStream(null);
@@ -154,7 +134,7 @@ export function KioskClient({ token }: { token: string }) {
 
   async function startCamera() {
     if (!selectedEmployeeId || !selectedBranchId) {
-      setError("Please select branch and employee.");
+      setError("Please select your name.");
       return;
     }
     setError(null);
@@ -305,19 +285,8 @@ export function KioskClient({ token }: { token: string }) {
   return (
     <div className="border-border bg-card text-card-foreground mx-auto w-full max-w-md rounded-2xl border p-4 shadow-sm sm:p-6">
       <h1 className="text-lg font-semibold sm:text-xl">Attendance</h1>
-      <p className="text-muted-foreground mt-1 text-sm">Select branch and your name, then continue.</p>
+      <p className="text-muted-foreground mt-1 text-sm">Select your name, then continue.</p>
       <div className="mt-4 space-y-3">
-        <select
-          value={selectedBranchId}
-          onChange={(e) => void refreshForBranch(e.target.value)}
-          className="border-input bg-background ring-offset-background focus-visible:ring-ring min-h-11 w-full rounded-lg border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
-        >
-          {branches.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.name}
-            </option>
-          ))}
-        </select>
         <select
           value={selectedEmployeeId}
           onChange={(e) => setSelectedEmployeeId(e.target.value)}
