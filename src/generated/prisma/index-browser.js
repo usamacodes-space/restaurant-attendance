@@ -149,6 +149,16 @@ exports.Prisma.BranchScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.BranchOperatingHourScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  dayOfWeek: 'dayOfWeek',
+  openTime: 'openTime',
+  closeTime: 'closeTime',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.BranchShiftScalarFieldEnum = {
   id: 'id',
   branchId: 'branchId',
@@ -201,6 +211,7 @@ exports.Prisma.AttendanceScalarFieldEnum = {
   employeeId: 'employeeId',
   kioskSessionId: 'kioskSessionId',
   checkInAt: 'checkInAt',
+  countedCheckInAt: 'countedCheckInAt',
   checkOutAt: 'checkOutAt',
   checkInSelfieUrl: 'checkInSelfieUrl',
   checkOutSelfieUrl: 'checkOutSelfieUrl',
@@ -248,6 +259,7 @@ exports.Prisma.ModelName = {
   GlobalSettings: 'GlobalSettings',
   Company: 'Company',
   Branch: 'Branch',
+  BranchOperatingHour: 'BranchOperatingHour',
   BranchShift: 'BranchShift',
   User: 'User',
   Employee: 'Employee',

@@ -1,6 +1,7 @@
 import { computeShiftDeductionOvertimeHours } from "@/lib/employee-shift-attendance";
 import { prisma } from "@/lib/prisma";
 import { getValidKioskSessionByPlainToken } from "@/lib/kiosk-session";
+import { resolveAttendanceClosingTimeUtc } from "@/lib/branch-operating-hours";
 import { parseHHMM } from "@/lib/shift-time";
 import { saveSelfie } from "@/lib/upload-selfie";
 import { NextRequest, NextResponse } from "next/server";
@@ -105,31 +106,54 @@ export async function POST(req: NextRequest) {
   }
 
   const checkOutAt = new Date();
+  const branchOperatingHours = await prisma.branchOperatingHour.findMany({
+    where: { branchId: branch.id },
+    select: { dayOfWeek: true, openTime: true, closeTime: true },
+  });
+  const closingAt = resolveAttendanceClosingTimeUtc(open.checkInAt, branchOperatingHours);
+  const withinClosing = closingAt == null || checkOutAt.getTime() <= closingAt.getTime();
+
   let deductionHours = 0;
   let overtimeHours = 0;
-  const ss = employee.shiftStartTime?.trim();
-  const se = employee.shiftEndTime?.trim();
-  if (ss && se && parseHHMM(ss) !== null && parseHHMM(se) !== null) {
-    const calc = computeShiftDeductionOvertimeHours(open.checkInAt, checkOutAt, ss, se);
-    deductionHours = calc.deductionHours;
-    overtimeHours = calc.overtimeHours;
+  if (withinClosing) {
+    const ss = employee.shiftStartTime?.trim();
+    const se = employee.shiftEndTime?.trim();
+    if (ss && se && parseHHMM(ss) !== null && parseHHMM(se) !== null) {
+      const calc = computeShiftDeductionOvertimeHours(open.checkInAt, checkOutAt, ss, se);
+      deductionHours = calc.deductionHours;
+      overtimeHours = calc.overtimeHours;
+    }
   }
 
-  const updated = await prisma.attendance.update({
-    where: { id: open.id },
-    data: {
-      checkOutAt,
-      checkOutLatitude: Number.isFinite(latitude) ? latitude : null,
-      checkOutLongitude: Number.isFinite(longitude) ? longitude : null,
-      checkOutSelfieUrl,
-      deductionHours,
-      overtimeHours,
-    },
-  });
+  const updated = withinClosing
+    ? await prisma.attendance.update({
+        where: { id: open.id },
+        data: {
+          checkOutAt,
+          checkOutLatitude: Number.isFinite(latitude) ? latitude : null,
+          checkOutLongitude: Number.isFinite(longitude) ? longitude : null,
+          checkOutSelfieUrl,
+          deductionHours,
+          overtimeHours,
+        },
+      })
+    : await prisma.attendance.update({
+        where: { id: open.id },
+        data: {
+          // Missed branch closing-time checkout: keep this shift open/blank for reporting and non-payable hours.
+          checkOutAt: null,
+          checkOutLatitude: null,
+          checkOutLongitude: null,
+          checkOutSelfieUrl: null,
+          deductionHours: 0,
+          overtimeHours: 0,
+        },
+      });
 
   return NextResponse.json({
     ok: true,
     attendanceId: updated.id,
-    checkOutAt: updated.checkOutAt!.toISOString(),
+    checkOutAt: updated.checkOutAt ? updated.checkOutAt.toISOString() : null,
+    missedClosingTime: !withinClosing,
   });
 }

@@ -56,11 +56,11 @@ export type AttendanceLogRow = {
   hours: number | null;
   /** Hours before scheduled shift start (set at checkout from employee shift). */
   deductionHours: number;
-  /** Gross minus deduction (null if open shift). */
+  /** Gross minus deduction and overtime (regular payable hours, null if open shift). */
   netHours: number | null;
   /** Hours after scheduled shift end (set at checkout from employee shift). */
   overtimeHours: number;
-  /** Net + overtime when checked out (null if open shift). */
+  /** Regular + overtime when checked out (null if open shift). */
   totalHours: number | null;
   checkInLatitude: number | "";
   checkInLongitude: number | "";

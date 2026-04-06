@@ -74,10 +74,17 @@ export async function GET(req: NextRequest) {
   const isMaster = required.user.role === "MASTER_ADMIN";
   const companyId = required.user.companyId ?? "";
 
-  // Only count the portion of each shift that overlaps [start, end) — e.g. Sun 2pm → Mon 4am splits
-  // across two UTC weeks (Sun evening in week W, early Mon in week W+1).
+  // Only count the portion of each shift that overlaps [start, end). Hours are based on
+  // countedCheckInAt (opening-time grace adjusted) when present, otherwise checkInAt.
   const rows = companyWide
-    ? await prisma.$queryRaw<{ id: string; name: string; branchName: string; hours: unknown }[]>`
+    ? await prisma.$queryRaw<{
+        id: string;
+        name: string;
+        branchName: string;
+        regularHours: unknown;
+        overtimeHours: unknown;
+        totalHours: unknown;
+      }[]>`
       SELECT e.id, e.name, b.name AS "branchName",
         COALESCE(
           SUM(
@@ -86,47 +93,98 @@ export async function GET(req: NextRequest) {
               (
                 EXTRACT(
                   EPOCH FROM (
-                    LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
+                    LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
                   )
                 )
                 - COALESCE(a."deductionHours", 0) * 3600.0
                   * CASE
-                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt")) > 0
+                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
                       THEN EXTRACT(
                         EPOCH FROM (
-                          LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
+                          LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
                         )
-                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt"))
-                      ELSE 0::double precision
-                    END
-                + COALESCE(a."overtimeHours", 0) * 3600.0
-                  * CASE
-                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt")) > 0
-                      THEN EXTRACT(
-                        EPOCH FROM (
-                          LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
-                        )
-                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt"))
+                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
                       ELSE 0::double precision
                     END
               )
             )
           ) / 3600.0,
           0
-        )::float AS hours
+        )::float AS "regularHours",
+        COALESCE(
+          SUM(
+            GREATEST(
+              0,
+              COALESCE(a."overtimeHours", 0) * 3600.0
+                * CASE
+                    WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                    THEN EXTRACT(
+                      EPOCH FROM (
+                        LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                      )
+                    ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                    ELSE 0::double precision
+                  END
+            )
+          ) / 3600.0,
+          0
+        )::float AS "overtimeHours",
+        (
+          COALESCE(
+            SUM(
+              GREATEST(
+                0,
+                (
+                  EXTRACT(
+                    EPOCH FROM (
+                      LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                    )
+                  )
+                  - COALESCE(a."deductionHours", 0) * 3600.0
+                    * CASE
+                        WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                        THEN EXTRACT(
+                          EPOCH FROM (
+                            LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                          )
+                        ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                        ELSE 0::double precision
+                      END
+                  + COALESCE(a."overtimeHours", 0) * 3600.0
+                    * CASE
+                        WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                        THEN EXTRACT(
+                          EPOCH FROM (
+                            LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                          )
+                        ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                        ELSE 0::double precision
+                      END
+                )
+              )
+            ) / 3600.0,
+            0
+          )
+        )::float AS "totalHours"
       FROM "Employee" e
       INNER JOIN "Branch" b ON b.id = e."branchId"
       LEFT JOIN "Attendance" a
         ON a."employeeId" = e.id
         AND a."checkOutAt" IS NOT NULL
         AND a."checkOutAt" > ${start}
-        AND a."checkInAt" < ${end}
+        AND COALESCE(a."countedCheckInAt", a."checkInAt") < ${end}
         AND (${isMaster} OR a."companyId" = ${companyId})
       WHERE (${isMaster} OR e."companyId" = ${companyId})
       GROUP BY e.id, e.name, b.name
       ORDER BY b.name ASC, e.name ASC
     `
-    : await prisma.$queryRaw<{ id: string; name: string; hours: unknown }[]>`
+    : await prisma.$queryRaw<{
+        id: string;
+        name: string;
+        regularHours: unknown;
+        overtimeHours: unknown;
+        totalHours: unknown;
+      }[]>`
       SELECT e.id, e.name,
         COALESCE(
           SUM(
@@ -135,40 +193,85 @@ export async function GET(req: NextRequest) {
               (
                 EXTRACT(
                   EPOCH FROM (
-                    LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
+                    LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
                   )
                 )
                 - COALESCE(a."deductionHours", 0) * 3600.0
                   * CASE
-                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt")) > 0
+                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
                       THEN EXTRACT(
                         EPOCH FROM (
-                          LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
+                          LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
                         )
-                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt"))
-                      ELSE 0::double precision
-                    END
-                + COALESCE(a."overtimeHours", 0) * 3600.0
-                  * CASE
-                      WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt")) > 0
-                      THEN EXTRACT(
-                        EPOCH FROM (
-                          LEAST(a."checkOutAt", ${end}) - GREATEST(a."checkInAt", ${start})
-                        )
-                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - a."checkInAt"))
+                      ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
                       ELSE 0::double precision
                     END
               )
             )
           ) / 3600.0,
           0
-        )::float AS hours
+        )::float AS "regularHours",
+        COALESCE(
+          SUM(
+            GREATEST(
+              0,
+              COALESCE(a."overtimeHours", 0) * 3600.0
+                * CASE
+                    WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                    THEN EXTRACT(
+                      EPOCH FROM (
+                        LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                      )
+                    ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                    ELSE 0::double precision
+                  END
+            )
+          ) / 3600.0,
+          0
+        )::float AS "overtimeHours",
+        (
+          COALESCE(
+            SUM(
+              GREATEST(
+                0,
+                (
+                  EXTRACT(
+                    EPOCH FROM (
+                      LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                    )
+                  )
+                  - COALESCE(a."deductionHours", 0) * 3600.0
+                    * CASE
+                        WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                        THEN EXTRACT(
+                          EPOCH FROM (
+                            LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                          )
+                        ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                        ELSE 0::double precision
+                      END
+                  + COALESCE(a."overtimeHours", 0) * 3600.0
+                    * CASE
+                        WHEN EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt"))) > 0
+                        THEN EXTRACT(
+                          EPOCH FROM (
+                            LEAST(a."checkOutAt", ${end}) - GREATEST(COALESCE(a."countedCheckInAt", a."checkInAt"), ${start})
+                          )
+                        ) / EXTRACT(EPOCH FROM (a."checkOutAt" - COALESCE(a."countedCheckInAt", a."checkInAt")))
+                        ELSE 0::double precision
+                      END
+                )
+              )
+            ) / 3600.0,
+            0
+          )
+        )::float AS "totalHours"
       FROM "Employee" e
       LEFT JOIN "Attendance" a
         ON a."employeeId" = e.id
         AND a."checkOutAt" IS NOT NULL
         AND a."checkOutAt" > ${start}
-        AND a."checkInAt" < ${end}
+        AND COALESCE(a."countedCheckInAt", a."checkInAt") < ${end}
         AND a."branchId" = ${branchFilterId!}
         AND (${isMaster} OR a."companyId" = ${companyId})
       WHERE (${isMaster} OR e."companyId" = ${companyId})
@@ -180,7 +283,9 @@ export async function GET(req: NextRequest) {
   const mappedRows = rows.map((r) => ({
     employeeId: r.id,
     name: r.name,
-    hours: Math.round(Number(r.hours) * 100) / 100,
+    regularHours: Math.round(Number(r.regularHours) * 100) / 100,
+    overtimeHours: Math.round(Number(r.overtimeHours) * 100) / 100,
+    totalHours: Math.round(Number(r.totalHours) * 100) / 100,
     ...("branchName" in r && r.branchName != null ? { branchName: r.branchName } : {}),
   }));
 
@@ -194,7 +299,9 @@ export async function GET(req: NextRequest) {
       Scope: scopeLabel,
       Employee: r.name,
       "Home branch": companyWide ? (r.branchName ?? "") : (scopedBranchName ?? ""),
-      "Total hours": r.hours,
+      "Regular hours": r.regularHours,
+      "Overtime hours": r.overtimeHours,
+      "Total hours": r.totalHours,
     }));
 
     const baseName = `work-hours_${safeFilenamePart(label)}_${companyWide ? "company" : safeFilenamePart(scopedBranchName ?? "branch")}`;
@@ -208,6 +315,8 @@ export async function GET(req: NextRequest) {
         "Scope",
         "Employee",
         "Home branch",
+        "Regular hours",
+        "Overtime hours",
         "Total hours",
       ] as const;
       const escape = (v: unknown) => {
@@ -241,6 +350,8 @@ export async function GET(req: NextRequest) {
               "Scope",
               "Employee",
               "Home branch",
+              "Regular hours",
+              "Overtime hours",
               "Total hours",
             ],
           ]);

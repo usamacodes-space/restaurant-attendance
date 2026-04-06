@@ -23,7 +23,14 @@ export function HoursSection() {
   const [branchId, setBranchId] = useState(ALL_BRANCHES);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [rows, setRows] = useState<
-    { employeeId: string; name: string; hours: number; branchName?: string }[]
+    {
+      employeeId: string;
+      name: string;
+      regularHours: number;
+      overtimeHours: number;
+      totalHours: number;
+      branchName?: string;
+    }[]
   >([]);
 
   useEffect(() => {
@@ -59,8 +66,8 @@ export function HoursSection() {
       <CardHeader className="px-4 pt-6 sm:px-6">
         <CardTitle className="text-lg sm:text-xl">Work hours</CardTitle>
         <CardDescription>
-          Per employee totals for the selected period: net time after shift-based deductions plus prorated overtime
-          (stored at checkout from each employee&apos;s scheduled UTC shift), using the same overlap rules across
+          Per employee totals for the selected period: regular hours (after deduction), overtime hours, and total
+          payable hours. Uses opening-time grace-adjusted check-in for counting and the same overlap rules across
           week/month boundaries. Choose all branches or one branch. Export matches the filters below (CSV or Excel).
         </CardDescription>
       </CardHeader>
@@ -129,6 +136,8 @@ export function HoursSection() {
               <TableRow>
                 <TableHead>Employee</TableHead>
                 {branchId === ALL_BRANCHES ? <TableHead>Home branch</TableHead> : null}
+                <TableHead className="text-right">Regular h</TableHead>
+                <TableHead className="text-right">OT h</TableHead>
                 <TableHead className="text-right">Total h</TableHead>
               </TableRow>
             </TableHeader>
@@ -139,7 +148,9 @@ export function HoursSection() {
                   {branchId === ALL_BRANCHES ? (
                     <TableCell className="text-muted-foreground">{r.branchName ?? "—"}</TableCell>
                   ) : null}
-                  <TableCell className="text-right tabular-nums">{r.hours.toFixed(2)} h</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.regularHours.toFixed(2)} h</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.overtimeHours.toFixed(2)} h</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.totalHours.toFixed(2)} h</TableCell>
                 </TableRow>
               ))}
             </TableBody>

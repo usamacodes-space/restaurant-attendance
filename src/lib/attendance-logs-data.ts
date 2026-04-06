@@ -54,9 +54,10 @@ export function normalizeAttendanceLogRows(rows: AttendanceLogDbRow[]) {
       locationStatus = d <= r.branch.radiusMeters ? "Matched" : "Outside branch radius";
     }
 
+    const effectiveCheckInAt = r.countedCheckInAt ?? r.checkInAt;
     const hours =
-      r.checkOutAt != null && r.checkOutAt.getTime() > r.checkInAt.getTime()
-        ? Math.round(((r.checkOutAt.getTime() - r.checkInAt.getTime()) / 3_600_000) * 100) / 100
+      r.checkOutAt != null && r.checkOutAt.getTime() > effectiveCheckInAt.getTime()
+        ? Math.round(((r.checkOutAt.getTime() - effectiveCheckInAt.getTime()) / 3_600_000) * 100) / 100
         : null;
 
     const deductionHours = Math.round(Math.max(0, Number(r.deductionHours ?? 0)) * 100) / 100;
@@ -96,7 +97,9 @@ export type NormalizedAttendanceLogRow = ReturnType<typeof normalizeAttendanceLo
 
 /** Same columns as CSV / Excel export (no selfie URLs). */
 export function toAttendanceExportRow(row: NormalizedAttendanceLogRow) {
-  const { checkInSelfieUrl: _i, checkOutSelfieUrl: _o, ...rest } = row;
+  const rest = { ...row };
+  delete rest.checkInSelfieUrl;
+  delete rest.checkOutSelfieUrl;
   return rest;
 }
 
