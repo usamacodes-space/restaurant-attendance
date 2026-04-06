@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { normalizeHHMM } from "@/lib/shift-time";
 import { useCallback, useEffect, useState } from "react";
 import type { Branch } from "../types";
 import { primaryButtonClass as primaryBtn } from "../types";
@@ -28,16 +29,9 @@ type OperatingDay = {
   closeTime: string | null;
 };
 
-function toAmPm(hhmm: string | null) {
+function toHoursMins(hhmm: string | null) {
   if (!hhmm) return "closed";
-  const [hRaw, mRaw] = hhmm.split(":");
-  const h = Number(hRaw);
-  const m = Number(mRaw);
-  if (!Number.isInteger(h) || !Number.isInteger(m)) return hhmm;
-  const suffix = h >= 12 ? "pm" : "am";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  if (m === 0) return `${h12}${suffix}`;
-  return `${h12}:${String(m).padStart(2, "0")}${suffix}`;
+  return normalizeHHMM(hhmm) ?? hhmm;
 }
 
 export function ShiftsSection() {
@@ -191,7 +185,8 @@ export function ShiftsSection() {
           <div className="space-y-1">
             <h3 className="text-sm font-semibold">Branch operation times (all 7 days)</h3>
             <p className="text-muted-foreground text-xs">
-              Set opening and closing for each day. Example format: Monday {toAmPm("16:00")} - {toAmPm("02:00")}.
+              Set opening and closing for each day. Example format: Monday {toHoursMins("16:00")} -{" "}
+              {toHoursMins("02:00")}.
             </p>
           </div>
           <div className="space-y-2">
@@ -235,7 +230,7 @@ export function ShiftsSection() {
                   Closed
                 </Button>
                 <p className="text-muted-foreground text-xs sm:col-start-2 sm:col-end-5">
-                  {d.label} {toAmPm(d.openTime)} - {toAmPm(d.closeTime)}
+                  {d.label} {toHoursMins(d.openTime)} - {toHoursMins(d.closeTime)}
                 </p>
               </div>
             ))}

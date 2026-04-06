@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDateHoursMinutes } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Branch, Company, Employee, EmployeeRole } from "../types";
 import { EMPLOYEE_ROLE_OPTIONS, primaryButtonClass } from "../types";
@@ -377,7 +378,7 @@ export function CompanyWorkspaceSection() {
                     />
                     <div className="min-w-0 space-y-2">
                       <p className="text-muted-foreground text-xs break-all">
-                        Expires: {new Date(qrByBranch[b.id].expiresAt).toLocaleString()}
+                        Expires: {formatDateHoursMinutes(qrByBranch[b.id].expiresAt)}
                       </p>
                       <Button variant="outline" size="sm" asChild>
                         <a href={qrByBranch[b.id].publicUrl} target="_blank" rel="noreferrer">

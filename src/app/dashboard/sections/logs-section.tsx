@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { formatDateHoursMinutes } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import type { AttendanceLogRow, Branch, Employee } from "../types";
 
@@ -205,10 +206,10 @@ export function LogsSection() {
                     <TableCell className="font-medium">{r.employeeName}</TableCell>
                     <TableCell className="text-sm">{r.branch}</TableCell>
                     <TableCell className="whitespace-nowrap text-xs sm:text-sm">
-                      {r.checkInAt ? new Date(r.checkInAt).toLocaleString() : "-"}
+                      {r.checkInAt ? formatDateHoursMinutes(r.checkInAt) : "-"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs sm:text-sm">
-                      {r.checkOutAt ? new Date(r.checkOutAt).toLocaleString() : "-"}
+                      {r.checkOutAt ? formatDateHoursMinutes(r.checkOutAt) : "-"}
                     </TableCell>
                     <TableCell className="text-right tabular-nums text-xs sm:text-sm">
                       {typeof r.hours === "number" ? `${r.hours.toFixed(2)}` : "—"}
