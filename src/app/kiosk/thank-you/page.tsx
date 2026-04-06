@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 function useBackNavigationLock() {
@@ -17,7 +17,7 @@ function useBackNavigationLock() {
   }, []);
 }
 
-export default function KioskThankYouPage() {
+function KioskThankYouContent() {
   const searchParams = useSearchParams();
   const mode = (searchParams.get("mode") ?? "").toLowerCase();
 
@@ -45,5 +45,13 @@ export default function KioskThankYouPage() {
       <p className="mt-2 text-base font-medium">{content.message}</p>
       <p className="text-muted-foreground mt-3 text-sm">{content.note}</p>
     </div>
+  );
+}
+
+export default function KioskThankYouPage() {
+  return (
+    <Suspense fallback={null}>
+      <KioskThankYouContent />
+    </Suspense>
   );
 }
