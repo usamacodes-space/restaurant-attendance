@@ -87,9 +87,9 @@ export function LogsSection() {
         <CardTitle className="text-lg sm:text-xl">Attendance logs</CardTitle>
         <CardDescription>
           Deduction and overtime are set at checkout from each employee&apos;s scheduled shift (Workspace → employee
-          shift times, UTC clock). Early arrival counts as deduction; time after shift end counts as OT. Open shifts
-          show no net/total until checkout. Google Sheets uses the same columns as CSV; configure the spreadsheet under
-          Workspace.
+          shift times, UTC clock). If check-in is within the first 15 minutes after branch opening, counted hours start
+          at opening time. If a shift misses branch closing checkout, checkout remains blank and no payable hours are
+          counted. Google Sheets uses the same columns as CSV; configure the spreadsheet under Workspace.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 pb-6 sm:px-6">
@@ -174,7 +174,7 @@ export function LogsSection() {
                 <TableHead className="min-w-[140px]">Check-out</TableHead>
                 <TableHead className="min-w-[72px] text-right">Gross h</TableHead>
                 <TableHead className="min-w-[88px] text-right">Deduct</TableHead>
-                <TableHead className="min-w-[72px] text-right">Net h</TableHead>
+                <TableHead className="min-w-[72px] text-right">Regular h</TableHead>
                 <TableHead className="min-w-[88px] text-right">OT</TableHead>
                 <TableHead className="min-w-[72px] text-right">Total</TableHead>
                 <TableHead className="min-w-[160px]">Location</TableHead>

@@ -21,14 +21,35 @@ type ShiftRow = {
   crossesMidnight: boolean;
 };
 
+type OperatingDay = {
+  dayOfWeek: number;
+  label: string;
+  openTime: string | null;
+  closeTime: string | null;
+};
+
+function toAmPm(hhmm: string | null) {
+  if (!hhmm) return "closed";
+  const [hRaw, mRaw] = hhmm.split(":");
+  const h = Number(hRaw);
+  const m = Number(mRaw);
+  if (!Number.isInteger(h) || !Number.isInteger(m)) return hhmm;
+  const suffix = h >= 12 ? "pm" : "am";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  if (m === 0) return `${h12}${suffix}`;
+  return `${h12}:${String(m).padStart(2, "0")}${suffix}`;
+}
+
 export function ShiftsSection() {
   const [branchId, setBranchId] = useState("");
   const [branches, setBranches] = useState<Branch[]>([]);
   const [shifts, setShifts] = useState<ShiftRow[]>([]);
+  const [operatingDays, setOperatingDays] = useState<OperatingDay[]>([]);
   const [newName, setNewName] = useState("");
   const [newStart, setNewStart] = useState("09:00");
   const [newEnd, setNewEnd] = useState("17:00");
   const [busy, setBusy] = useState<string | false>(false);
+  const [opsBusy, setOpsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,9 +75,23 @@ export function ShiftsSection() {
     setShifts(data.shifts ?? []);
   }, [branchId]);
 
+  const loadOperatingHours = useCallback(async () => {
+    if (!branchId) return;
+    setError(null);
+    const res = await fetch(`/api/admin/branch-operating-hours?branchId=${encodeURIComponent(branchId)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error ?? "Failed to load branch operating hours");
+      setOperatingDays([]);
+      return;
+    }
+    setOperatingDays(data.days ?? []);
+  }, [branchId]);
+
   useEffect(() => {
     void loadShifts();
-  }, [loadShifts]);
+    void loadOperatingHours();
+  }, [loadOperatingHours, loadShifts]);
 
   async function addShift(e: React.FormEvent) {
     e.preventDefault();
@@ -93,6 +128,31 @@ export function ShiftsSection() {
     setShifts((prev) => prev.filter((s) => s.id !== id));
   }
 
+  async function saveOperatingHours() {
+    if (!branchId) return;
+    setError(null);
+    setOpsBusy(true);
+    const res = await fetch("/api/admin/branch-operating-hours", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        branchId,
+        days: operatingDays.map((d) => ({
+          dayOfWeek: d.dayOfWeek,
+          openTime: d.openTime || null,
+          closeTime: d.closeTime || null,
+        })),
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setOpsBusy(false);
+    if (!res.ok) {
+      setError(data.error ?? "Failed to save branch operating hours");
+      return;
+    }
+    setOperatingDays(data.days ?? []);
+  }
+
   return (
     <Card className="border-border shadow-md">
       <CardHeader className="px-4 pt-6 sm:px-6">
@@ -100,7 +160,8 @@ export function ShiftsSection() {
         <CardDescription>
           Define expected working windows in 24-hour local time (e.g. 09:00–17:00). If the end time is earlier on
           the clock than the start (e.g. 22:00–06:00), it is treated as overnight. Shifts are for planning and
-          reference; check-in is not blocked outside these times.
+          reference; check-in is not blocked outside these times. Also set branch operation times for Monday–Sunday
+          (e.g. Monday 16:00–02:00) to enforce closing-time attendance rules.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-4 pb-6 sm:px-6">
@@ -124,6 +185,66 @@ export function ShiftsSection() {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-3 rounded-xl border border-border p-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold">Branch operation times (all 7 days)</h3>
+            <p className="text-muted-foreground text-xs">
+              Set opening and closing for each day. Example format: Monday {toAmPm("16:00")} - {toAmPm("02:00")}.
+            </p>
+          </div>
+          <div className="space-y-2">
+            {operatingDays.map((d) => (
+              <div key={d.dayOfWeek} className="grid grid-cols-1 gap-2 rounded-md border border-border p-2 sm:grid-cols-[120px_1fr_1fr_auto] sm:items-center">
+                <div className="text-sm font-medium">{d.label}</div>
+                <Input
+                  type="time"
+                  value={d.openTime ?? ""}
+                  onChange={(e) =>
+                    setOperatingDays((prev) =>
+                      prev.map((row) =>
+                        row.dayOfWeek === d.dayOfWeek ? { ...row, openTime: e.target.value || null } : row
+                      )
+                    )
+                  }
+                />
+                <Input
+                  type="time"
+                  value={d.closeTime ?? ""}
+                  onChange={(e) =>
+                    setOperatingDays((prev) =>
+                      prev.map((row) =>
+                        row.dayOfWeek === d.dayOfWeek ? { ...row, closeTime: e.target.value || null } : row
+                      )
+                    )
+                  }
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setOperatingDays((prev) =>
+                      prev.map((row) =>
+                        row.dayOfWeek === d.dayOfWeek ? { ...row, openTime: null, closeTime: null } : row
+                      )
+                    )
+                  }
+                >
+                  Closed
+                </Button>
+                <p className="text-muted-foreground text-xs sm:col-start-2 sm:col-end-5">
+                  {d.label} {toAmPm(d.openTime)} - {toAmPm(d.closeTime)}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end">
+            <Button type="button" className={primaryBtn} disabled={opsBusy || !branchId} onClick={() => void saveOperatingHours()}>
+              {opsBusy ? "Saving…" : "Save operating hours"}
+            </Button>
+          </div>
         </div>
 
         <form onSubmit={addShift} className="flex flex-col gap-3 rounded-xl border border-border p-4 sm:flex-row sm:flex-wrap sm:items-end">

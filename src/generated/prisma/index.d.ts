@@ -29,6 +29,12 @@ export type Company = $Result.DefaultSelection<Prisma.$CompanyPayload>
  */
 export type Branch = $Result.DefaultSelection<Prisma.$BranchPayload>
 /**
+ * Model BranchOperatingHour
+ * Branch opening/closing window by weekday (branch local clock HH:MM).
+ * dayOfWeek uses ISO-like numbering: 1=Monday ... 7=Sunday.
+ */
+export type BranchOperatingHour = $Result.DefaultSelection<Prisma.$BranchOperatingHourPayload>
+/**
  * Model BranchShift
  * Expected working window for a branch (local time HH:MM). If startTime is after endTime, shift crosses midnight.
  */
@@ -237,6 +243,16 @@ export class PrismaClient<
     * ```
     */
   get branch(): Prisma.BranchDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.branchOperatingHour`: Exposes CRUD operations for the **BranchOperatingHour** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BranchOperatingHours
+    * const branchOperatingHours = await prisma.branchOperatingHour.findMany()
+    * ```
+    */
+  get branchOperatingHour(): Prisma.BranchOperatingHourDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.branchShift`: Exposes CRUD operations for the **BranchShift** model.
@@ -731,6 +747,7 @@ export namespace Prisma {
     GlobalSettings: 'GlobalSettings',
     Company: 'Company',
     Branch: 'Branch',
+    BranchOperatingHour: 'BranchOperatingHour',
     BranchShift: 'BranchShift',
     User: 'User',
     Employee: 'Employee',
@@ -754,7 +771,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "globalSettings" | "company" | "branch" | "branchShift" | "user" | "employee" | "kioskSession" | "attendance"
+      modelProps: "globalSettings" | "company" | "branch" | "branchOperatingHour" | "branchShift" | "user" | "employee" | "kioskSession" | "attendance"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -977,6 +994,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BranchCountArgs<ExtArgs>
             result: $Utils.Optional<BranchCountAggregateOutputType> | number
+          }
+        }
+      }
+      BranchOperatingHour: {
+        payload: Prisma.$BranchOperatingHourPayload<ExtArgs>
+        fields: Prisma.BranchOperatingHourFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BranchOperatingHourFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BranchOperatingHourFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          findFirst: {
+            args: Prisma.BranchOperatingHourFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BranchOperatingHourFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          findMany: {
+            args: Prisma.BranchOperatingHourFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>[]
+          }
+          create: {
+            args: Prisma.BranchOperatingHourCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          createMany: {
+            args: Prisma.BranchOperatingHourCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BranchOperatingHourCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>[]
+          }
+          delete: {
+            args: Prisma.BranchOperatingHourDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          update: {
+            args: Prisma.BranchOperatingHourUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          deleteMany: {
+            args: Prisma.BranchOperatingHourDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BranchOperatingHourUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BranchOperatingHourUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>[]
+          }
+          upsert: {
+            args: Prisma.BranchOperatingHourUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchOperatingHourPayload>
+          }
+          aggregate: {
+            args: Prisma.BranchOperatingHourAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBranchOperatingHour>
+          }
+          groupBy: {
+            args: Prisma.BranchOperatingHourGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BranchOperatingHourGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BranchOperatingHourCountArgs<ExtArgs>
+            result: $Utils.Optional<BranchOperatingHourCountAggregateOutputType> | number
           }
         }
       }
@@ -1449,6 +1540,7 @@ export namespace Prisma {
     globalSettings?: GlobalSettingsOmit
     company?: CompanyOmit
     branch?: BranchOmit
+    branchOperatingHour?: BranchOperatingHourOmit
     branchShift?: BranchShiftOmit
     user?: UserOmit
     employee?: EmployeeOmit
@@ -1596,6 +1688,7 @@ export namespace Prisma {
     kioskSessions: number
     attendances: number
     shifts: number
+    operatingHours: number
   }
 
   export type BranchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1603,6 +1696,7 @@ export namespace Prisma {
     kioskSessions?: boolean | BranchCountOutputTypeCountKioskSessionsArgs
     attendances?: boolean | BranchCountOutputTypeCountAttendancesArgs
     shifts?: boolean | BranchCountOutputTypeCountShiftsArgs
+    operatingHours?: boolean | BranchCountOutputTypeCountOperatingHoursArgs
   }
 
   // Custom InputTypes
@@ -1642,6 +1736,13 @@ export namespace Prisma {
    */
   export type BranchCountOutputTypeCountShiftsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BranchShiftWhereInput
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountOperatingHoursArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BranchOperatingHourWhereInput
   }
 
 
@@ -4112,6 +4213,7 @@ export namespace Prisma {
     kioskSessions?: boolean | Branch$kioskSessionsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
     shifts?: boolean | Branch$shiftsArgs<ExtArgs>
+    operatingHours?: boolean | Branch$operatingHoursArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["branch"]>
 
@@ -4160,6 +4262,7 @@ export namespace Prisma {
     kioskSessions?: boolean | Branch$kioskSessionsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
     shifts?: boolean | Branch$shiftsArgs<ExtArgs>
+    operatingHours?: boolean | Branch$operatingHoursArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BranchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4177,6 +4280,7 @@ export namespace Prisma {
       kioskSessions: Prisma.$KioskSessionPayload<ExtArgs>[]
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
       shifts: Prisma.$BranchShiftPayload<ExtArgs>[]
+      operatingHours: Prisma.$BranchOperatingHourPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4590,6 +4694,7 @@ export namespace Prisma {
     kioskSessions<T extends Branch$kioskSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$kioskSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KioskSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attendances<T extends Branch$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     shifts<T extends Branch$shiftsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$shiftsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchShiftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    operatingHours<T extends Branch$operatingHoursArgs<ExtArgs> = {}>(args?: Subset<T, Branch$operatingHoursArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5120,6 +5225,30 @@ export namespace Prisma {
   }
 
   /**
+   * Branch.operatingHours
+   */
+  export type Branch$operatingHoursArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    where?: BranchOperatingHourWhereInput
+    orderBy?: BranchOperatingHourOrderByWithRelationInput | BranchOperatingHourOrderByWithRelationInput[]
+    cursor?: BranchOperatingHourWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BranchOperatingHourScalarFieldEnum | BranchOperatingHourScalarFieldEnum[]
+  }
+
+  /**
    * Branch without action
    */
   export type BranchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5135,6 +5264,1130 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BranchInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BranchOperatingHour
+   */
+
+  export type AggregateBranchOperatingHour = {
+    _count: BranchOperatingHourCountAggregateOutputType | null
+    _avg: BranchOperatingHourAvgAggregateOutputType | null
+    _sum: BranchOperatingHourSumAggregateOutputType | null
+    _min: BranchOperatingHourMinAggregateOutputType | null
+    _max: BranchOperatingHourMaxAggregateOutputType | null
+  }
+
+  export type BranchOperatingHourAvgAggregateOutputType = {
+    dayOfWeek: number | null
+  }
+
+  export type BranchOperatingHourSumAggregateOutputType = {
+    dayOfWeek: number | null
+  }
+
+  export type BranchOperatingHourMinAggregateOutputType = {
+    id: string | null
+    branchId: string | null
+    dayOfWeek: number | null
+    openTime: string | null
+    closeTime: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BranchOperatingHourMaxAggregateOutputType = {
+    id: string | null
+    branchId: string | null
+    dayOfWeek: number | null
+    openTime: string | null
+    closeTime: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BranchOperatingHourCountAggregateOutputType = {
+    id: number
+    branchId: number
+    dayOfWeek: number
+    openTime: number
+    closeTime: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BranchOperatingHourAvgAggregateInputType = {
+    dayOfWeek?: true
+  }
+
+  export type BranchOperatingHourSumAggregateInputType = {
+    dayOfWeek?: true
+  }
+
+  export type BranchOperatingHourMinAggregateInputType = {
+    id?: true
+    branchId?: true
+    dayOfWeek?: true
+    openTime?: true
+    closeTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BranchOperatingHourMaxAggregateInputType = {
+    id?: true
+    branchId?: true
+    dayOfWeek?: true
+    openTime?: true
+    closeTime?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BranchOperatingHourCountAggregateInputType = {
+    id?: true
+    branchId?: true
+    dayOfWeek?: true
+    openTime?: true
+    closeTime?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BranchOperatingHourAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BranchOperatingHour to aggregate.
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchOperatingHours to fetch.
+     */
+    orderBy?: BranchOperatingHourOrderByWithRelationInput | BranchOperatingHourOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BranchOperatingHourWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchOperatingHours from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchOperatingHours.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BranchOperatingHours
+    **/
+    _count?: true | BranchOperatingHourCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BranchOperatingHourAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BranchOperatingHourSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BranchOperatingHourMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BranchOperatingHourMaxAggregateInputType
+  }
+
+  export type GetBranchOperatingHourAggregateType<T extends BranchOperatingHourAggregateArgs> = {
+        [P in keyof T & keyof AggregateBranchOperatingHour]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBranchOperatingHour[P]>
+      : GetScalarType<T[P], AggregateBranchOperatingHour[P]>
+  }
+
+
+
+
+  export type BranchOperatingHourGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BranchOperatingHourWhereInput
+    orderBy?: BranchOperatingHourOrderByWithAggregationInput | BranchOperatingHourOrderByWithAggregationInput[]
+    by: BranchOperatingHourScalarFieldEnum[] | BranchOperatingHourScalarFieldEnum
+    having?: BranchOperatingHourScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BranchOperatingHourCountAggregateInputType | true
+    _avg?: BranchOperatingHourAvgAggregateInputType
+    _sum?: BranchOperatingHourSumAggregateInputType
+    _min?: BranchOperatingHourMinAggregateInputType
+    _max?: BranchOperatingHourMaxAggregateInputType
+  }
+
+  export type BranchOperatingHourGroupByOutputType = {
+    id: string
+    branchId: string
+    dayOfWeek: number
+    openTime: string | null
+    closeTime: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BranchOperatingHourCountAggregateOutputType | null
+    _avg: BranchOperatingHourAvgAggregateOutputType | null
+    _sum: BranchOperatingHourSumAggregateOutputType | null
+    _min: BranchOperatingHourMinAggregateOutputType | null
+    _max: BranchOperatingHourMaxAggregateOutputType | null
+  }
+
+  type GetBranchOperatingHourGroupByPayload<T extends BranchOperatingHourGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BranchOperatingHourGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BranchOperatingHourGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BranchOperatingHourGroupByOutputType[P]>
+            : GetScalarType<T[P], BranchOperatingHourGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BranchOperatingHourSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    dayOfWeek?: boolean
+    openTime?: boolean
+    closeTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchOperatingHour"]>
+
+  export type BranchOperatingHourSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    dayOfWeek?: boolean
+    openTime?: boolean
+    closeTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchOperatingHour"]>
+
+  export type BranchOperatingHourSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    branchId?: boolean
+    dayOfWeek?: boolean
+    openTime?: boolean
+    closeTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branchOperatingHour"]>
+
+  export type BranchOperatingHourSelectScalar = {
+    id?: boolean
+    branchId?: boolean
+    dayOfWeek?: boolean
+    openTime?: boolean
+    closeTime?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BranchOperatingHourOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "branchId" | "dayOfWeek" | "openTime" | "closeTime" | "createdAt" | "updatedAt", ExtArgs["result"]["branchOperatingHour"]>
+  export type BranchOperatingHourInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+  export type BranchOperatingHourIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+  export type BranchOperatingHourIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+
+  export type $BranchOperatingHourPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BranchOperatingHour"
+    objects: {
+      branch: Prisma.$BranchPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      branchId: string
+      dayOfWeek: number
+      /**
+       * 24h local time, zero-padded "HH:MM". Null means day is closed/unset.
+       */
+      openTime: string | null
+      /**
+       * 24h local time, zero-padded "HH:MM". Null means day is closed/unset.
+       */
+      closeTime: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["branchOperatingHour"]>
+    composites: {}
+  }
+
+  type BranchOperatingHourGetPayload<S extends boolean | null | undefined | BranchOperatingHourDefaultArgs> = $Result.GetResult<Prisma.$BranchOperatingHourPayload, S>
+
+  type BranchOperatingHourCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BranchOperatingHourFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BranchOperatingHourCountAggregateInputType | true
+    }
+
+  export interface BranchOperatingHourDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BranchOperatingHour'], meta: { name: 'BranchOperatingHour' } }
+    /**
+     * Find zero or one BranchOperatingHour that matches the filter.
+     * @param {BranchOperatingHourFindUniqueArgs} args - Arguments to find a BranchOperatingHour
+     * @example
+     * // Get one BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BranchOperatingHourFindUniqueArgs>(args: SelectSubset<T, BranchOperatingHourFindUniqueArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BranchOperatingHour that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BranchOperatingHourFindUniqueOrThrowArgs} args - Arguments to find a BranchOperatingHour
+     * @example
+     * // Get one BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BranchOperatingHourFindUniqueOrThrowArgs>(args: SelectSubset<T, BranchOperatingHourFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BranchOperatingHour that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourFindFirstArgs} args - Arguments to find a BranchOperatingHour
+     * @example
+     * // Get one BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BranchOperatingHourFindFirstArgs>(args?: SelectSubset<T, BranchOperatingHourFindFirstArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BranchOperatingHour that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourFindFirstOrThrowArgs} args - Arguments to find a BranchOperatingHour
+     * @example
+     * // Get one BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BranchOperatingHourFindFirstOrThrowArgs>(args?: SelectSubset<T, BranchOperatingHourFindFirstOrThrowArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BranchOperatingHours that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BranchOperatingHours
+     * const branchOperatingHours = await prisma.branchOperatingHour.findMany()
+     * 
+     * // Get first 10 BranchOperatingHours
+     * const branchOperatingHours = await prisma.branchOperatingHour.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const branchOperatingHourWithIdOnly = await prisma.branchOperatingHour.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BranchOperatingHourFindManyArgs>(args?: SelectSubset<T, BranchOperatingHourFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BranchOperatingHour.
+     * @param {BranchOperatingHourCreateArgs} args - Arguments to create a BranchOperatingHour.
+     * @example
+     * // Create one BranchOperatingHour
+     * const BranchOperatingHour = await prisma.branchOperatingHour.create({
+     *   data: {
+     *     // ... data to create a BranchOperatingHour
+     *   }
+     * })
+     * 
+     */
+    create<T extends BranchOperatingHourCreateArgs>(args: SelectSubset<T, BranchOperatingHourCreateArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BranchOperatingHours.
+     * @param {BranchOperatingHourCreateManyArgs} args - Arguments to create many BranchOperatingHours.
+     * @example
+     * // Create many BranchOperatingHours
+     * const branchOperatingHour = await prisma.branchOperatingHour.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BranchOperatingHourCreateManyArgs>(args?: SelectSubset<T, BranchOperatingHourCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BranchOperatingHours and returns the data saved in the database.
+     * @param {BranchOperatingHourCreateManyAndReturnArgs} args - Arguments to create many BranchOperatingHours.
+     * @example
+     * // Create many BranchOperatingHours
+     * const branchOperatingHour = await prisma.branchOperatingHour.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BranchOperatingHours and only return the `id`
+     * const branchOperatingHourWithIdOnly = await prisma.branchOperatingHour.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BranchOperatingHourCreateManyAndReturnArgs>(args?: SelectSubset<T, BranchOperatingHourCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BranchOperatingHour.
+     * @param {BranchOperatingHourDeleteArgs} args - Arguments to delete one BranchOperatingHour.
+     * @example
+     * // Delete one BranchOperatingHour
+     * const BranchOperatingHour = await prisma.branchOperatingHour.delete({
+     *   where: {
+     *     // ... filter to delete one BranchOperatingHour
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BranchOperatingHourDeleteArgs>(args: SelectSubset<T, BranchOperatingHourDeleteArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BranchOperatingHour.
+     * @param {BranchOperatingHourUpdateArgs} args - Arguments to update one BranchOperatingHour.
+     * @example
+     * // Update one BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BranchOperatingHourUpdateArgs>(args: SelectSubset<T, BranchOperatingHourUpdateArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BranchOperatingHours.
+     * @param {BranchOperatingHourDeleteManyArgs} args - Arguments to filter BranchOperatingHours to delete.
+     * @example
+     * // Delete a few BranchOperatingHours
+     * const { count } = await prisma.branchOperatingHour.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BranchOperatingHourDeleteManyArgs>(args?: SelectSubset<T, BranchOperatingHourDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BranchOperatingHours.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BranchOperatingHours
+     * const branchOperatingHour = await prisma.branchOperatingHour.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BranchOperatingHourUpdateManyArgs>(args: SelectSubset<T, BranchOperatingHourUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BranchOperatingHours and returns the data updated in the database.
+     * @param {BranchOperatingHourUpdateManyAndReturnArgs} args - Arguments to update many BranchOperatingHours.
+     * @example
+     * // Update many BranchOperatingHours
+     * const branchOperatingHour = await prisma.branchOperatingHour.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BranchOperatingHours and only return the `id`
+     * const branchOperatingHourWithIdOnly = await prisma.branchOperatingHour.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BranchOperatingHourUpdateManyAndReturnArgs>(args: SelectSubset<T, BranchOperatingHourUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BranchOperatingHour.
+     * @param {BranchOperatingHourUpsertArgs} args - Arguments to update or create a BranchOperatingHour.
+     * @example
+     * // Update or create a BranchOperatingHour
+     * const branchOperatingHour = await prisma.branchOperatingHour.upsert({
+     *   create: {
+     *     // ... data to create a BranchOperatingHour
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BranchOperatingHour we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BranchOperatingHourUpsertArgs>(args: SelectSubset<T, BranchOperatingHourUpsertArgs<ExtArgs>>): Prisma__BranchOperatingHourClient<$Result.GetResult<Prisma.$BranchOperatingHourPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BranchOperatingHours.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourCountArgs} args - Arguments to filter BranchOperatingHours to count.
+     * @example
+     * // Count the number of BranchOperatingHours
+     * const count = await prisma.branchOperatingHour.count({
+     *   where: {
+     *     // ... the filter for the BranchOperatingHours we want to count
+     *   }
+     * })
+    **/
+    count<T extends BranchOperatingHourCountArgs>(
+      args?: Subset<T, BranchOperatingHourCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BranchOperatingHourCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BranchOperatingHour.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BranchOperatingHourAggregateArgs>(args: Subset<T, BranchOperatingHourAggregateArgs>): Prisma.PrismaPromise<GetBranchOperatingHourAggregateType<T>>
+
+    /**
+     * Group by BranchOperatingHour.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchOperatingHourGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BranchOperatingHourGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BranchOperatingHourGroupByArgs['orderBy'] }
+        : { orderBy?: BranchOperatingHourGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BranchOperatingHourGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBranchOperatingHourGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BranchOperatingHour model
+   */
+  readonly fields: BranchOperatingHourFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BranchOperatingHour.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BranchOperatingHourClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    branch<T extends BranchDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BranchDefaultArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BranchOperatingHour model
+   */
+  interface BranchOperatingHourFieldRefs {
+    readonly id: FieldRef<"BranchOperatingHour", 'String'>
+    readonly branchId: FieldRef<"BranchOperatingHour", 'String'>
+    readonly dayOfWeek: FieldRef<"BranchOperatingHour", 'Int'>
+    readonly openTime: FieldRef<"BranchOperatingHour", 'String'>
+    readonly closeTime: FieldRef<"BranchOperatingHour", 'String'>
+    readonly createdAt: FieldRef<"BranchOperatingHour", 'DateTime'>
+    readonly updatedAt: FieldRef<"BranchOperatingHour", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BranchOperatingHour findUnique
+   */
+  export type BranchOperatingHourFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchOperatingHour to fetch.
+     */
+    where: BranchOperatingHourWhereUniqueInput
+  }
+
+  /**
+   * BranchOperatingHour findUniqueOrThrow
+   */
+  export type BranchOperatingHourFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchOperatingHour to fetch.
+     */
+    where: BranchOperatingHourWhereUniqueInput
+  }
+
+  /**
+   * BranchOperatingHour findFirst
+   */
+  export type BranchOperatingHourFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchOperatingHour to fetch.
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchOperatingHours to fetch.
+     */
+    orderBy?: BranchOperatingHourOrderByWithRelationInput | BranchOperatingHourOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BranchOperatingHours.
+     */
+    cursor?: BranchOperatingHourWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchOperatingHours from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchOperatingHours.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BranchOperatingHours.
+     */
+    distinct?: BranchOperatingHourScalarFieldEnum | BranchOperatingHourScalarFieldEnum[]
+  }
+
+  /**
+   * BranchOperatingHour findFirstOrThrow
+   */
+  export type BranchOperatingHourFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchOperatingHour to fetch.
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchOperatingHours to fetch.
+     */
+    orderBy?: BranchOperatingHourOrderByWithRelationInput | BranchOperatingHourOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BranchOperatingHours.
+     */
+    cursor?: BranchOperatingHourWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchOperatingHours from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchOperatingHours.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BranchOperatingHours.
+     */
+    distinct?: BranchOperatingHourScalarFieldEnum | BranchOperatingHourScalarFieldEnum[]
+  }
+
+  /**
+   * BranchOperatingHour findMany
+   */
+  export type BranchOperatingHourFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter, which BranchOperatingHours to fetch.
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BranchOperatingHours to fetch.
+     */
+    orderBy?: BranchOperatingHourOrderByWithRelationInput | BranchOperatingHourOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BranchOperatingHours.
+     */
+    cursor?: BranchOperatingHourWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BranchOperatingHours from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BranchOperatingHours.
+     */
+    skip?: number
+    distinct?: BranchOperatingHourScalarFieldEnum | BranchOperatingHourScalarFieldEnum[]
+  }
+
+  /**
+   * BranchOperatingHour create
+   */
+  export type BranchOperatingHourCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BranchOperatingHour.
+     */
+    data: XOR<BranchOperatingHourCreateInput, BranchOperatingHourUncheckedCreateInput>
+  }
+
+  /**
+   * BranchOperatingHour createMany
+   */
+  export type BranchOperatingHourCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BranchOperatingHours.
+     */
+    data: BranchOperatingHourCreateManyInput | BranchOperatingHourCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BranchOperatingHour createManyAndReturn
+   */
+  export type BranchOperatingHourCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * The data used to create many BranchOperatingHours.
+     */
+    data: BranchOperatingHourCreateManyInput | BranchOperatingHourCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BranchOperatingHour update
+   */
+  export type BranchOperatingHourUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BranchOperatingHour.
+     */
+    data: XOR<BranchOperatingHourUpdateInput, BranchOperatingHourUncheckedUpdateInput>
+    /**
+     * Choose, which BranchOperatingHour to update.
+     */
+    where: BranchOperatingHourWhereUniqueInput
+  }
+
+  /**
+   * BranchOperatingHour updateMany
+   */
+  export type BranchOperatingHourUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BranchOperatingHours.
+     */
+    data: XOR<BranchOperatingHourUpdateManyMutationInput, BranchOperatingHourUncheckedUpdateManyInput>
+    /**
+     * Filter which BranchOperatingHours to update
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * Limit how many BranchOperatingHours to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BranchOperatingHour updateManyAndReturn
+   */
+  export type BranchOperatingHourUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * The data used to update BranchOperatingHours.
+     */
+    data: XOR<BranchOperatingHourUpdateManyMutationInput, BranchOperatingHourUncheckedUpdateManyInput>
+    /**
+     * Filter which BranchOperatingHours to update
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * Limit how many BranchOperatingHours to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BranchOperatingHour upsert
+   */
+  export type BranchOperatingHourUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BranchOperatingHour to update in case it exists.
+     */
+    where: BranchOperatingHourWhereUniqueInput
+    /**
+     * In case the BranchOperatingHour found by the `where` argument doesn't exist, create a new BranchOperatingHour with this data.
+     */
+    create: XOR<BranchOperatingHourCreateInput, BranchOperatingHourUncheckedCreateInput>
+    /**
+     * In case the BranchOperatingHour was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BranchOperatingHourUpdateInput, BranchOperatingHourUncheckedUpdateInput>
+  }
+
+  /**
+   * BranchOperatingHour delete
+   */
+  export type BranchOperatingHourDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
+    /**
+     * Filter which BranchOperatingHour to delete.
+     */
+    where: BranchOperatingHourWhereUniqueInput
+  }
+
+  /**
+   * BranchOperatingHour deleteMany
+   */
+  export type BranchOperatingHourDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BranchOperatingHours to delete
+     */
+    where?: BranchOperatingHourWhereInput
+    /**
+     * Limit how many BranchOperatingHours to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BranchOperatingHour without action
+   */
+  export type BranchOperatingHourDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchOperatingHour
+     */
+    select?: BranchOperatingHourSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BranchOperatingHour
+     */
+    omit?: BranchOperatingHourOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchOperatingHourInclude<ExtArgs> | null
   }
 
 
@@ -9737,6 +10990,7 @@ export namespace Prisma {
     employeeId: string | null
     kioskSessionId: string | null
     checkInAt: Date | null
+    countedCheckInAt: Date | null
     checkOutAt: Date | null
     checkInSelfieUrl: string | null
     checkOutSelfieUrl: string | null
@@ -9756,6 +11010,7 @@ export namespace Prisma {
     employeeId: string | null
     kioskSessionId: string | null
     checkInAt: Date | null
+    countedCheckInAt: Date | null
     checkOutAt: Date | null
     checkInSelfieUrl: string | null
     checkOutSelfieUrl: string | null
@@ -9775,6 +11030,7 @@ export namespace Prisma {
     employeeId: number
     kioskSessionId: number
     checkInAt: number
+    countedCheckInAt: number
     checkOutAt: number
     checkInSelfieUrl: number
     checkOutSelfieUrl: number
@@ -9814,6 +11070,7 @@ export namespace Prisma {
     employeeId?: true
     kioskSessionId?: true
     checkInAt?: true
+    countedCheckInAt?: true
     checkOutAt?: true
     checkInSelfieUrl?: true
     checkOutSelfieUrl?: true
@@ -9833,6 +11090,7 @@ export namespace Prisma {
     employeeId?: true
     kioskSessionId?: true
     checkInAt?: true
+    countedCheckInAt?: true
     checkOutAt?: true
     checkInSelfieUrl?: true
     checkOutSelfieUrl?: true
@@ -9852,6 +11110,7 @@ export namespace Prisma {
     employeeId?: true
     kioskSessionId?: true
     checkInAt?: true
+    countedCheckInAt?: true
     checkOutAt?: true
     checkInSelfieUrl?: true
     checkOutSelfieUrl?: true
@@ -9958,6 +11217,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date
+    countedCheckInAt: Date | null
     checkOutAt: Date | null
     checkInSelfieUrl: string | null
     checkOutSelfieUrl: string | null
@@ -9996,6 +11256,7 @@ export namespace Prisma {
     employeeId?: boolean
     kioskSessionId?: boolean
     checkInAt?: boolean
+    countedCheckInAt?: boolean
     checkOutAt?: boolean
     checkInSelfieUrl?: boolean
     checkOutSelfieUrl?: boolean
@@ -10019,6 +11280,7 @@ export namespace Prisma {
     employeeId?: boolean
     kioskSessionId?: boolean
     checkInAt?: boolean
+    countedCheckInAt?: boolean
     checkOutAt?: boolean
     checkInSelfieUrl?: boolean
     checkOutSelfieUrl?: boolean
@@ -10042,6 +11304,7 @@ export namespace Prisma {
     employeeId?: boolean
     kioskSessionId?: boolean
     checkInAt?: boolean
+    countedCheckInAt?: boolean
     checkOutAt?: boolean
     checkInSelfieUrl?: boolean
     checkOutSelfieUrl?: boolean
@@ -10065,6 +11328,7 @@ export namespace Prisma {
     employeeId?: boolean
     kioskSessionId?: boolean
     checkInAt?: boolean
+    countedCheckInAt?: boolean
     checkOutAt?: boolean
     checkInSelfieUrl?: boolean
     checkOutSelfieUrl?: boolean
@@ -10077,7 +11341,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type AttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "branchId" | "employeeId" | "kioskSessionId" | "checkInAt" | "checkOutAt" | "checkInSelfieUrl" | "checkOutSelfieUrl" | "checkInLatitude" | "checkInLongitude" | "checkOutLatitude" | "checkOutLongitude" | "deductionHours" | "overtimeHours" | "createdAt", ExtArgs["result"]["attendance"]>
+  export type AttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "branchId" | "employeeId" | "kioskSessionId" | "checkInAt" | "countedCheckInAt" | "checkOutAt" | "checkInSelfieUrl" | "checkOutSelfieUrl" | "checkInLatitude" | "checkInLongitude" | "checkOutLatitude" | "checkOutLongitude" | "deductionHours" | "overtimeHours" | "createdAt", ExtArgs["result"]["attendance"]>
   export type AttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -10112,6 +11376,10 @@ export namespace Prisma {
       employeeId: string
       kioskSessionId: string
       checkInAt: Date
+      /**
+       * Effective start used for counted work hours (e.g. opening-time grace); falls back to checkInAt if null.
+       */
+      countedCheckInAt: Date | null
       checkOutAt: Date | null
       checkInSelfieUrl: string | null
       checkOutSelfieUrl: string | null
@@ -10561,6 +11829,7 @@ export namespace Prisma {
     readonly employeeId: FieldRef<"Attendance", 'String'>
     readonly kioskSessionId: FieldRef<"Attendance", 'String'>
     readonly checkInAt: FieldRef<"Attendance", 'DateTime'>
+    readonly countedCheckInAt: FieldRef<"Attendance", 'DateTime'>
     readonly checkOutAt: FieldRef<"Attendance", 'DateTime'>
     readonly checkInSelfieUrl: FieldRef<"Attendance", 'String'>
     readonly checkOutSelfieUrl: FieldRef<"Attendance", 'String'>
@@ -11036,6 +12305,19 @@ export namespace Prisma {
   export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
 
 
+  export const BranchOperatingHourScalarFieldEnum: {
+    id: 'id',
+    branchId: 'branchId',
+    dayOfWeek: 'dayOfWeek',
+    openTime: 'openTime',
+    closeTime: 'closeTime',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BranchOperatingHourScalarFieldEnum = (typeof BranchOperatingHourScalarFieldEnum)[keyof typeof BranchOperatingHourScalarFieldEnum]
+
+
   export const BranchShiftScalarFieldEnum: {
     id: 'id',
     branchId: 'branchId',
@@ -11100,6 +12382,7 @@ export namespace Prisma {
     employeeId: 'employeeId',
     kioskSessionId: 'kioskSessionId',
     checkInAt: 'checkInAt',
+    countedCheckInAt: 'countedCheckInAt',
     checkOutAt: 'checkOutAt',
     checkInSelfieUrl: 'checkInSelfieUrl',
     checkOutSelfieUrl: 'checkOutSelfieUrl',
@@ -11372,6 +12655,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionListRelationFilter
     attendances?: AttendanceListRelationFilter
     shifts?: BranchShiftListRelationFilter
+    operatingHours?: BranchOperatingHourListRelationFilter
   }
 
   export type BranchOrderByWithRelationInput = {
@@ -11389,6 +12673,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionOrderByRelationAggregateInput
     attendances?: AttendanceOrderByRelationAggregateInput
     shifts?: BranchShiftOrderByRelationAggregateInput
+    operatingHours?: BranchOperatingHourOrderByRelationAggregateInput
   }
 
   export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -11410,6 +12695,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionListRelationFilter
     attendances?: AttendanceListRelationFilter
     shifts?: BranchShiftListRelationFilter
+    operatingHours?: BranchOperatingHourListRelationFilter
   }, "id" | "companyId_name">
 
   export type BranchOrderByWithAggregationInput = {
@@ -11442,6 +12728,74 @@ export namespace Prisma {
     publicKioskToken?: StringNullableWithAggregatesFilter<"Branch"> | string | null
     publicKioskExpiresAt?: DateTimeNullableWithAggregatesFilter<"Branch"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
+  }
+
+  export type BranchOperatingHourWhereInput = {
+    AND?: BranchOperatingHourWhereInput | BranchOperatingHourWhereInput[]
+    OR?: BranchOperatingHourWhereInput[]
+    NOT?: BranchOperatingHourWhereInput | BranchOperatingHourWhereInput[]
+    id?: StringFilter<"BranchOperatingHour"> | string
+    branchId?: StringFilter<"BranchOperatingHour"> | string
+    dayOfWeek?: IntFilter<"BranchOperatingHour"> | number
+    openTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    closeTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    createdAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+    updatedAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+    branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
+  }
+
+  export type BranchOperatingHourOrderByWithRelationInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    dayOfWeek?: SortOrder
+    openTime?: SortOrderInput | SortOrder
+    closeTime?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    branch?: BranchOrderByWithRelationInput
+  }
+
+  export type BranchOperatingHourWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    branchId_dayOfWeek?: BranchOperatingHourBranchIdDayOfWeekCompoundUniqueInput
+    AND?: BranchOperatingHourWhereInput | BranchOperatingHourWhereInput[]
+    OR?: BranchOperatingHourWhereInput[]
+    NOT?: BranchOperatingHourWhereInput | BranchOperatingHourWhereInput[]
+    branchId?: StringFilter<"BranchOperatingHour"> | string
+    dayOfWeek?: IntFilter<"BranchOperatingHour"> | number
+    openTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    closeTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    createdAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+    updatedAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+    branch?: XOR<BranchScalarRelationFilter, BranchWhereInput>
+  }, "id" | "branchId_dayOfWeek">
+
+  export type BranchOperatingHourOrderByWithAggregationInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    dayOfWeek?: SortOrder
+    openTime?: SortOrderInput | SortOrder
+    closeTime?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BranchOperatingHourCountOrderByAggregateInput
+    _avg?: BranchOperatingHourAvgOrderByAggregateInput
+    _max?: BranchOperatingHourMaxOrderByAggregateInput
+    _min?: BranchOperatingHourMinOrderByAggregateInput
+    _sum?: BranchOperatingHourSumOrderByAggregateInput
+  }
+
+  export type BranchOperatingHourScalarWhereWithAggregatesInput = {
+    AND?: BranchOperatingHourScalarWhereWithAggregatesInput | BranchOperatingHourScalarWhereWithAggregatesInput[]
+    OR?: BranchOperatingHourScalarWhereWithAggregatesInput[]
+    NOT?: BranchOperatingHourScalarWhereWithAggregatesInput | BranchOperatingHourScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BranchOperatingHour"> | string
+    branchId?: StringWithAggregatesFilter<"BranchOperatingHour"> | string
+    dayOfWeek?: IntWithAggregatesFilter<"BranchOperatingHour"> | number
+    openTime?: StringNullableWithAggregatesFilter<"BranchOperatingHour"> | string | null
+    closeTime?: StringNullableWithAggregatesFilter<"BranchOperatingHour"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BranchOperatingHour"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BranchOperatingHour"> | Date | string
   }
 
   export type BranchShiftWhereInput = {
@@ -11758,6 +13112,7 @@ export namespace Prisma {
     employeeId?: StringFilter<"Attendance"> | string
     kioskSessionId?: StringFilter<"Attendance"> | string
     checkInAt?: DateTimeFilter<"Attendance"> | Date | string
+    countedCheckInAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkOutAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkInSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
     checkOutSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
@@ -11781,6 +13136,7 @@ export namespace Prisma {
     employeeId?: SortOrder
     kioskSessionId?: SortOrder
     checkInAt?: SortOrder
+    countedCheckInAt?: SortOrderInput | SortOrder
     checkOutAt?: SortOrderInput | SortOrder
     checkInSelfieUrl?: SortOrderInput | SortOrder
     checkOutSelfieUrl?: SortOrderInput | SortOrder
@@ -11807,6 +13163,7 @@ export namespace Prisma {
     employeeId?: StringFilter<"Attendance"> | string
     kioskSessionId?: StringFilter<"Attendance"> | string
     checkInAt?: DateTimeFilter<"Attendance"> | Date | string
+    countedCheckInAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkOutAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkInSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
     checkOutSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
@@ -11830,6 +13187,7 @@ export namespace Prisma {
     employeeId?: SortOrder
     kioskSessionId?: SortOrder
     checkInAt?: SortOrder
+    countedCheckInAt?: SortOrderInput | SortOrder
     checkOutAt?: SortOrderInput | SortOrder
     checkInSelfieUrl?: SortOrderInput | SortOrder
     checkOutSelfieUrl?: SortOrderInput | SortOrder
@@ -11857,6 +13215,7 @@ export namespace Prisma {
     employeeId?: StringWithAggregatesFilter<"Attendance"> | string
     kioskSessionId?: StringWithAggregatesFilter<"Attendance"> | string
     checkInAt?: DateTimeWithAggregatesFilter<"Attendance"> | Date | string
+    countedCheckInAt?: DateTimeNullableWithAggregatesFilter<"Attendance"> | Date | string | null
     checkOutAt?: DateTimeNullableWithAggregatesFilter<"Attendance"> | Date | string | null
     checkInSelfieUrl?: StringNullableWithAggregatesFilter<"Attendance"> | string | null
     checkOutSelfieUrl?: StringNullableWithAggregatesFilter<"Attendance"> | string | null
@@ -12011,6 +13370,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateInput = {
@@ -12027,6 +13387,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUpdateInput = {
@@ -12043,6 +13404,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateInput = {
@@ -12059,6 +13421,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchCreateManyInput = {
@@ -12094,6 +13457,75 @@ export namespace Prisma {
     publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
     publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchOperatingHourCreateInput = {
+    id?: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branch: BranchCreateNestedOneWithoutOperatingHoursInput
+  }
+
+  export type BranchOperatingHourUncheckedCreateInput = {
+    id?: string
+    branchId: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BranchOperatingHourUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneRequiredWithoutOperatingHoursNestedInput
+  }
+
+  export type BranchOperatingHourUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    branchId?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchOperatingHourCreateManyInput = {
+    id?: string
+    branchId: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BranchOperatingHourUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchOperatingHourUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    branchId?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BranchShiftCreateInput = {
@@ -12420,6 +13852,7 @@ export namespace Prisma {
   export type AttendanceCreateInput = {
     id?: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -12443,6 +13876,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -12458,6 +13892,7 @@ export namespace Prisma {
   export type AttendanceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12481,6 +13916,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12500,6 +13936,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -12515,6 +13952,7 @@ export namespace Prisma {
   export type AttendanceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12534,6 +13972,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12780,11 +14219,21 @@ export namespace Prisma {
     none?: BranchShiftWhereInput
   }
 
+  export type BranchOperatingHourListRelationFilter = {
+    every?: BranchOperatingHourWhereInput
+    some?: BranchOperatingHourWhereInput
+    none?: BranchOperatingHourWhereInput
+  }
+
   export type KioskSessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type BranchShiftOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BranchOperatingHourOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -12890,6 +14339,49 @@ export namespace Prisma {
   export type BranchScalarRelationFilter = {
     is?: BranchWhereInput
     isNot?: BranchWhereInput
+  }
+
+  export type BranchOperatingHourBranchIdDayOfWeekCompoundUniqueInput = {
+    branchId: string
+    dayOfWeek: number
+  }
+
+  export type BranchOperatingHourCountOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    dayOfWeek?: SortOrder
+    openTime?: SortOrder
+    closeTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BranchOperatingHourAvgOrderByAggregateInput = {
+    dayOfWeek?: SortOrder
+  }
+
+  export type BranchOperatingHourMaxOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    dayOfWeek?: SortOrder
+    openTime?: SortOrder
+    closeTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BranchOperatingHourMinOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    dayOfWeek?: SortOrder
+    openTime?: SortOrder
+    closeTime?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BranchOperatingHourSumOrderByAggregateInput = {
+    dayOfWeek?: SortOrder
   }
 
   export type BranchShiftCountOrderByAggregateInput = {
@@ -13135,6 +14627,7 @@ export namespace Prisma {
     employeeId?: SortOrder
     kioskSessionId?: SortOrder
     checkInAt?: SortOrder
+    countedCheckInAt?: SortOrder
     checkOutAt?: SortOrder
     checkInSelfieUrl?: SortOrder
     checkOutSelfieUrl?: SortOrder
@@ -13163,6 +14656,7 @@ export namespace Prisma {
     employeeId?: SortOrder
     kioskSessionId?: SortOrder
     checkInAt?: SortOrder
+    countedCheckInAt?: SortOrder
     checkOutAt?: SortOrder
     checkInSelfieUrl?: SortOrder
     checkOutSelfieUrl?: SortOrder
@@ -13182,6 +14676,7 @@ export namespace Prisma {
     employeeId?: SortOrder
     kioskSessionId?: SortOrder
     checkInAt?: SortOrder
+    countedCheckInAt?: SortOrder
     checkOutAt?: SortOrder
     checkInSelfieUrl?: SortOrder
     checkOutSelfieUrl?: SortOrder
@@ -13433,6 +14928,13 @@ export namespace Prisma {
     connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
   }
 
+  export type BranchOperatingHourCreateNestedManyWithoutBranchInput = {
+    create?: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput> | BranchOperatingHourCreateWithoutBranchInput[] | BranchOperatingHourUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchOperatingHourCreateOrConnectWithoutBranchInput | BranchOperatingHourCreateOrConnectWithoutBranchInput[]
+    createMany?: BranchOperatingHourCreateManyBranchInputEnvelope
+    connect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+  }
+
   export type EmployeeUncheckedCreateNestedManyWithoutBranchInput = {
     create?: XOR<EmployeeCreateWithoutBranchInput, EmployeeUncheckedCreateWithoutBranchInput> | EmployeeCreateWithoutBranchInput[] | EmployeeUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutBranchInput | EmployeeCreateOrConnectWithoutBranchInput[]
@@ -13459,6 +14961,13 @@ export namespace Prisma {
     connectOrCreate?: BranchShiftCreateOrConnectWithoutBranchInput | BranchShiftCreateOrConnectWithoutBranchInput[]
     createMany?: BranchShiftCreateManyBranchInputEnvelope
     connect?: BranchShiftWhereUniqueInput | BranchShiftWhereUniqueInput[]
+  }
+
+  export type BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput> | BranchOperatingHourCreateWithoutBranchInput[] | BranchOperatingHourUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchOperatingHourCreateOrConnectWithoutBranchInput | BranchOperatingHourCreateOrConnectWithoutBranchInput[]
+    createMany?: BranchOperatingHourCreateManyBranchInputEnvelope
+    connect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -13545,6 +15054,20 @@ export namespace Prisma {
     deleteMany?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
   }
 
+  export type BranchOperatingHourUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput> | BranchOperatingHourCreateWithoutBranchInput[] | BranchOperatingHourUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchOperatingHourCreateOrConnectWithoutBranchInput | BranchOperatingHourCreateOrConnectWithoutBranchInput[]
+    upsert?: BranchOperatingHourUpsertWithWhereUniqueWithoutBranchInput | BranchOperatingHourUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: BranchOperatingHourCreateManyBranchInputEnvelope
+    set?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    disconnect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    delete?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    connect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    update?: BranchOperatingHourUpdateWithWhereUniqueWithoutBranchInput | BranchOperatingHourUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: BranchOperatingHourUpdateManyWithWhereWithoutBranchInput | BranchOperatingHourUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: BranchOperatingHourScalarWhereInput | BranchOperatingHourScalarWhereInput[]
+  }
+
   export type EmployeeUncheckedUpdateManyWithoutBranchNestedInput = {
     create?: XOR<EmployeeCreateWithoutBranchInput, EmployeeUncheckedCreateWithoutBranchInput> | EmployeeCreateWithoutBranchInput[] | EmployeeUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutBranchInput | EmployeeCreateOrConnectWithoutBranchInput[]
@@ -13599,6 +15122,34 @@ export namespace Prisma {
     update?: BranchShiftUpdateWithWhereUniqueWithoutBranchInput | BranchShiftUpdateWithWhereUniqueWithoutBranchInput[]
     updateMany?: BranchShiftUpdateManyWithWhereWithoutBranchInput | BranchShiftUpdateManyWithWhereWithoutBranchInput[]
     deleteMany?: BranchShiftScalarWhereInput | BranchShiftScalarWhereInput[]
+  }
+
+  export type BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput> | BranchOperatingHourCreateWithoutBranchInput[] | BranchOperatingHourUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: BranchOperatingHourCreateOrConnectWithoutBranchInput | BranchOperatingHourCreateOrConnectWithoutBranchInput[]
+    upsert?: BranchOperatingHourUpsertWithWhereUniqueWithoutBranchInput | BranchOperatingHourUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: BranchOperatingHourCreateManyBranchInputEnvelope
+    set?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    disconnect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    delete?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    connect?: BranchOperatingHourWhereUniqueInput | BranchOperatingHourWhereUniqueInput[]
+    update?: BranchOperatingHourUpdateWithWhereUniqueWithoutBranchInput | BranchOperatingHourUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: BranchOperatingHourUpdateManyWithWhereWithoutBranchInput | BranchOperatingHourUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: BranchOperatingHourScalarWhereInput | BranchOperatingHourScalarWhereInput[]
+  }
+
+  export type BranchCreateNestedOneWithoutOperatingHoursInput = {
+    create?: XOR<BranchCreateWithoutOperatingHoursInput, BranchUncheckedCreateWithoutOperatingHoursInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutOperatingHoursInput
+    connect?: BranchWhereUniqueInput
+  }
+
+  export type BranchUpdateOneRequiredWithoutOperatingHoursNestedInput = {
+    create?: XOR<BranchCreateWithoutOperatingHoursInput, BranchUncheckedCreateWithoutOperatingHoursInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutOperatingHoursInput
+    upsert?: BranchUpsertWithoutOperatingHoursInput
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutOperatingHoursInput, BranchUpdateWithoutOperatingHoursInput>, BranchUncheckedUpdateWithoutOperatingHoursInput>
   }
 
   export type BranchCreateNestedOneWithoutShiftsInput = {
@@ -14143,6 +15694,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutCompanyInput = {
@@ -14158,6 +15710,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutCompanyInput = {
@@ -14245,6 +15798,7 @@ export namespace Prisma {
   export type AttendanceCreateWithoutCompanyInput = {
     id?: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -14266,6 +15820,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -14409,6 +15964,7 @@ export namespace Prisma {
     employeeId?: StringFilter<"Attendance"> | string
     kioskSessionId?: StringFilter<"Attendance"> | string
     checkInAt?: DateTimeFilter<"Attendance"> | Date | string
+    countedCheckInAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkOutAt?: DateTimeNullableFilter<"Attendance"> | Date | string | null
     checkInSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
     checkOutSelfieUrl?: StringNullableFilter<"Attendance"> | string | null
@@ -14523,6 +16079,7 @@ export namespace Prisma {
   export type AttendanceCreateWithoutBranchInput = {
     id?: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -14544,6 +16101,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -14591,6 +16149,34 @@ export namespace Prisma {
 
   export type BranchShiftCreateManyBranchInputEnvelope = {
     data: BranchShiftCreateManyBranchInput | BranchShiftCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BranchOperatingHourCreateWithoutBranchInput = {
+    id?: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BranchOperatingHourUncheckedCreateWithoutBranchInput = {
+    id?: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BranchOperatingHourCreateOrConnectWithoutBranchInput = {
+    where: BranchOperatingHourWhereUniqueInput
+    create: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput>
+  }
+
+  export type BranchOperatingHourCreateManyBranchInputEnvelope = {
+    data: BranchOperatingHourCreateManyBranchInput | BranchOperatingHourCreateManyBranchInput[]
     skipDuplicates?: boolean
   }
 
@@ -14718,6 +16304,115 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"BranchShift"> | Date | string
   }
 
+  export type BranchOperatingHourUpsertWithWhereUniqueWithoutBranchInput = {
+    where: BranchOperatingHourWhereUniqueInput
+    update: XOR<BranchOperatingHourUpdateWithoutBranchInput, BranchOperatingHourUncheckedUpdateWithoutBranchInput>
+    create: XOR<BranchOperatingHourCreateWithoutBranchInput, BranchOperatingHourUncheckedCreateWithoutBranchInput>
+  }
+
+  export type BranchOperatingHourUpdateWithWhereUniqueWithoutBranchInput = {
+    where: BranchOperatingHourWhereUniqueInput
+    data: XOR<BranchOperatingHourUpdateWithoutBranchInput, BranchOperatingHourUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type BranchOperatingHourUpdateManyWithWhereWithoutBranchInput = {
+    where: BranchOperatingHourScalarWhereInput
+    data: XOR<BranchOperatingHourUpdateManyMutationInput, BranchOperatingHourUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type BranchOperatingHourScalarWhereInput = {
+    AND?: BranchOperatingHourScalarWhereInput | BranchOperatingHourScalarWhereInput[]
+    OR?: BranchOperatingHourScalarWhereInput[]
+    NOT?: BranchOperatingHourScalarWhereInput | BranchOperatingHourScalarWhereInput[]
+    id?: StringFilter<"BranchOperatingHour"> | string
+    branchId?: StringFilter<"BranchOperatingHour"> | string
+    dayOfWeek?: IntFilter<"BranchOperatingHour"> | number
+    openTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    closeTime?: StringNullableFilter<"BranchOperatingHour"> | string | null
+    createdAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+    updatedAt?: DateTimeFilter<"BranchOperatingHour"> | Date | string
+  }
+
+  export type BranchCreateWithoutOperatingHoursInput = {
+    id?: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
+    createdAt?: Date | string
+    company: CompanyCreateNestedOneWithoutBranchesInput
+    employees?: EmployeeCreateNestedManyWithoutBranchInput
+    kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutOperatingHoursInput = {
+    id?: string
+    companyId: string
+    name: string
+    latitude?: number | null
+    longitude?: number | null
+    radiusMeters?: number
+    publicKioskToken?: string | null
+    publicKioskExpiresAt?: Date | string | null
+    createdAt?: Date | string
+    employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
+    kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutOperatingHoursInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutOperatingHoursInput, BranchUncheckedCreateWithoutOperatingHoursInput>
+  }
+
+  export type BranchUpsertWithoutOperatingHoursInput = {
+    update: XOR<BranchUpdateWithoutOperatingHoursInput, BranchUncheckedUpdateWithoutOperatingHoursInput>
+    create: XOR<BranchCreateWithoutOperatingHoursInput, BranchUncheckedCreateWithoutOperatingHoursInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutOperatingHoursInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutOperatingHoursInput, BranchUncheckedUpdateWithoutOperatingHoursInput>
+  }
+
+  export type BranchUpdateWithoutOperatingHoursInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutBranchesNestedInput
+    employees?: EmployeeUpdateManyWithoutBranchNestedInput
+    kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutOperatingHoursInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    radiusMeters?: IntFieldUpdateOperationsInput | number
+    publicKioskToken?: NullableStringFieldUpdateOperationsInput | string | null
+    publicKioskExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
+    kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+  }
+
   export type BranchCreateWithoutShiftsInput = {
     id?: string
     name: string
@@ -14731,6 +16426,7 @@ export namespace Prisma {
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutShiftsInput = {
@@ -14746,6 +16442,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutShiftsInput = {
@@ -14777,6 +16474,7 @@ export namespace Prisma {
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutShiftsInput = {
@@ -14792,6 +16490,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type CompanyCreateWithoutUsersInput = {
@@ -15005,6 +16704,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutEmployeesInput = {
@@ -15020,6 +16720,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutEmployeesInput = {
@@ -15030,6 +16731,7 @@ export namespace Prisma {
   export type AttendanceCreateWithoutEmployeeInput = {
     id?: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15051,6 +16753,7 @@ export namespace Prisma {
     branchId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15163,6 +16866,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutEmployeesInput = {
@@ -15178,6 +16882,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -15209,6 +16914,7 @@ export namespace Prisma {
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutKioskSessionsInput = {
@@ -15224,6 +16930,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutKioskSessionsInput = {
@@ -15234,6 +16941,7 @@ export namespace Prisma {
   export type AttendanceCreateWithoutKioskSessionInput = {
     id?: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15255,6 +16963,7 @@ export namespace Prisma {
     branchId: string
     employeeId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15301,6 +17010,7 @@ export namespace Prisma {
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutKioskSessionsInput = {
@@ -15316,6 +17026,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutKioskSessionInput = {
@@ -15376,6 +17087,7 @@ export namespace Prisma {
     employees?: EmployeeCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourCreateNestedManyWithoutBranchInput
   }
 
   export type BranchUncheckedCreateWithoutAttendancesInput = {
@@ -15391,6 +17103,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedCreateNestedManyWithoutBranchInput
     kioskSessions?: KioskSessionUncheckedCreateNestedManyWithoutBranchInput
     shifts?: BranchShiftUncheckedCreateNestedManyWithoutBranchInput
+    operatingHours?: BranchOperatingHourUncheckedCreateNestedManyWithoutBranchInput
   }
 
   export type BranchCreateOrConnectWithoutAttendancesInput = {
@@ -15517,6 +17230,7 @@ export namespace Prisma {
     employees?: EmployeeUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutAttendancesInput = {
@@ -15532,6 +17246,7 @@ export namespace Prisma {
     employees?: EmployeeUncheckedUpdateManyWithoutBranchNestedInput
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type EmployeeUpsertWithoutAttendancesInput = {
@@ -15647,6 +17362,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15672,6 +17388,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateWithoutCompanyInput = {
@@ -15687,6 +17404,7 @@ export namespace Prisma {
     kioskSessions?: KioskSessionUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     shifts?: BranchShiftUncheckedUpdateManyWithoutBranchNestedInput
+    operatingHours?: BranchOperatingHourUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type BranchUncheckedUpdateManyWithoutCompanyInput = {
@@ -15779,6 +17497,7 @@ export namespace Prisma {
   export type AttendanceUpdateWithoutCompanyInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15800,6 +17519,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15818,6 +17538,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15859,6 +17580,7 @@ export namespace Prisma {
     employeeId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -15878,6 +17600,15 @@ export namespace Prisma {
     endTime: string
     sortOrder?: number
     createdAt?: Date | string
+  }
+
+  export type BranchOperatingHourCreateManyBranchInput = {
+    id?: string
+    dayOfWeek: number
+    openTime?: string | null
+    closeTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EmployeeUpdateWithoutBranchInput = {
@@ -15956,6 +17687,7 @@ export namespace Prisma {
   export type AttendanceUpdateWithoutBranchInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15977,6 +17709,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15995,6 +17728,7 @@ export namespace Prisma {
     employeeId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16034,12 +17768,40 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BranchOperatingHourUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchOperatingHourUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BranchOperatingHourUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    openTime?: NullableStringFieldUpdateOperationsInput | string | null
+    closeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AttendanceCreateManyEmployeeInput = {
     id?: string
     companyId: string
     branchId: string
     kioskSessionId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -16055,6 +17817,7 @@ export namespace Prisma {
   export type AttendanceUpdateWithoutEmployeeInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16076,6 +17839,7 @@ export namespace Prisma {
     branchId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16094,6 +17858,7 @@ export namespace Prisma {
     branchId?: StringFieldUpdateOperationsInput | string
     kioskSessionId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16112,6 +17877,7 @@ export namespace Prisma {
     branchId: string
     employeeId: string
     checkInAt: Date | string
+    countedCheckInAt?: Date | string | null
     checkOutAt?: Date | string | null
     checkInSelfieUrl?: string | null
     checkOutSelfieUrl?: string | null
@@ -16127,6 +17893,7 @@ export namespace Prisma {
   export type AttendanceUpdateWithoutKioskSessionInput = {
     id?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16148,6 +17915,7 @@ export namespace Prisma {
     branchId?: StringFieldUpdateOperationsInput | string
     employeeId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16166,6 +17934,7 @@ export namespace Prisma {
     branchId?: StringFieldUpdateOperationsInput | string
     employeeId?: StringFieldUpdateOperationsInput | string
     checkInAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    countedCheckInAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     checkInSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null
     checkOutSelfieUrl?: NullableStringFieldUpdateOperationsInput | string | null

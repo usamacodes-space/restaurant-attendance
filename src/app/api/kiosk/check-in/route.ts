@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getValidKioskSessionByPlainToken } from "@/lib/kiosk-session";
+import { computeCountedCheckInAt, isAttendancePastClosingTimeUtc } from "@/lib/branch-operating-hours";
 import { saveSelfie } from "@/lib/upload-selfie";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -52,10 +53,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid passcode" }, { status: 401 });
   }
 
-  const existingOpen = await prisma.attendance.findFirst({
-    where: { employeeId, branchId: branch.id, checkOutAt: null },
+  const branchOperatingHours = await prisma.branchOperatingHour.findMany({
+    where: { branchId: branch.id },
+    select: { dayOfWeek: true, openTime: true, closeTime: true },
   });
-  if (existingOpen) {
+
+  const existingOpenRows = await prisma.attendance.findMany({
+    where: { employeeId, branchId: branch.id, checkOutAt: null },
+    orderBy: { checkInAt: "desc" },
+  });
+  const now = new Date();
+  const activeOpen = existingOpenRows.find(
+    (row) => !isAttendancePastClosingTimeUtc(now, row.checkInAt, branchOperatingHours)
+  );
+  if (activeOpen) {
     return NextResponse.json({ error: "Already checked in" }, { status: 409 });
   }
 
@@ -69,13 +80,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to store selfie" }, { status: 500 });
   }
 
+  const checkInAt = now;
+  const countedCheckInAt = computeCountedCheckInAt(checkInAt, branchOperatingHours, 15);
+
   const attendance = await prisma.attendance.create({
     data: {
       companyId: employee.companyId,
       branchId: branch.id,
       employeeId,
       kioskSessionId: kiosk.id,
-      checkInAt: new Date(),
+      checkInAt,
+      countedCheckInAt,
       checkInSelfieUrl: selfieUrl,
       checkInLatitude: Number.isFinite(latitude) ? latitude : null,
       checkInLongitude: Number.isFinite(longitude) ? longitude : null,

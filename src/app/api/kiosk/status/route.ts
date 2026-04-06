@@ -1,4 +1,5 @@
 import { getValidKioskSessionByPlainToken } from "@/lib/kiosk-session";
+import { isAttendancePastClosingTimeUtc } from "@/lib/branch-operating-hours";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -68,6 +69,34 @@ export async function POST(req: NextRequest) {
     orderBy: { checkInAt: "desc" },
   });
 
+  let hasOpenShift = !!open;
+  let openAttendanceId = open?.id ?? null;
+  let openCheckInAtIso = open?.checkInAt.toISOString() ?? null;
+  if (open) {
+    const branchOperatingHours = await prisma.branchOperatingHour.findMany({
+      where: { branchId: branch.id },
+      select: { dayOfWeek: true, openTime: true, closeTime: true },
+    });
+    const pastClosing = isAttendancePastClosingTimeUtc(new Date(), open.checkInAt, branchOperatingHours);
+    if (pastClosing) {
+      // Auto-mark stale open shifts as missed checkout (blank checkout; zero payable hours).
+      await prisma.attendance.update({
+        where: { id: open.id },
+        data: {
+          checkOutAt: null,
+          checkOutLatitude: null,
+          checkOutLongitude: null,
+          checkOutSelfieUrl: null,
+          deductionHours: 0,
+          overtimeHours: 0,
+        },
+      });
+      hasOpenShift = false;
+      openAttendanceId = null;
+      openCheckInAtIso = null;
+    }
+  }
+
   return NextResponse.json({
     employee: {
       id: employee.id,
@@ -77,8 +106,8 @@ export async function POST(req: NextRequest) {
       branchName: employee.branch.name,
     },
     branch,
-    hasOpenShift: !!open,
-    openAttendanceId: open?.id ?? null,
-    checkInAt: open?.checkInAt.toISOString() ?? null,
+    hasOpenShift,
+    openAttendanceId,
+    checkInAt: openCheckInAtIso,
   });
 }

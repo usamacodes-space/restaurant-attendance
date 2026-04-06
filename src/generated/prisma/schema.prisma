@@ -50,23 +50,42 @@ model Company {
 }
 
 model Branch {
-  id                   String         @id @default(cuid())
+  id                   String                @id @default(cuid())
   companyId            String
-  company              Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company              Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
   name                 String
   latitude             Float?
   longitude            Float?
-  radiusMeters         Int            @default(100)
+  radiusMeters         Int                   @default(100)
   /// Latest kiosk plain token for the stable public /qr?branchId= page (rotates when admin refreshes QR).
   publicKioskToken     String?
   publicKioskExpiresAt DateTime?
-  createdAt            DateTime       @default(now())
+  createdAt            DateTime              @default(now())
   employees            Employee[]
   kioskSessions        KioskSession[]
   attendances          Attendance[]
   shifts               BranchShift[]
+  operatingHours       BranchOperatingHour[]
 
   @@unique([companyId, name])
+}
+
+/// Branch opening/closing window by weekday (branch local clock HH:MM).
+/// dayOfWeek uses ISO-like numbering: 1=Monday ... 7=Sunday.
+model BranchOperatingHour {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  /// 24h local time, zero-padded "HH:MM". Null means day is closed/unset.
+  openTime  String?
+  /// 24h local time, zero-padded "HH:MM". Null means day is closed/unset.
+  closeTime String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([branchId, dayOfWeek])
+  @@index([branchId])
 }
 
 /// Expected working window for a branch (local time HH:MM). If startTime is after endTime, shift crosses midnight.
@@ -143,6 +162,8 @@ model Attendance {
   kioskSessionId    String
   kioskSession      KioskSession @relation(fields: [kioskSessionId], references: [id], onDelete: Restrict)
   checkInAt         DateTime
+  /// Effective start used for counted work hours (e.g. opening-time grace); falls back to checkInAt if null.
+  countedCheckInAt  DateTime?
   checkOutAt        DateTime?
   checkInSelfieUrl  String?
   checkOutSelfieUrl String?
