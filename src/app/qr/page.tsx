@@ -1,4 +1,5 @@
 import { getQrBranding } from "@/lib/global-settings";
+import { ensureActiveKioskSessionForBranch } from "@/lib/kiosk-session";
 import { prisma } from "@/lib/prisma";
 import { formatDateHoursMinutes } from "@/lib/utils";
 import QRCode from "qrcode";
@@ -159,8 +160,6 @@ export default async function PublicQrPage({
       where: { id: branchId },
       select: {
         name: true,
-        publicKioskToken: true,
-        publicKioskExpiresAt: true,
         company: { select: { qrCompanyLogoUrl: true } },
       },
     });
@@ -182,14 +181,10 @@ export default async function PublicQrPage({
     }
     branchName = branch.name;
     companyLogoUrl = branch.company.qrCompanyLogoUrl ?? null;
-    const now = new Date();
-    if (
-      branch.publicKioskToken &&
-      branch.publicKioskExpiresAt &&
-      branch.publicKioskExpiresAt > now
-    ) {
-      token = branch.publicKioskToken;
-      expiresAt = branch.publicKioskExpiresAt;
+    const activeSession = await ensureActiveKioskSessionForBranch(branchId);
+    if (activeSession) {
+      token = activeSession.token;
+      expiresAt = activeSession.expiresAt;
     }
   } else if (legacyToken) {
     token = legacyToken;
@@ -239,7 +234,7 @@ export default async function PublicQrPage({
           >
             <p className="font-bold">No active kiosk session</p>
             <p className="mt-2 opacity-90">
-              Ask a company admin to open the dashboard and refresh the branch QR once. This page URL stays the same and will show the updated code automatically.
+              Kiosk session is being prepared. This page URL stays the same and will show the active QR automatically.
             </p>
           </div>
         }

@@ -1,7 +1,6 @@
 import { requireRoles } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import { generateKioskPlainToken, hashKioskToken } from "@/lib/kiosk-token";
-import { kioskSessionTtlMs } from "@/lib/kiosk-session";
+import { rotateKioskSessionForBranch } from "@/lib/kiosk-session";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -23,23 +22,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden branch" }, { status: 403 });
   }
 
-  const plain = generateKioskPlainToken();
-  const tokenHash = hashKioskToken(plain);
-  const expiresAt = new Date(Date.now() + kioskSessionTtlMs());
-
-  await prisma.$transaction([
-    prisma.kioskSession.create({
-      data: { tokenHash, expiresAt, branchId },
-    }),
-    prisma.branch.update({
-      where: { id: branchId },
-      data: { publicKioskToken: plain, publicKioskExpiresAt: expiresAt },
-    }),
-  ]);
+  const activeSession = await rotateKioskSessionForBranch(branchId);
+  if (!activeSession) {
+    return NextResponse.json({ error: "Branch not found" }, { status: 404 });
+  }
 
   return NextResponse.json({
-    token: plain,
-    expiresAt: expiresAt.toISOString(),
+    token: activeSession.token,
+    expiresAt: activeSession.expiresAt.toISOString(),
     branch: { id: branch.id, name: branch.name },
   });
 }

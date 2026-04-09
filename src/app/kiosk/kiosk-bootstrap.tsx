@@ -30,7 +30,7 @@ export function KioskBootstrap({ branchId }: Props) {
     }
 
     void load();
-    const interval = window.setInterval(() => void load(), 45_000);
+    const interval = window.setInterval(() => void load(), 5_000);
     return () => {
       cancelled = true;
       window.clearInterval(interval);
@@ -43,7 +43,7 @@ export function KioskBootstrap({ branchId }: Props) {
         <div className="border-border bg-card text-card-foreground max-w-md rounded-2xl border p-6 text-center shadow-sm">
           <p className="font-semibold">Kiosk unavailable</p>
           <p className="text-muted-foreground mt-2 text-sm">{error}</p>
-          <p className="text-muted-foreground mt-3 text-xs">Ask an admin to refresh the branch QR in the dashboard.</p>
+          <p className="text-muted-foreground mt-3 text-xs">Please keep this page open. A new kiosk session appears automatically.</p>
         </div>
       </div>
     );
