@@ -10,7 +10,7 @@ export function QrAutoRefresh({ branchId }: { branchId: string }) {
     if (!branchId) return;
     const id = window.setInterval(() => {
       router.refresh();
-    }, 45_000);
+    }, 5_000);
     return () => window.clearInterval(id);
   }, [branchId, router]);
   return null;
