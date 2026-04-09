@@ -63,10 +63,16 @@ If the app is behind a proxy or you need a fixed origin in links, set `NEXT_PUBL
 | Script            | Purpose                    |
 |-------------------|----------------------------|
 | `npm run dev`     | Development server         |
-| `npm run build`   | `prisma migrate deploy` + `prisma generate` + build |
+| `npm run build`   | `prisma generate` + build |
 | `npm run db:deploy` | `prisma migrate deploy` |
 | `npm run db:migrate` | `prisma migrate dev`    |
 | `npm run db:push` | `prisma db push` (prototyping) |
+
+### Vercel migration behavior
+
+- Default `npm run build` uses `scripts/vercel-prebuild.mjs`.
+- It runs `prisma migrate deploy` for Vercel production (`VERCEL=1` and `VERCEL_ENV=production`) or when `RUN_MIGRATIONS=true`.
+- Preview deployments skip migrations by default to avoid failing builds on restricted DBs.
 
 ## Stack
 
